@@ -1,37 +1,114 @@
+//Imports
 import React from 'react';
-import { StyleSheet, Text, View, Pressable, Dimensions } from 'react-native';
+import { useRef } from 'react';
+import { StyleSheet, Text, View, Pressable , Platform , Animated} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Shadow } from 'react-native-shadow-2';
+import 'react-native-gesture-handler';
 
-const { width } = Dimensions.get('window');
+//Components
+import Homesvg from '../components/SvgComponents/Home/Homesvg';
+import HomesvgShadow from '../components/SvgComponents/Home/Homesvg2';
+import Calendarsvg from '../components/SvgComponents/Calendar/Calendarsvg';
+import CalendarsvgShadow from '../components/SvgComponents/Calendar/Calendarsvg2';
+import Addsvg from '../components/SvgComponents/Add/Addsvg';
+import AddsvgShadow from '../components/SvgComponents/Add/Addsvg2';
+import Groupssvg from '../components/SvgComponents/Groups/Groupssvg';
+import GroupssvgShadow from '../components/SvgComponents/Groups/Groupssvg2';
+import Notificationssvg from '../components/SvgComponents/Notifications/Notificationssvg';
+import NotificationssvgShadow from '../components/SvgComponents/Notifications/Notificationssvg2';
+
+
 
 export default function Navbar() {
+    //Para cambiar de pantalla
     const navigation = useNavigation();
+
+    //Animaciones
+    const homeAnim = useRef(new Animated.Value(0)).current;
+    const calendarAnim = useRef(new Animated.Value(0)).current;
+    const addAnim = useRef(new Animated.Value(0)).current;
+    const groupsAnim = useRef(new Animated.Value(0)).current;
+    const notificationsAnim = useRef(new Animated.Value(0)).current;
+
+    const handlePressIn = (anim) => {
+        Animated.spring(anim, {
+            toValue: 4,
+            useNativeDriver: true,
+        }).start();
+    };
+
+    const handlePressOut = (anim) => {
+        Animated.spring(anim, {
+            toValue: 0,
+            useNativeDriver: true,
+        }).start();
+    };
+
 
     return (
         <View style={styles.container}>
             <Shadow
-                distance={10}
-                startColor={'#00000020'}
+                distance={40}
+                startColor={'#eac7ae3d'}
                 finalColor={'#00000000'}
                 offset={[0, -3]}
                 containerViewStyle={{ width: '100%' }}
             >
                 <View style={styles.navbar}>
-                    <Pressable style={styles.navbutton} onPress={() => navigation.navigate('Home')}>
-                        <Text style={styles.text}>Home</Text>
+                    <Pressable
+                        style={styles.navbutton}
+                        onPress={() => navigation.navigate('Home')}
+                        onPressIn={() => handlePressIn(homeAnim)}
+                        onPressOut={() => handlePressOut(homeAnim)}
+                    >
+                        <Animated.View style={{ transform: [{ translateY: homeAnim }] }}>
+                            <Homesvg style={styles.icon} />
+                            <HomesvgShadow style={styles.iconShadow} />
+                        </Animated.View>
                     </Pressable>
-                    <Pressable style={styles.navbutton} onPress={() => navigation.navigate('Calendar')}>
-                        <Text style={styles.text}>Calendar</Text>
+                    <Pressable
+                        style={styles.navbutton}
+                        onPress={() => navigation.navigate('Calendar')}
+                        onPressIn={() => handlePressIn(calendarAnim)}
+                        onPressOut={() => handlePressOut(calendarAnim)}
+                    >
+                        <Animated.View style={{ transform: [{ translateY: calendarAnim }] }}>
+                            <Calendarsvg style={styles.icon} />
+                            <CalendarsvgShadow style={styles.iconShadow} />
+                        </Animated.View>
                     </Pressable>
-                    <Pressable style={styles.navbutton} onPress={() => navigation.navigate('Avisos')}>
-                        <Text style={styles.text}>Add</Text>
+                    <Pressable
+                        style={styles.navbutton}
+                        onPressIn={() => handlePressIn(addAnim)}
+                        onPressOut={() => handlePressOut(addAnim)}
+                    >
+                        <Animated.View style={{ transform: [{ translateY: addAnim }] }}>
+                            <Addsvg style={styles.iconAdd} />
+                            <AddsvgShadow style={styles.iconShadowAdd} />
+                        </Animated.View>
                     </Pressable>
-                    <Pressable style={styles.navbutton} onPress={() => navigation.navigate('Groups')}>
-                        <Text style={styles.text}>Groups</Text>
+                    <Pressable
+                        style={styles.navbutton}
+                        onPress={() => navigation.navigate('Groups')}
+                        onPressIn={() => handlePressIn(groupsAnim)}
+                        onPressOut={() => handlePressOut(groupsAnim)}
+                    >
+                        <Animated.View style={{ transform: [{ translateY: groupsAnim }] }}>
+                            <Groupssvg style={styles.icon} />
+                            <GroupssvgShadow style={styles.iconShadow} />
+                        </Animated.View>
                     </Pressable>
-                    <Pressable style={styles.navbutton} onPress={() => navigation.navigate('Notifications')}>
-                        <Text style={styles.text}>Notif</Text>
+                    <Pressable
+                        style={styles.navbutton}
+                        onPress={() => navigation.navigate('Notifications')}
+                        onPressIn={() => handlePressIn(notificationsAnim)}
+                        onPressOut={() => handlePressOut(notificationsAnim)}
+                    >
+                        <Animated.View style={{ transform: [{ translateY: notificationsAnim }] }}>
+                            <Notificationssvg style={styles.icon} />
+                            <NotificationssvgShadow style={styles.iconShadow} />
+                        </Animated.View>
                     </Pressable>
                 </View>
             </Shadow>
@@ -66,4 +143,48 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 16,
     },
+    icon: {
+        ...Platform.select({
+            ios: {
+                width: 30,
+                height: 30,
+                transform: [{ translateY: -8 }],
+            },
+            android: {
+                width: 35,
+                height: 35,
+                transform: [{ translateY: 0 }],
+            }
+        }),
+    },
+    iconShadow: {
+        ...Platform.select({
+            ios: {
+                width: 30,
+                height: 30,
+                position: 'absolute',
+                transform: [{ translateY: -4 }],
+                zIndex: -1,
+            },
+            android: {
+                width: 35,
+                height: 35,
+                position: 'absolute',
+                transform: [{ translateY: 4 }],
+                zIndex: -1,
+            }
+        }),
+    },
+    iconAdd: {
+        width: 50,
+        height: 50,
+        transform: [{ translateY: -10 }],
+    },
+    iconShadowAdd: {
+        width: 50,
+        height: 50,
+        position: 'absolute',
+        transform: [{ translateY: -6 }],
+        zIndex: -1,
+    }
 });
