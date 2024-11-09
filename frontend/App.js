@@ -1,11 +1,15 @@
 //Imports
 import React from 'react';
+import { useRef , useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Home from './routes/Home';
 import UserCalendar from './routes/UserCalendar';
 import Groups from './routes/Groups';
 import Notifications from './routes/Notifications';
+import * as NavigationBar from 'expo-navigation-bar';
+
+
 
 //Components
 import Navbar from './components/Navbar';
@@ -13,9 +17,17 @@ import Navbar from './components/Navbar';
 
 
 
+
 const Stack = createStackNavigator();
 
 export default function App() {
+
+    useEffect(() => {
+        NavigationBar.setBackgroundColorAsync("#F1F1F1");
+        NavigationBar.setButtonStyleAsync("dark");
+    }
+    ,[])
+
     return (
         <NavigationContainer>
             <Stack.Navigator

@@ -4,8 +4,10 @@ import { Image , Pressable, StyleSheet, Text, TextInput, View , ScrollView , Fla
 import { Shadow } from 'react-native-shadow-2';
 
 //Components
-
-
+import Weathersvg from '../components/SvgComponents/Home/Weathersvg1';
+import WeathersvgShadow from '../components/SvgComponents/Home/Weathersvg1Shadow';
+import Weathersvg2 from '../components/SvgComponents/Home/Weathersvg2';
+import Weathersvg2Shadow from '../components/SvgComponents/Home/Weathersvg2Shadow';
 
 
 export default function Home() {
@@ -57,7 +59,12 @@ export default function Home() {
                         <Image style={styles.profileImage} source={require('../assets/pingu.png')} />
                     </Pressable>
                 </View>
-                <View></View>
+                <View style={styles.weatherContainer}>
+                    <Weathersvg style={styles.weathersvg} />
+                    <WeathersvgShadow style={styles.weathersvgShadow} />
+                    <Weathersvg2 style={styles.weathersvg2} />
+                    <Weathersvg2Shadow style={styles.weathersvg2Shadow} />
+                </View>
             </View>
             <View style={styles.weekdaysContainer}>
                 <Shadow offset={[0,4]} distance={3}>
@@ -93,6 +100,49 @@ export default function Home() {
                     </View>
                 </Shadow>
             </View>
+            <View style={styles.taskHeaderWrapper}>
+                <Text style={styles.headerText}>Tasks</Text>
+            </View>
+            <View style={styles.tasksContainer}>
+                <FlatList style={styles.taskList} horizontal={true} showsHorizontalScrollIndicator={false}
+                    data={[
+                        { key: 'Task 1' },
+                        { key: 'Task 2' },
+                        { key: 'Task 3' },
+                        { key: 'Task 4' },
+                        { key: 'Task 5' },
+                        { key: 'Task 6' },
+                        { key: 'Task 7' },
+                        { key: 'Task 8' },
+                        { key: 'Task 9' },
+                        { key: 'Task 10' },
+                    ]}
+                    renderItem={({ item }) => <Shadow offset={[10,15]} distance={3}><View style={styles.taskcard}><Text>{item.key}</Text></View></Shadow>}
+                />
+            </View>
+            <View style={styles.listContainer}>
+                <Text style={styles.headerText}>Lists</Text>
+                <View style={styles.listList} >
+                    <FlatList horizontal={false} showsVerticalScrollIndicator={false}
+                        data={[
+                            { key: 'List 1' },
+                            { key: 'List 2' },
+                            { key: 'List 3' },
+                            { key: 'List 4' },
+                            { key: 'List 5' },
+                        ]}
+                        renderItem={({ item }) => 
+                        <View style={styles.tasksContainer}>
+                                <View style={styles.listcard}>
+                                    <Text style={styles.textList}>{item.key}</Text>
+                                    <Pressable>
+                                        <Text>+</Text>
+                                    </Pressable>
+                                </View>
+                        </View>}
+                    />
+                </View>
+            </View>
         </View>
     );
 }
@@ -106,7 +156,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     profileGreeting: {
-        marginTop: '13%',
+        marginTop: '5%',
         marginLeft: 40,
         width: '100%',
         display: 'flex',
@@ -134,6 +184,33 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
     },
+    weatherContainer: {
+        marginRight: 18,
+    },
+    weathersvg: {
+        width: 100,
+        height: 100,
+        transform: [{ translateY: 32 }],
+    },
+    weathersvgShadow: {
+        width: 100,
+        height: 100,
+        transform: [{ translateY: 35 }],
+        position: 'absolute',
+        zIndex: -1,
+    },
+    weathersvg2: {
+        width: 100,
+        height: 100,
+        zIndex: -2,
+    },
+    weathersvg2Shadow: {
+        width: 100,
+        height: 100,
+        position: 'absolute',
+        transform: [{ translateY: 108 }],
+        zIndex: -3,
+    },
     weekdays: {
         flexDirection: 'row',
         justifyContent: 'space-around',
@@ -145,7 +222,7 @@ const styles = StyleSheet.create({
     },
     weekdaysContainer: {
         width: '80%',
-        marginTop: 20,
+        marginTop: 10,
     },
     day: {
         alignItems: 'center',
@@ -169,5 +246,52 @@ const styles = StyleSheet.create({
     texttoday: {
         color: '#FFFFFF',
         fontWeight: 'bold',
+    },
+    tasksContainer: {
+        width: '100%',
+    },
+    taskHeaderWrapper: {
+        width: '80%',
+        marginTop: 20,
+    },
+    taskList: {
+        width: '100%',
+        height: 190,
+    },
+    taskcard: {
+        width: 150,
+        height: 170,
+        backgroundColor: '#B5C18E',
+        margin: 10,
+        borderRadius: 25,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    listContainer: {
+        width: '80%',
+    },
+    listList: {
+        width: '100%',
+        height: 250,
+        marginTop: 10,
+    },
+    listcard: {
+        width: '100%',
+        height: 50,
+        backgroundColor: '#B5C18E',
+        marginTop: 5,
+        marginBottom: 5,
+        borderRadius: 15,
+        paddingLeft: 20,
+        paddingRight: 20,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    textList: {
+        color: '#FFFFFF',
+        fontWeight: 'bold',
+        fontSize: 20,
     },
 });
