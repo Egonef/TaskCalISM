@@ -14,4 +14,4 @@ const tareaSchema = new Schema({
     timestamps: true
 })
 
-module.exports = model('Tarea', productoSchema)
+module.exports = model('Tarea', tareaSchema)

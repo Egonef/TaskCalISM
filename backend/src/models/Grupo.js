@@ -17,4 +17,4 @@ const grupoSchema = new Schema({
     timestamps: true
 })
 
-module.exports = model('Grupo', usuarioSchema)
+module.exports = model('Grupo', grupoSchema)
