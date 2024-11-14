@@ -11,14 +11,24 @@ import Weathersvg from '../components/SvgComponents/Home/Weathersvg1';
 import WeathersvgShadow from '../components/SvgComponents/Home/Weathersvg1Shadow';
 import Weathersvg2 from '../components/SvgComponents/Home/Weathersvg2';
 import Weathersvg2Shadow from '../components/SvgComponents/Home/Weathersvg2Shadow';
+import Sunsvg from '../components/SvgComponents/Home/Sunsvg';
+import Cloudsvg from '../components/SvgComponents/Home/Cloudsvg';
+import Rainsvg from '../components/SvgComponents/Home/Rainsvg';
+import Moonsvg from '../components/SvgComponents/Home/Moonsvg';
 
+//Clave de la api de openweather(Pasar a .env)
 const WEATHER_API = '0410f4e1d48e8b7de2f6529d00e3560f';
 
 export default function Home() {
 
     //Estado para la temperatura (Asi controlamos que se haya cargado la temperatura)
     const [temperature, setTemperature] = useState(null);
+    //Estado para el clima(Sunny, Cloudy, Rainy...)
+    const [weather, setWeather] = useState(null);
+    //Estado para las tareas
+    const [tasks, setTasks] = useState(null);
 
+    
 
     //Funcion para saludar segun la hora
     const greet = () => {
@@ -72,6 +82,30 @@ export default function Home() {
         }
     };
 
+    //Obtenemos el clima con la api de openweather(Sunny, Cloudy, Rainy...)
+    const fetchWeather = async () => {
+        try {
+            console.log('Fetching the weather...');
+            const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=Cordoba,ES&units=metric&appid=${WEATHER_API}`);
+            console.log('Weather fetched:', response.data.weather[0].main);
+            setWeather(response.data.weather[0].main);
+        } catch (error) {
+            console.error('Error fetching the weather:', error);
+        }
+    };
+
+    //Solicitud al backend para obtener las tareas
+    const fetchTasks = async () => {
+        try {
+            console.log('Fetching the tasks...');
+            const response = await axios.get('http://localhost:3001/tasks');
+            console.log('Tasks fetched:', response.data);
+            setTasks(response.data);
+        } catch (error) {
+            console.error('Error fetching the tasks:', error);
+        }
+    };
+
     //useEffect sive par ejecutar lo de dentro cuando se modifique lo que hay 
     // entre los corchetes, si no hay nada se ejecuta solo una vez al cargar la pagina
     useEffect(() => {
@@ -82,8 +116,11 @@ export default function Home() {
             const roundedTemp = Math.round(temp);
             setTemperature(roundedTemp);
         };
-
         fetchTemperature();
+
+        fetchWeather();
+
+        fetchTasks();
     }, []);
 
     return (
@@ -97,6 +134,11 @@ export default function Home() {
                     </Pressable>
                 </View>
                 <View style={styles.weatherContainer}>
+                    {weather == 'Clear' ? <Sunsvg style={styles.climateIcon} /> 
+                    : weather == 'Clouds' ?  <Cloudsvg style={styles.climateIcon}/> 
+                    : weather == 'Drizzle' ?  <Rainsvg style={styles.climateIcon}/> 
+                    : weather == 'Clear' && greet() == 'Good Night!' ?  <Moonsvg style={styles.climateIcon}/> 
+                    : <Weathersvg style={styles.climateIcon} />}
                     <Weathersvg style={styles.weathersvg} />
                     <WeathersvgShadow style={styles.weathersvgShadow} />
                     <Text style={styles.temperatureText}>{temperature}°C</Text>
@@ -142,20 +184,16 @@ export default function Home() {
                 <Text style={styles.headerText}>Tasks</Text>
             </View>
             <View style={styles.tasksContainer}>
-                <FlatList style={styles.taskList} horizontal={true} showsHorizontalScrollIndicator={false}
-                    data={[
-                        { key: 'Task 1' },
-                        { key: 'Task 2' },
-                        { key: 'Task 3' },
-                        { key: 'Task 4' },
-                        { key: 'Task 5' },
-                        { key: 'Task 6' },
-                        { key: 'Task 7' },
-                        { key: 'Task 8' },
-                        { key: 'Task 9' },
-                        { key: 'Task 10' },
-                    ]}
-                    renderItem={({ item }) => <Shadow offset={[10,15]} distance={3}><View style={styles.taskcard}><Text>{item.key}</Text></View></Shadow>}
+                <FlatList style={styles.taskList} 
+                horizontal={true} 
+                showsHorizontalScrollIndicator={false}
+                data={tasks}
+                renderItem={({ item }) => 
+                    <Shadow offset={[10,15]} distance={3}>
+                        <View style={styles.taskcard}>
+                            <Text>{item.descripcion}</Text>
+                        </View>
+                    </Shadow>}
                 />
             </View>
             <View style={styles.listContainer}>
@@ -256,6 +294,14 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: '#FFFFFF',
         fontWeight: 'bold',
+    },
+    climateIcon: {
+        width: 50,
+        height: 50,
+        position: 'absolute',
+        transform: [{ translateY: 63 }],
+        marginLeft: 15,
+        zIndex: 1,
     },
     weekdays: {
         flexDirection: 'row',

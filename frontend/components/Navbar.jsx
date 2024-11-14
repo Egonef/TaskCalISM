@@ -64,7 +64,6 @@ export default function Navbar() {
                     >
                         <Animated.View style={{ transform: [{ translateY: homeAnim }] }}>
                             <Homesvg style={styles.icon} />
-                            <HomesvgShadow style={styles.iconShadow} />
                         </Animated.View>
                     </Pressable>
                     <Pressable
@@ -75,7 +74,6 @@ export default function Navbar() {
                     >
                         <Animated.View style={{ transform: [{ translateY: calendarAnim }] }}>
                             <Calendarsvg style={styles.icon} />
-                            <CalendarsvgShadow style={styles.iconShadow} />
                         </Animated.View>
                     </Pressable>
                     <Pressable
@@ -85,7 +83,6 @@ export default function Navbar() {
                     >
                         <Animated.View style={{ transform: [{ translateY: addAnim }] }}>
                             <Addsvg style={styles.iconAdd} />
-                            <AddsvgShadow style={styles.iconShadowAdd} />
                         </Animated.View>
                     </Pressable>
                     <Pressable
@@ -96,7 +93,6 @@ export default function Navbar() {
                     >
                         <Animated.View style={{ transform: [{ translateY: groupsAnim }] }}>
                             <Groupssvg style={styles.icon} />
-                            <GroupssvgShadow style={styles.iconShadow} />
                         </Animated.View>
                     </Pressable>
                     <Pressable
@@ -107,7 +103,6 @@ export default function Navbar() {
                     >
                         <Animated.View style={{ transform: [{ translateY: notificationsAnim }] }}>
                             <Notificationssvg style={styles.icon} />
-                            <NotificationssvgShadow style={styles.iconShadow} />
                         </Animated.View>
                     </Pressable>
                 </View>
