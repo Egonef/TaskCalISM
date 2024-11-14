@@ -1,12 +1,15 @@
-require('dotenv').config()
+// src/index.js
+import dotenv from 'dotenv';
+import app from './app.js';  // Usamos import para traer la aplicación Express
+import './database.js';      // Conexión a la base de datos
 
-const app = require('./app')
-require('./database')
+dotenv.config();  // Cargar variables de entorno desde .env
 
-//esta logica es para ejecutar el servidor
-async function main(){
-    await app.listen(app.get('port'))
-    console.log('el servidor se esta ejecutando en el puerto: ', app.get('port'))
+// Iniciar el servidor
+async function main() {
+  const port = app.get('port');
+  await app.listen(port);
+  console.log('El servidor se está ejecutando en el puerto:', port);
 }
 
 main();

@@ -1,4 +1,4 @@
-const {Schema, model} = require('mongoose')
+import { Schema, model } from 'mongoose'
 
 const tareaSchema = new Schema({
     nombre: String,
@@ -14,4 +14,4 @@ const tareaSchema = new Schema({
     timestamps: true
 })
 
-module.exports = model('Tarea', productoSchema)
+export default model('Tarea', tareaSchema)
