@@ -1,4 +1,4 @@
-import Tarea from '../models/Tarea.js'
+import Tarea from '../models/TareaUsuario.js'
 import asyncHandler from 'express-async-handler'
 
 
