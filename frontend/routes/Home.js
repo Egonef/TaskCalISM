@@ -98,7 +98,7 @@ export default function Home() {
     const fetchTasks = async () => {
         try {
             console.log('Fetching the tasks...');
-            const response = await axios.get('http://localhost:3001/tasks');
+            const response = await axios.get('http://localhost:3000/api/tasks');
             console.log('Tasks fetched:', response.data);
             setTasks(response.data);
         } catch (error) {

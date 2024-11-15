@@ -2,8 +2,13 @@
 import dotenv from 'dotenv';
 import app from './app.js';  // Usamos import para traer la aplicación Express
 import './database.js';      // Conexión a la base de datos
+import cors from 'cors';
 
 dotenv.config();  // Cargar variables de entorno desde .env
+
+//Usar cors/// NO TOCAR QUE SI NO NO FUNCIONA NA
+app.use(cors());
+
 
 // Iniciar el servidor
 async function main() {
