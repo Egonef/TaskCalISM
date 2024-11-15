@@ -7,7 +7,12 @@ import cors from 'cors';
 dotenv.config();  // Cargar variables de entorno desde .env
 
 //Usar cors/// NO TOCAR QUE SI NO NO FUNCIONA NA
-app.use(cors());
+
+app.use(cors({
+    origin: '*', // Permitir todas las orígenes, puedes restringirlo a tu dominio específico
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 
 // Iniciar el servidor

@@ -7,6 +7,7 @@ import asyncHandler from 'express-async-handler'
 
 ///api/users
 export const getTasks = asyncHandler(async(req, res) => {
+    console.log("llamada a getTasks")
     const tasks = [
         { id: 1, descripcion: "KK 1", completada: false },
         { id: 2, descripcion: "Si 2", completada: true },
