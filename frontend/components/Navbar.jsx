@@ -1,10 +1,10 @@
 //Imports
-import React from 'react';
-import { useRef } from 'react';
+import React, { useRef, useContext } from 'react';
 import { StyleSheet, Text, View, Pressable , Platform , Animated} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Shadow } from 'react-native-shadow-2';
 import 'react-native-gesture-handler';
+import { GlobalContext } from '../GlobalContext';
 
 //Components
 import Homesvg from '../components/SvgComponents/Home/Homesvg';
@@ -17,7 +17,7 @@ import Groupssvg from '../components/SvgComponents/Groups/Groupssvg';
 import GroupssvgShadow from '../components/SvgComponents/Groups/Groupssvg2';
 import Notificationssvg from '../components/SvgComponents/Notifications/Notificationssvg';
 import NotificationssvgShadow from '../components/SvgComponents/Notifications/Notificationssvg2';
-
+import AddPopUp from './AddPopUp';
 
 
 export default function Navbar() {
@@ -30,6 +30,9 @@ export default function Navbar() {
     const addAnim = useRef(new Animated.Value(0)).current;
     const groupsAnim = useRef(new Animated.Value(0)).current;
     const notificationsAnim = useRef(new Animated.Value(0)).current;
+
+    //Para abrir el popUp
+    const { OpenAddPopUp , setOpenAddPopUp } = useContext(GlobalContext);
 
     const handlePressIn = (anim) => {
         Animated.spring(anim, {
@@ -48,6 +51,7 @@ export default function Navbar() {
 
     return (
         <View style={styles.container}>
+            
             <Shadow
                 distance={40}
                 startColor={'#eac7ae3d'}
@@ -78,6 +82,7 @@ export default function Navbar() {
                     </Pressable>
                     <Pressable
                         style={styles.navbutton}
+                        onPress={() => { OpenAddPopUp === false ? setOpenAddPopUp(true) : setOpenAddPopUp(false) }}
                         onPressIn={() => handlePressIn(addAnim)}
                         onPressOut={() => handlePressOut(addAnim)}
                     >
