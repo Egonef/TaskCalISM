@@ -4,7 +4,7 @@ import { Button, Pressable, StyleSheet, Text, TextInput, View , ScrollView , Fla
 
 
 //Components
-
+import AddPopUp from '../components/AddPopUp';
 
 
 
@@ -13,6 +13,7 @@ export default function Groups() {
         <View style={styles.container}>
             <StatusBar style="auto" />
             <Text style={styles.header}>Groups</Text>
+            <AddPopUp />
         </View>
     );
 }

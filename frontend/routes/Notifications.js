@@ -4,7 +4,7 @@ import { Button, Pressable, StyleSheet, Text, TextInput, View , ScrollView , Fla
 
 
 //Components
-
+import AddPopUp from '../components/AddPopUp';
 
 
 
@@ -13,6 +13,7 @@ export default function Notifications() {
         <View style={styles.container}>
             <StatusBar style="auto" />
             <Text style={styles.header}>Notifications</Text>
+            <AddPopUp />
         </View>
     );
 }
