@@ -30,8 +30,6 @@ export default function Home() {
     //Estado para las tareas
     const [tasks, setTasks] = useState(null);
 
-    
-
     //Funcion para saludar segun la hora
     const greet = () => {
         let today = new Date();
