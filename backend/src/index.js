@@ -2,7 +2,7 @@
 import dotenv from 'dotenv';
 import app from './app.js';  // Usamos import para traer la aplicación Express
 import './database.js';      // Conexión a la base de datos
-//import cors from 'cors';
+import cors from 'cors';
 
 dotenv.config();  // Cargar variables de entorno desde .env
 

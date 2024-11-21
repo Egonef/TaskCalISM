@@ -1,6 +1,6 @@
 import Usuario from '../models/Usuario.js'
 import asyncHandler from 'express-async-handler'
-const bcrypt = require('bcrypt');
+import bcrypt from 'bcrypt'
 const saltRounds = 10;
 
 // Tus rutas van aquí
