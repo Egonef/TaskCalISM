@@ -25,7 +25,7 @@ export default function Home() {
 
     //Estado para la temperatura (Asi controlamos que se haya cargado la temperatura)
     const [temperature, setTemperature] = useState(null);
-    //Estado para el clima(Sunny, Cloudy, Rainy...)
+    //Estado para el clima
     const [weather, setWeather] = useState(null);
     //Estado para las tareas
     const [tasks, setTasks] = useState(null);
@@ -82,7 +82,7 @@ export default function Home() {
         }
     };
 
-    //Obtenemos el clima con la api de openweather(Sunny, Cloudy, Rainy...)
+    //Obtenemos el clima con la api de openweather(Clear, Cloud, Drizzle...)
     const fetchWeather = async () => {
         try {
             console.log('Fetching the weather...');
