@@ -16,6 +16,7 @@ import Cloudsvg from '../components/SvgComponents/Home/Cloudsvg';
 import Rainsvg from '../components/SvgComponents/Home/Rainsvg';
 import Moonsvg from '../components/SvgComponents/Home/Moonsvg';
 import AddPopUp from '../components/AddPopUp';
+
 //Clave de la api de openweather(Pasar a .env)
 const WEATHER_API = '0410f4e1d48e8b7de2f6529d00e3560f';
 //Direccion ip del backend (Cambiar para desarrollo)
@@ -121,7 +122,7 @@ export default function Home() {
 
 
     //useEffect sive par ejecutar lo de dentro cuando se modifique lo que hay
-    // entre los corchetes, si no hay nada se ejecuta solo una vez al cargar la pagina
+    // entre los corchetes[], si no hay nada se ejecuta solo una vez al cargar la pagina
     useEffect(() => {
         //Obtenemos la temperatura y nos aseguramos de que la hayamos obtenido antes de mostrarla(await)
         const fetchTemperature = async () => {

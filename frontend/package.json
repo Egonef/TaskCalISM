@@ -16,6 +16,7 @@
     "expo": "~51.0.28",
     "expo-navigation-bar": "~3.0.7",
     "expo-status-bar": "~1.12.1",
+    "ngrok": "^4.3.3",
     "react": "18.2.0",
     "react-native": "0.74.5",
     "react-native-gesture-handler": "^2.20.2",
