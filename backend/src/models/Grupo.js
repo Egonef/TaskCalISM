@@ -1,4 +1,4 @@
-const {Schema, model} = require('mongoose')
+import { Schema, model } from 'mongoose'
 
 const grupoSchema = new Schema({
     nombre: String,
@@ -16,4 +16,4 @@ const grupoSchema = new Schema({
     timestamps: true
 })
 
-module.exports = model('Grupo', grupoSchema)
+export default model('Grupo', grupoSchema)

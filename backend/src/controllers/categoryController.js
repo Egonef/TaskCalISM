@@ -52,30 +52,45 @@ export const createCategoryUser = asyncHandler(async (req, res) => {
 });
 
 ///api/categories/user/modify/:id
-export const modifyCategory = asyncHandler(async (req, res) => {
-    const { id } = req.params;  // ID de la categoría que se va a modificar
-    const { nombre, descripcion } = req.body;  // Nuevos datos para la categoría
+export const modifyCategoryUser = asyncHandler(async (req, res) => {
+    const { id } = req.params; // ID de la tarea a modificar
+    const { nombre, descripcion} = req.body;
 
     try {
-        // Buscar la categoría por ID y actualizarla
-        const categoriaModificada = await CategoriaUsuario.findByIdAndUpdate(
-            id,
-            { nombre, descripcion }, // Nuevos datos para la categoría
-            { new: true }  // Devuelve el documento modificado en lugar del original
-        );
+        // Verificar si la categoría existe
+        const categoria = await CategoriaUsuario.findById(id);
+        if (!categoria) {
+            return res.status(404).json({ message: "La categoria no existe" });
+        }
 
-        // Verificar si la categoría fue encontrada y modificada
-        if (!categoriaModificada) {
+        // Actualizar los campos con los nuevos valores si están presentes
+        categoria.nombre = nombre || categoria.nombre;
+        categoria.descripcion = descripcion || categoria.descripcion;
+
+        // Guardar los cambios
+        const categoriaActualizada = await categoria.save();
+        res.status(200).json({ message: "La categoria ha sido actualizada correctamente", tarea: categoriaActualizada });
+    } catch (error) {
+        res.status(500).json({ message: "Error al actualizar la categoria", error: error.message });
+    }
+});
+///api/categories/user/delete/:id
+export const deleteCategoryUser = asyncHandler(async (req, res) => {
+    const { id } = req.params;  // ID de la categoría a eliminar
+
+    try {
+        // Buscar y eliminar la categoría por su ID
+        const categoriaEliminada = await CategoriaUsuario.findByIdAndDelete(id);
+
+        // Verificar si la categoría fue eliminada
+        if (!categoriaEliminada) {
             return res.status(404).json({ message: "Categoría no encontrada" });
         }
 
-        // Responder con la categoría modificada
-        res.status(200).json({
-            message: "Categoría modificada correctamente",
-            categoria: categoriaModificada
-        });
+        // Responder con un mensaje de éxito
+        res.status(200).json({ message: "Categoría eliminada correctamente" });
     } catch (error) {
-        res.status(500).json({ message: "Error al modificar la categoría", error: error.message });
+        res.status(500).json({ message: "Error al eliminar la categoría", error: error.message });
     }
 });
 
@@ -122,5 +137,48 @@ export const createCategoryGroup = asyncHandler(async (req, res) => {
     } catch (error) {
         // Capturar errores y enviar una respuesta adecuada
         res.status(500).json({ message: "Error al crear la categoría", error: error.message });
+    }
+});
+
+///api/categories/group/modify/:id
+export const modifyCategoryGroup= asyncHandler(async (req, res) => {
+    const { id } = req.params; // ID de la tarea a modificar
+    const { nombre, descripcion} = req.body;
+
+    try {
+        // Verificar si la categoría existe
+        const categoria = await CategoriaGrupo.findById(id);
+        if (!categoria) {
+            return res.status(404).json({ message: "La categoria no existe" });
+        }
+
+        // Actualizar los campos con los nuevos valores si están presentes
+        categoria.nombre = nombre || categoria.nombre;
+        categoria.descripcion = descripcion || categoria.descripcion;
+
+        // Guardar los cambios
+        const categoriaActualizada = await categoria.save();
+        res.status(200).json({ message: "La categoria ha sido actualizada correctamente", tarea: categoriaActualizada });
+    } catch (error) {
+        res.status(500).json({ message: "Error al actualizar la categoria", error: error.message });
+    }
+});
+///api/categories/group/delete/:id
+export const deleteCategoryGroup = asyncHandler(async (req, res) => {
+    const { id } = req.params;  // ID de la categoría a eliminar
+
+    try {
+        // Buscar y eliminar la categoría por su ID
+        const categoriaEliminada = await CategoriaGrupo.findByIdAndDelete(id);
+
+        // Verificar si la categoría fue eliminada
+        if (!categoriaEliminada) {
+            return res.status(404).json({ message: "Categoría no encontrada" });
+        }
+
+        // Responder con un mensaje de éxito
+        res.status(200).json({ message: "Categoría eliminada correctamente" });
+    } catch (error) {
+        res.status(500).json({ message: "Error al eliminar la categoría", error: error.message });
     }
 });
