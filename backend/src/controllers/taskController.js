@@ -101,3 +101,74 @@ export const deleteTask = asyncHandler(async (req, res) => {
         res.status(500).json({ message: "Error al eliminar la tarea", error: error.message });
     }
 });
+///api/tasks/gettask/:id
+export const getTaskUser = asyncHandler(async(req,res) => {
+    const { id } = req.params;
+
+    try{
+        const tarea = await Tarea.findById(id);
+        if (!tarea) {
+            return res.status(404).json({ message: "La tarea no existe" });
+        }
+
+        res.status(200).json(tarea);
+    } catch (error){
+        res.status(500).json({message: "Error al buscar la tarea."});
+    }
+})
+///api/tasks/endtask/:id
+export const endTask = asyncHandler(async(req,res) => {
+    const { id } = req.params;
+    try{
+        const tarea = await Tarea.findById(id);
+
+        if (!tarea) {
+            return res.status(404).json({ message: "La tarea no existe." });
+        }
+
+        if(!tarea.estado){
+            tarea.estado = true;
+            await tarea.save();
+            res.status(200).json({ message: "La tarea se cambio a completada."});
+        }
+        else{
+            res.status(200).json({ message: "La tarea ya estaba completada."});
+        }       
+    } catch (error){
+        res.status(500).json({ message: "Error al encontrar la tarea."});
+    }
+});
+///api/tasks/tasksToday/:id
+export const tareasDiarias = asyncHandler (async(req,res) => {
+    const { id_usuario } = req.params;
+
+    const fechaActual = new Date();
+    const fechaLimite = new Date();
+    fechaLimite.setMonth(fechaActual.getDay() + 1);
+    try{
+        const tareas = await Tarea.find({
+            id_usuario: id_usuario, // Filtrar por el ID del usuario
+            fecha_vencimiento: { $gte: fechaActual, $lte: fechaLimite } // Fecha de vencimiento dentro del rango
+        });
+        res.status(200).json(tareas);
+        } catch (error){
+        res.status(500).json({message: "Error al buscar las tareas."})
+    }
+})
+///api/tasks/calendar/:id
+export const calendarioTareas = asyncHandler (async(req,res) => {
+    const { id_usuario } = req.params;
+
+    const fechaActual = new Date();
+    const fechaLimite = new Date();
+    fechaLimite.setMonth(fechaActual.getMonth() + 1);
+    try{
+        const tareas = await Tarea.find({
+            id_usuario: id_usuario, // Filtrar por el ID del usuario
+            fecha_vencimiento: { $gte: fechaActual, $lte: fechaLimite } // Fecha de vencimiento dentro del rango
+        });
+        res.status(200).json(tareas);
+        } catch (error){
+        res.status(500).json({message: "Error al buscar las tareas."})
+    }
+})

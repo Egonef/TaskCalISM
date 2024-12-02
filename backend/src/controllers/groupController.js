@@ -20,18 +20,19 @@ export const getGroups = asyncHandler(async(req, res) => {
 
 export const createGroup = asyncHandler(async(req, res) => {
 
-    const { nombre, descripcion } = req.body;
+    const { nombre, descripcion, id_admin } = req.body;
 
     try {
         const grupoExistente = await Grupo.findOne({ nombre });
-        if (grupoExistente) {
-            return res.status(409).json({ message: "El grupo ya existe" });
+        if (grupoExistente.descripcion == descripcion) {
+            return res.status(409).json({ message: "El nombre y la descripcion insertadas coinciden con otro grupo." });
         }
 
         const newGroup = new Grupo({
             nombre,
             descripcion,
-            fecha_nacimiento,
+            fecha_nacimiento, //No sé que hacer con esto xd. Hay una variable id_calendario, pero me deja aún más confuso que esta.
+            id_admin
         });
 
         await newGroup.save();

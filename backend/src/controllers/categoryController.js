@@ -2,6 +2,7 @@ import asyncHandler from 'express-async-handler'
 import Usuario from '../models/Usuario.js';
 import CategoriaUsuario from '../models/CategoriaUsuario.js';
 import CategoriaGrupo from '../models/CategoriaGrupo.js';
+import Tarea from '../models/TareaUsuario.js';
 
 
 /*
@@ -93,7 +94,23 @@ export const deleteCategoryUser = asyncHandler(async (req, res) => {
         res.status(500).json({ message: "Error al eliminar la categoría", error: error.message });
     }
 });
+///api/categories/user/tasks/:id
+export const getTasksCategoryUser = asyncHandler(async (req,res) => {
+    const { id_categoria} = req.params;
 
+    try {
+        //Buscar tareas de la categoría
+        const tareas = await Tarea.find({id_categoria_usuario : id_categoria});
+
+        if (!tareas || tareas.length === 0) {
+            return res.status(404).json({ message: "No se encontraron tareas para esta categoría" });
+        }
+
+        res.status(200).json(tareas);
+    } catch (error) {
+        res.status(500).json({ message: "Error al buscar las tareas"});
+    }
+})
 /*
 ----------------------------------
     CATEGORIAS DE GRUPOS
@@ -182,3 +199,20 @@ export const deleteCategoryGroup = asyncHandler(async (req, res) => {
         res.status(500).json({ message: "Error al eliminar la categoría", error: error.message });
     }
 });
+///api/categories/group/tasks/:id
+export const getTasksCategoryGroup = asyncHandler(async (req,res) => {
+    const { id_categoria} = req.params;
+
+    try {
+        //Buscar tareas de la categoría
+        const tareas = await Tarea.find({id_categoria_grupo : id_categoria});
+
+        if (!tareas || tareas.length === 0) {
+            return res.status(404).json({ message: "No se encontraron tareas para esta categoría" });
+        }
+
+        res.status(200).json(tareas);
+    } catch (error) {
+        res.status(500).json({ message: "Error al buscar las tareas"});
+    }
+})
