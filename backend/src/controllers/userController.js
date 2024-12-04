@@ -1,4 +1,5 @@
 import Usuario from '../models/Usuario.js'
+import Grupo from '../models/Grupo.js'
 import asyncHandler from 'express-async-handler'
 import bcrypt from 'bcrypt'
 const saltRounds = 10;
@@ -9,7 +10,7 @@ const saltRounds = 10;
 //error 404: no se ha encontrado; error 409: conflicto
 
 ///api/users
-export const getUsers = asyncHandler(async(req, res) => {
+export const getUsers = asyncHandler(async(req, res) => { //NO TIENE CU
     try{
         const users = await Usuario.find({})
         res.status(200).json(users)
@@ -19,7 +20,21 @@ export const getUsers = asyncHandler(async(req, res) => {
     }
 })
 
-export const createUser = asyncHandler(async(req, res) => {
+export const getUser = asyncHandler(async(req, res) => { //CU01
+    const {nombre_usuario} = req.body;
+    try{
+        const user = await Usuario.findOne({nombre_usuario})
+        if(user)
+            res.status(200).json(user)
+        else
+            res.status(404).json({ message: "Usuario no encontrado" });
+
+    }catch(error){
+        res.status(500).json({ message: error.message });
+    }
+})
+
+export const createUser = asyncHandler(async(req, res) => { //CU23
 
     const { nombre_usuario, nombre, contraseña, fecha_nacimiento} = req.body;
 
@@ -48,22 +63,7 @@ export const createUser = asyncHandler(async(req, res) => {
 })
 
 
-/*export const deleteUser = asyncHandler(async(req, res) => {
-    try {
-        const usuario = await Usuario.findByIdAndDelete(req.params.id);
-
-        if(!usuario){
-            return res.status(404).json({ message: "Usuario no encontrado" });
-        }
-
-        res.status(200).json({ message: 'El usuario ha sido eliminado' });
-
-    } catch (error) {
-        return res.status(500).json({ message: error.message });
-    }
-})*/
-
-export const updateUser = asyncHandler(async(req, res) => {
+export const updateUser = asyncHandler(async(req, res) => { //CU02
     
     const { nombre_usuario, nombre, contraseña, fecha_nacimiento} = req.body;
 
@@ -99,7 +99,7 @@ export const updateUser = asyncHandler(async(req, res) => {
     }
 })
 
-/*export const loginUser = asyncHandler(async(req, res) => {
+/*export const loginUser = asyncHandler(async(req, res) => { //CU24
 
     const { nombre_usuario, contraseña } = req.body;
     try {
@@ -121,7 +121,7 @@ export const updateUser = asyncHandler(async(req, res) => {
     }
 })
 
-export const logoutUser = asyncHandler(async(req, res) => {
+export const logoutUser = asyncHandler(async(req, res) => { //CU25
     try {
         const usuarioId = req.session.usuarioId; // Almacena el ID del usuario antes de destruir la sesión
 
@@ -143,9 +143,30 @@ export const logoutUser = asyncHandler(async(req, res) => {
     }
 }) */
 
-export const acceptInvitationGroup = asyncHandler(async(req, res) => {
+export const acceptInvitationGroup = asyncHandler(async(req, res) => { //CU06
 
-    const {id_usuario , id_grupo} = req.body
+    const {nombre_usuario , nombre} = req.body
 
+    try {
+        const usuario = await Usuario.findOne(nombre_usuario);
+        if (!usuario) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        usuario.id_grupos.push(grupo);
+        await usuario.save();
+
+        const grupo = await Grupo.findOne(nombre);
+        if (!grupo) {
+            return res.status(404).json({ message: 'Grupo no encontrado' });
+        }
+
+        grupo.id_usuarios.push(usuario);
+        await grupo.save();
+
+        res.status(200).json({ message: 'Invitación aceptada correctamente' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 
 })

@@ -1,4 +1,4 @@
-import Tarea from '../models/TareaUsuario.js';
+import TareaUsuario from '../models/TareaUsuario.js';
 import Usuario from '../models/Usuario.js';
 import CategoriaUsuario from '../models/CategoriaUsuario.js';
 
@@ -9,7 +9,7 @@ import asyncHandler from 'express-async-handler'
     // GETS GENERICOS
 
 ///api/tasks?id_categoria_usuario=0
-export const getTasks = asyncHandler(async(req, res) => { 
+export const getTasksUser = asyncHandler(async(req, res) => {  //CU09, que diferencia hay con el getTasksByCategoryUser de categoryUserController.js??
     try{
         const {id_categoria_usuario} = req.query
         const tasks = await Tarea.find({id_categoria_usuario})
@@ -20,12 +20,12 @@ export const getTasks = asyncHandler(async(req, res) => {
     }
 })
 ///api/tasks
-export const createTask = asyncHandler(async (req, res) => {
-    const { nombre, descripcion, fecha_vencimiento, estado, id_categoria_usuario } = req.body;
+export const createTaskUser = asyncHandler(async (req, res) => { //CU11
+    const { nombre, descripcion, fecha_vencimiento, id_categoria_usuario } = req.body;
 
     try {
         // Verificar si el usuario asociado existe
-        const usuarioExistente = await Usuario.findById(id_categoria_usuario);
+        const usuarioExistente = await Usuario.findById(id_usuario);
         if (!usuarioExistente) {
             return res.status(404).json({ message: "El usuario asociado no existe" });
         }
@@ -41,7 +41,7 @@ export const createTask = asyncHandler(async (req, res) => {
             nombre,
             descripcion,
             fecha_vencimiento,
-            estado,
+            estado: false,
             id_categoria_usuario,
         });
 
@@ -55,13 +55,13 @@ export const createTask = asyncHandler(async (req, res) => {
 });
 
 ///api/tasks/modify/:id
-export const modifyTask = asyncHandler(async (req, res) => {
+export const modifyTask = asyncHandler(async (req, res) => { //CU12
     const { id } = req.params; // ID de la tarea a modificar
     const { nombre, descripcion, fecha_vencimiento, estado, id_categoria_usuario } = req.body;
 
     try {
         // Verificar si la tarea existe
-        const tarea = await Tarea.findById(id);
+        const tarea = await TareaUsuario.findById(id);
         if (!tarea) {
             return res.status(404).json({ message: "La tarea no existe" });
         }
@@ -71,7 +71,7 @@ export const modifyTask = asyncHandler(async (req, res) => {
         tarea.descripcion = descripcion || tarea.descripcion;
         tarea.fecha_vencimiento = fecha_vencimiento || tarea.fecha_vencimiento;
         tarea.estado = estado !== undefined ? estado : tarea.estado;
-        tarea.id_categoria_usuario = id_categoria_usuario || tarea.id_categoria_usuario;
+        //tarea.id_categoria_usuario = id_categoria_usuario || tarea.id_categoria_usuario;
 
         // Guardar los cambios
         const tareaActualizada = await tarea.save();
@@ -82,12 +82,12 @@ export const modifyTask = asyncHandler(async (req, res) => {
 });
 
 ///api/tasks/delete/:id
-export const deleteTask = asyncHandler(async (req, res) => {
+export const deleteTask = asyncHandler(async (req, res) => { //CU13
     const { id } = req.params; // ID de la tarea a eliminar
 
     try {
         // Verificar si la tarea existe
-        const tarea = await Tarea.findById(id);
+        const tarea = await TareaUsuario.findById(id);
         if (!tarea) {
             return res.status(404).json({ message: "La tarea no existe" });
         }
@@ -100,11 +100,11 @@ export const deleteTask = asyncHandler(async (req, res) => {
     }
 });
 ///api/tasks/gettask/:id
-export const getTaskUser = asyncHandler(async(req,res) => {
+export const getTaskUser = asyncHandler(async(req,res) => { //CU10
     const { id } = req.params;
 
     try{
-        const tarea = await Tarea.findById(id);
+        const tarea = await TareaUsuario.findById(id);
         if (!tarea) {
             return res.status(404).json({ message: "La tarea no existe" });
         }
@@ -115,10 +115,10 @@ export const getTaskUser = asyncHandler(async(req,res) => {
     }
 })
 ///api/tasks/endtask/:id
-export const endTask = asyncHandler(async(req,res) => {
+export const endTask = asyncHandler(async(req,res) => { //CU15
     const { id } = req.params;
     try{
-        const tarea = await Tarea.findById(id);
+        const tarea = await TareaUsuario.findById(id);
 
         if (!tarea) {
             return res.status(404).json({ message: "La tarea no existe." });
@@ -137,7 +137,7 @@ export const endTask = asyncHandler(async(req,res) => {
     }
 });
 ///api/tasks/tasksToday/:id
-export const tareasDiarias = asyncHandler (async(req,res) => {
+export const tareasDiarias = asyncHandler (async(req,res) => { //CU18
     const { id_categoria_usuario } = req.params;
 
     const fechaActual = new Date();
@@ -154,7 +154,7 @@ export const tareasDiarias = asyncHandler (async(req,res) => {
     }
 })
 ///api/tasks/calendar/:id
-export const calendarioTareas = asyncHandler (async(req,res) => {
+export const calendarioTareas = asyncHandler (async(req,res) => { //CU16
     const { id_categoria_usuario } = req.params;
 
     const fechaActual = new Date();

@@ -1,7 +1,7 @@
 import asyncHandler from 'express-async-handler'
 import Usuario from '../models/Usuario.js';
 import CategoriaUsuario from '../models/CategoriaUsuario.js';
-import Tarea from '../models/TareaUsuario.js';
+import TareaUsuario from '../models/TareaUsuario.js';
 
 
 /*
@@ -11,7 +11,7 @@ import Tarea from '../models/TareaUsuario.js';
 */
 
 ///api/categories/user?id_usuario=0
-export const getCategoriesUser = asyncHandler(async(req, res) => { 
+export const getCategoriesUser = asyncHandler(async(req, res) => { //CU22
     try{
         const {id_usuario} = req.query
         const categories = await CategoriaUsuario.find({id_usuario})
@@ -22,8 +22,9 @@ export const getCategoriesUser = asyncHandler(async(req, res) => {
     }
 })
 
+
 ///api/categories/user
-export const createCategoryUser = asyncHandler(async (req, res) => {
+export const createCategoryUser = asyncHandler(async (req, res) => { //CU14
     const { nombre, descripcion, id_usuario } = req.body;
 
     try {
@@ -44,7 +45,7 @@ export const createCategoryUser = asyncHandler(async (req, res) => {
         await Categoria.save();
 
         // Responder con éxito
-        res.status(201).json({ message: "La categoría ha sido creada correctamente", categoria: nuevaCategoria });
+        res.status(200).json({ message: "La categoría ha sido creada correctamente", categoria: nuevaCategoria });
     } catch (error) {
         // Capturar errores y enviar una respuesta adecuada
         res.status(500).json({ message: "Error al crear la categoría", error: error.message });
@@ -52,7 +53,7 @@ export const createCategoryUser = asyncHandler(async (req, res) => {
 });
 
 ///api/categories/user/modify/:id_categoria
-export const modifyCategoryUser = asyncHandler(async (req, res) => {
+export const modifyCategoryUser = asyncHandler(async (req, res) => { //CU20
     const { id_categoria } = req.params; // ID de la categoria a modificar
     const { nombre, descripcion} = req.body;
 
@@ -75,7 +76,7 @@ export const modifyCategoryUser = asyncHandler(async (req, res) => {
     }
 });
 ///api/categories/user/delete/:id_categoria
-export const deleteCategoryUser = asyncHandler(async (req, res) => {
+export const deleteCategoryUser = asyncHandler(async (req, res) => { //CU21
     const { id_categoria } = req.params;  // ID de la categoría a eliminar
 
     try {
@@ -94,12 +95,12 @@ export const deleteCategoryUser = asyncHandler(async (req, res) => {
     }
 });
 ///api/categories/user/tasks/:id_categoria
-export const getTasksCategoryUser = asyncHandler(async (req,res) => {
+export const getTasksByCategoryUser = asyncHandler(async (req,res) => { //CU09
     const { id_categoria} = req.params;
 
     try {
         //Buscar tareas de la categoría
-        const tareas = await Tarea.find({id_categoria_usuario : id_categoria});
+        const tareas = await TareaUsuario.find({id_categoria_usuario : id_categoria});
 
         if (!tareas || tareas.length === 0) {
             return res.status(404).json({ message: "No se encontraron tareas para esta categoría" });

@@ -1,7 +1,7 @@
 import asyncHandler from 'express-async-handler'
-import Usuario from '../models/Usuario.js';
+import Grupo from '../models/Grupo.js';
 import CategoriaGrupo from '../models/CategoriaGrupo.js';
-import Tarea from '../models/TareaUsuario.js';
+import TareaGrupo from '../models/TareaGrupo.js';
 
 
 /*
@@ -27,8 +27,8 @@ export const createCategoryGroup = asyncHandler(async (req, res) => {
 
     try {
         // Verificar si el usuario asociado existe
-        const usuarioExistente = await Usuario.findById(id_grupo);
-        if (!usuarioExistente) {
+        const grupoExistente = await Grupo.findById(id_grupo);
+        if (!grupoExistente) {
             return res.status(404).json({ message: "El usuario asociado no existe" });
         }
 
@@ -43,7 +43,7 @@ export const createCategoryGroup = asyncHandler(async (req, res) => {
         await Categoria.save();
 
         // Responder con éxito
-        res.status(201).json({ message: "La categoría ha sido creada correctamente", categoria: nuevaCategoria });
+        res.status(200).json({ message: "La categoría ha sido creada correctamente", categoria: nuevaCategoria });
     } catch (error) {
         // Capturar errores y enviar una respuesta adecuada
         res.status(500).json({ message: "Error al crear la categoría", error: error.message });
@@ -51,8 +51,8 @@ export const createCategoryGroup = asyncHandler(async (req, res) => {
 });
 
 ///api/categories/group/modify/:id_categoria
-export const modifyCategoryGroup= asyncHandler(async (req, res) => {
-    const { id_categoria } = req.params; // ID de la tarea a modificar
+export const modifyCategoryGroup= asyncHandler(async (req, res) => { 
+    const { id_categoria } = req.params; // ID de la categoria a modificar
     const { nombre, descripcion} = req.body;
 
     try {
@@ -93,12 +93,12 @@ export const deleteCategoryGroup = asyncHandler(async (req, res) => {
     }
 });
 ///api/categories/group/tasks/:id
-export const getTasksCategoryGroup = asyncHandler(async (req,res) => {
+export const getTasksByCategoryGroup = asyncHandler(async (req,res) => {
     const { id_categoria} = req.params;
 
     try {
         //Buscar tareas de la categoría
-        const tareas = await Tarea.find({id_categoria_grupo : id_categoria});
+        const tareas = await TareaGrupo.find({id_categoria_grupo : id_categoria});
 
         if (!tareas || tareas.length === 0) {
             return res.status(404).json({ message: "No se encontraron tareas para esta categoría" });
