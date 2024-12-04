@@ -5,7 +5,7 @@ const tareaUsuarioSchema = new Schema({
     descripcion: String,
     fecha_vencimiento: Date,
     estado: Boolean,
-    id_usuario: { type: Schema.Types.ObjectId, ref: 'Usuario'},
+    //id_usuario: { type: Schema.Types.ObjectId, ref: 'Usuario'},
     id_categoria_usuario: { type: Schema.Types.ObjectId, ref: 'CategoriaUsuario' }, // Referencia a la categoría    
         
 },
