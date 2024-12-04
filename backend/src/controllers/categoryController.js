@@ -52,14 +52,14 @@ export const createCategoryUser = asyncHandler(async (req, res) => {
     }
 });
 
-///api/categories/user/modify/:id
+///api/categories/user/modify/:id_categoria
 export const modifyCategoryUser = asyncHandler(async (req, res) => {
-    const { id } = req.params; // ID de la tarea a modificar
+    const { id_categoria } = req.params; // ID de la categoria a modificar
     const { nombre, descripcion} = req.body;
 
     try {
         // Verificar si la categoría existe
-        const categoria = await CategoriaUsuario.findById(id);
+        const categoria = await CategoriaUsuario.findById(id_categoria);
         if (!categoria) {
             return res.status(404).json({ message: "La categoria no existe" });
         }
@@ -75,13 +75,13 @@ export const modifyCategoryUser = asyncHandler(async (req, res) => {
         res.status(500).json({ message: "Error al actualizar la categoria", error: error.message });
     }
 });
-///api/categories/user/delete/:id
+///api/categories/user/delete/:id_categoria
 export const deleteCategoryUser = asyncHandler(async (req, res) => {
-    const { id } = req.params;  // ID de la categoría a eliminar
+    const { id_categoria } = req.params;  // ID de la categoría a eliminar
 
     try {
         // Buscar y eliminar la categoría por su ID
-        const categoriaEliminada = await CategoriaUsuario.findByIdAndDelete(id);
+        const categoriaEliminada = await CategoriaUsuario.findByIdAndDelete(id_categoria);
 
         // Verificar si la categoría fue eliminada
         if (!categoriaEliminada) {
@@ -94,7 +94,7 @@ export const deleteCategoryUser = asyncHandler(async (req, res) => {
         res.status(500).json({ message: "Error al eliminar la categoría", error: error.message });
     }
 });
-///api/categories/user/tasks/:id
+///api/categories/user/tasks/:id_categoria
 export const getTasksCategoryUser = asyncHandler(async (req,res) => {
     const { id_categoria} = req.params;
 
@@ -157,14 +157,14 @@ export const createCategoryGroup = asyncHandler(async (req, res) => {
     }
 });
 
-///api/categories/group/modify/:id
+///api/categories/group/modify/:id_categoria
 export const modifyCategoryGroup= asyncHandler(async (req, res) => {
-    const { id } = req.params; // ID de la tarea a modificar
+    const { id_categoria } = req.params; // ID de la tarea a modificar
     const { nombre, descripcion} = req.body;
 
     try {
         // Verificar si la categoría existe
-        const categoria = await CategoriaGrupo.findById(id);
+        const categoria = await CategoriaGrupo.findById(id_categoria);
         if (!categoria) {
             return res.status(404).json({ message: "La categoria no existe" });
         }
@@ -182,11 +182,11 @@ export const modifyCategoryGroup= asyncHandler(async (req, res) => {
 });
 ///api/categories/group/delete/:id
 export const deleteCategoryGroup = asyncHandler(async (req, res) => {
-    const { id } = req.params;  // ID de la categoría a eliminar
+    const { id_categoria } = req.params;  // ID de la categoría a eliminar
 
     try {
         // Buscar y eliminar la categoría por su ID
-        const categoriaEliminada = await CategoriaGrupo.findByIdAndDelete(id);
+        const categoriaEliminada = await CategoriaGrupo.findByIdAndDelete(id_categoria);
 
         // Verificar si la categoría fue eliminada
         if (!categoriaEliminada) {
