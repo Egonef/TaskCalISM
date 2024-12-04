@@ -30,10 +30,12 @@ export const createUser = asyncHandler(async(req, res) => {
         }
 
         const contraseña_hashed = await bcrypt.hash(contraseña, saltRounds);
+        id_calendario = "0"; //Provisional
 
         const newUsu = new Usuario({
             nombre_usuario,
             nombre,
+            id_calendario,
             contraseña: contraseña_hashed,
             fecha_nacimiento,
         });

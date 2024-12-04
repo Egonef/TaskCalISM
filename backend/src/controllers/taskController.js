@@ -8,11 +8,11 @@ import asyncHandler from 'express-async-handler'
 // Tus rutas van aquí
     // GETS GENERICOS
 
-///api/tasks?id_usuario=0
+///api/tasks?id_categoria_usuario=0
 export const getTasks = asyncHandler(async(req, res) => { 
     try{
-        const {id_usuario} = req.query
-        const tasks = await Tarea.find({id_usuario})
+        const {id_categoria_usuario} = req.query
+        const tasks = await Tarea.find({id_categoria_usuario})
         res.status(200).json(tasks)
 
     }catch(error){
@@ -21,11 +21,11 @@ export const getTasks = asyncHandler(async(req, res) => {
 })
 ///api/tasks
 export const createTask = asyncHandler(async (req, res) => {
-    const { nombre, descripcion, fecha_vencimiento, estado, id_usuario, id_categoria_usuario } = req.body;
+    const { nombre, descripcion, fecha_vencimiento, estado, id_categoria_usuario } = req.body;
 
     try {
         // Verificar si el usuario asociado existe
-        const usuarioExistente = await Usuario.findById(id_usuario);
+        const usuarioExistente = await Usuario.findById(id_categoria_usuario);
         if (!usuarioExistente) {
             return res.status(404).json({ message: "El usuario asociado no existe" });
         }
@@ -42,7 +42,6 @@ export const createTask = asyncHandler(async (req, res) => {
             descripcion,
             fecha_vencimiento,
             estado,
-            id_usuario,
             id_categoria_usuario,
         });
 
@@ -58,7 +57,7 @@ export const createTask = asyncHandler(async (req, res) => {
 ///api/tasks/modify/:id
 export const modifyTask = asyncHandler(async (req, res) => {
     const { id } = req.params; // ID de la tarea a modificar
-    const { nombre, descripcion, fecha_vencimiento, estado, id_usuario, id_categoria_usuario } = req.body;
+    const { nombre, descripcion, fecha_vencimiento, estado, id_categoria_usuario } = req.body;
 
     try {
         // Verificar si la tarea existe
@@ -72,7 +71,6 @@ export const modifyTask = asyncHandler(async (req, res) => {
         tarea.descripcion = descripcion || tarea.descripcion;
         tarea.fecha_vencimiento = fecha_vencimiento || tarea.fecha_vencimiento;
         tarea.estado = estado !== undefined ? estado : tarea.estado;
-        tarea.id_usuario = id_usuario || tarea.id_usuario;
         tarea.id_categoria_usuario = id_categoria_usuario || tarea.id_categoria_usuario;
 
         // Guardar los cambios
@@ -140,14 +138,14 @@ export const endTask = asyncHandler(async(req,res) => {
 });
 ///api/tasks/tasksToday/:id
 export const tareasDiarias = asyncHandler (async(req,res) => {
-    const { id_usuario } = req.params;
+    const { id_categoria_usuario } = req.params;
 
     const fechaActual = new Date();
     const fechaLimite = new Date();
     fechaLimite.setMonth(fechaActual.getDay() + 1);
     try{
         const tareas = await Tarea.find({
-            id_usuario: id_usuario, // Filtrar por el ID del usuario
+            id_categoria_usuario: id_categoria_usuario, // Filtrar por el ID de la categoria
             fecha_vencimiento: { $gte: fechaActual, $lte: fechaLimite } // Fecha de vencimiento dentro del rango
         });
         res.status(200).json(tareas);
@@ -157,14 +155,14 @@ export const tareasDiarias = asyncHandler (async(req,res) => {
 })
 ///api/tasks/calendar/:id
 export const calendarioTareas = asyncHandler (async(req,res) => {
-    const { id_usuario } = req.params;
+    const { id_categoria_usuario } = req.params;
 
     const fechaActual = new Date();
     const fechaLimite = new Date();
     fechaLimite.setMonth(fechaActual.getMonth() + 1);
     try{
         const tareas = await Tarea.find({
-            id_usuario: id_usuario, // Filtrar por el ID del usuario
+            id_categoria_usuario: id_categoria_usuario, // Filtrar por el ID de la categoria
             fecha_vencimiento: { $gte: fechaActual, $lte: fechaLimite } // Fecha de vencimiento dentro del rango
         });
         res.status(200).json(tareas);

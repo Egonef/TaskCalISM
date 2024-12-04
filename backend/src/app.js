@@ -28,8 +28,13 @@ app.use(express.json());
 // Rutas
 import userRoutes from './routes/userRoute.js';  // Importa las rutas usando import
 import taskRoutes from './routes/taskRoute.js';
+import categoryUserRoutes from './routes/categoryRouteUser.js';
+import categoryGroupRoutes from './routes/categoryRouteGroup.js';
+
 app.use('/api/users', userRoutes);
 app.use('/api/tasks', taskRoutes);
+app.use('/api/categories/user', categoryUserRoutes);
+app.use('/api/categories/group', categoryGroupRoutes);
 
 app.use(express.static('public'));
 
