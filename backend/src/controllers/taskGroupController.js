@@ -1,5 +1,5 @@
 import TareaGrupo from '../models/TareaGrupo.js';
-import TareaMiembro from '../models/TareaMiembrp.js';
+import TareaMiembro from '../models/TareaMiembro.js';
 import Grupo from '../models/Grupo.js';
 import Usuario from '../models/Usuario.js';
 import CategoriaGrupo from '../models/CategoriaGrupo.js';

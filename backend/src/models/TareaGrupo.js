@@ -12,5 +12,5 @@ const tareaGrupoSchema = new Schema({
     timestamps: true
 })
 
-module.export('TareaGrupo', tareaGrupoSchema)
+export default model('TareaGrupo', tareaGrupoSchema)
 
