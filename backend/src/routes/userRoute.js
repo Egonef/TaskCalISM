@@ -11,7 +11,5 @@ router.route('/invitation/:id').put(ctr.acceptInvitationGroup)
 
 
 
-
-
 export default router
 

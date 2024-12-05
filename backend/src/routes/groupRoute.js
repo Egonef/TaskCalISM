@@ -4,7 +4,7 @@ const router = express.Router()
 
 
 router.route('/').get(ctr.getGroups)
-router.route('/').post(ctr.createGroup)
+router.route('/:id').post(ctr.createGroup)
 router.route('/delete/:id').delete(ctr.deleteGroup)
 router.route('/deleteUser/:id').delete(ctr.deleteUserGroup)
 

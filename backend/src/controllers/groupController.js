@@ -1,4 +1,5 @@
 import Grupo from '../models/Grupo.js'
+import Usuario from '../models/Usuario.js'
 import asyncHandler from 'express-async-handler'
 
 
@@ -18,23 +19,35 @@ export const getGroups = asyncHandler(async(req, res) => { //NO TIENE CU
     }
 })
 
+//no es necesario un getGroup??
+
 export const createGroup = asyncHandler(async(req, res) => { //CU03
 
-    const { nombre, descripcion, id_admin } = req.body;
+    const { nombre , descripcion} = req.body;
 
     try {
+        const admin = await Usuario.findById(req.params.id)  
         const grupoExistente = await Grupo.findOne({ nombre });
-        if (grupoExistente.descripcion == descripcion) {
-            return res.status(409).json({ message: "El nombre y la descripcion insertadas coinciden con otro grupo." });
+        if (grupoExistente) {
+            return res.status(409).json({ message: "El grupo ya existe" });
         }
 
-        id_calendario = "0"; //Provisional
+        const id_calendario = "0"; //Provisional
+        
+        if (!admin) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
         const newGroup = new Grupo({
             nombre,
             descripcion,
             id_calendario, 
-            id_admin
+            id_admin:admin,
+            id_usuarios:admin //deberiamos de ponerlo en el models
         });
+
+        admin.id_grupos.push(newGroup);
+        //grupo.id_usuarios.push(admin);
 
         await newGroup.save();
         res.status(200).json({ message: "El grupo ha sido creado correctamente" });
@@ -45,7 +58,7 @@ export const createGroup = asyncHandler(async(req, res) => { //CU03
 
 export const deleteGroup = asyncHandler(async(req, res) => { //CU07
    
-    const {nombre_usuario, nombre} = req.body;
+    const {nombre_usuario} = req.body;
     try {
 
         const usuario = await Usuario.findOne({nombre_usuario});
@@ -54,15 +67,17 @@ export const deleteGroup = asyncHandler(async(req, res) => { //CU07
             return res.status(404).json({ message: "Usuario no encontrado" });
         }
 
-        const grupo = await Grupo.findOne(nombre);
+        const grupo = await Grupo.findById(req.params.id);
 
-        if(grupo.id_admin != usuario._id){
+        
+
+        if(grupo.id_admin.some(usuario => usuario.equals(usuario._id))){ //revisar esto pq esta mal
             res.status(409).json({ message: "El usuario no es el administrador del grupo" });
 
         }
         else{
             await Grupo.findByIdAndDelete(grupo._id);
-            usuario.id_grupos = usuarioAEliminar.id_grupos.filter(id_grupo => id_grupo != grupo._id);
+            usuario.id_grupos = usuario.id_grupos.filter(id_grupo => id_grupo != grupo._id);
             await usuarioAEliminar.save();
             res.status(200).json({ message: 'El grupo ha sido eliminado' });
         }

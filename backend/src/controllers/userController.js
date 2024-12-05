@@ -21,9 +21,9 @@ export const getUsers = asyncHandler(async(req, res) => { //NO TIENE CU
 })
 
 export const getUser = asyncHandler(async(req, res) => { //CU01
-    const {nombre_usuario} = req.body;
+    
     try{
-        const user = await Usuario.findOne({nombre_usuario})
+        const user = await Usuario.findById(req.params.id);
         if(user)
             res.status(200).json(user)
         else
@@ -36,7 +36,7 @@ export const getUser = asyncHandler(async(req, res) => { //CU01
 
 export const createUser = asyncHandler(async(req, res) => { //CU23
 
-    const { nombre_usuario, nombre, contraseña, fecha_nacimiento} = req.body;
+    const { nombre_usuario, nombre, contraseña, fecha_nacimiento } = req.body;
 
     try {
         const usuarioExistente = await Usuario.findOne({ nombre_usuario });
@@ -45,7 +45,7 @@ export const createUser = asyncHandler(async(req, res) => { //CU23
         }
 
         const contraseña_hashed = await bcrypt.hash(contraseña, saltRounds);
-        id_calendario = "0"; //Provisional
+        const id_calendario = "0"; //Provisional
 
         const newUsu = new Usuario({
             nombre_usuario,
@@ -53,6 +53,7 @@ export const createUser = asyncHandler(async(req, res) => { //CU23
             id_calendario,
             contraseña: contraseña_hashed,
             fecha_nacimiento,
+            id_grupos: []
         });
 
         await newUsu.save();
@@ -145,24 +146,29 @@ export const logoutUser = asyncHandler(async(req, res) => { //CU25
 
 export const acceptInvitationGroup = asyncHandler(async(req, res) => { //CU06
 
-    const {nombre_usuario , nombre} = req.body
+    const {nombre_usuario} = req.body
 
     try {
-        const usuario = await Usuario.findOne(nombre_usuario);
+        const usuario = await Usuario.findOne({nombre_usuario});
         if (!usuario) {
             return res.status(404).json({ message: 'Usuario no encontrado' });
         }
 
-        usuario.id_grupos.push(grupo);
-        await usuario.save();
-
-        const grupo = await Grupo.findOne(nombre);
+        const grupo = await Grupo.findById(req.params.id);
         if (!grupo) {
             return res.status(404).json({ message: 'Grupo no encontrado' });
         }
 
+        
+        if (usuario.id_grupos.some(grupo => grupo.equals(grupo._id))) {
+            return res.status(409).json({ message: 'El usuario ya está en el grupo' });
+        }
+        usuario.id_grupos.push(grupo);
+        await usuario.save();
+
+
         grupo.id_usuarios.push(usuario);
-        await grupo.save();
+        await grupoo.save();
 
         res.status(200).json({ message: 'Invitación aceptada correctamente' });
     } catch (error) {
