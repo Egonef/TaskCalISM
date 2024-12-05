@@ -63,7 +63,7 @@ export const createUser = asyncHandler(async(req, res) => { //CU23
 })
 
 
-export const updateUser = asyncHandler(async(req, res) => { //CU02
+export const modifyUser = asyncHandler(async(req, res) => { //CU02
     
     const { nombre_usuario, nombre, contraseña, fecha_nacimiento} = req.body;
 

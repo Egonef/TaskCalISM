@@ -8,7 +8,7 @@ const usuarioSchema = new Schema({
     ],
     id_usuario: [
         {
-            tarea_grupo: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+            id_usuario: { type: Schema.Types.ObjectId, ref: 'Usuario' },
         }
     ],
         

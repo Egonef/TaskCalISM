@@ -1,5 +1,7 @@
 import TareaGrupo from '../models/TareaGrupo.js';
+import TareaMiembro from '../models/TareaMiembrp.js';
 import Grupo from '../models/Grupo.js';
+import Usuario from '../models/Usuario.js';
 import CategoriaGrupo from '../models/CategoriaGrupo.js';
 
 import asyncHandler from 'express-async-handler'
@@ -9,7 +11,7 @@ import asyncHandler from 'express-async-handler'
     // GETS GENERICOS
 
 ///api/tasks?id_usuario=0
-export const getTasks = asyncHandler(async(req, res) => { //que diferencia hay con el getTasksByCategoryGroup de categoryGroupController.js??
+export const getTasksGroup = asyncHandler(async(req, res) => { //que diferencia hay con el getTasksByCategoryGroup de categoryGroupController.js??
     try{
         const {id_categoria_grupo} = req.query
         const tasks = await TareaGrupo.find({id_categoria_grupo})
@@ -20,7 +22,7 @@ export const getTasks = asyncHandler(async(req, res) => { //que diferencia hay c
     }
 })
 ///api/tasks
-export const createTask = asyncHandler(async (req, res) => { //CU11
+export const createTaskGroup = asyncHandler(async (req, res) => { //CU11
     const { nombre, descripcion, fecha_vencimiento, estado, id_categoria_grupo } = req.body;
 
     try {
@@ -55,7 +57,7 @@ export const createTask = asyncHandler(async (req, res) => { //CU11
 });
 
 ///api/tasks/modify/:id
-export const modifyTask = asyncHandler(async (req, res) => { //CU13
+export const modifyTaskGroup = asyncHandler(async (req, res) => { //CU13
     const { id } = req.params; // ID de la tarea a modificar
     const { nombre, descripcion, fecha_vencimiento, estado, id_categoria_grupo } = req.body;
 
@@ -83,7 +85,7 @@ export const modifyTask = asyncHandler(async (req, res) => { //CU13
 });
 
 ///api/tasks/delete/:id
-export const deleteTask = asyncHandler(async (req, res) => { //CU14
+export const deleteTaskGroup = asyncHandler(async (req, res) => { //CU14
     const { id } = req.params; // ID de la tarea a eliminar
 
     try {
@@ -101,7 +103,7 @@ export const deleteTask = asyncHandler(async (req, res) => { //CU14
     }
 });
 ///api/tasks/gettask/:id
-export const getTaskGroup = asyncHandler(async(req,res) => { //CU10
+export const getTaskGroupGroup = asyncHandler(async(req,res) => { //CU10
     const { id } = req.params;
 
     try{
@@ -172,7 +174,61 @@ export const calendarioTareasGroup = asyncHandler (async(req,res) => {
     }
 })
 
+
+//obtenemos todas las tareas de un grupo y sus usuarios asignados
+export const getTasksMember = async(id_grupo) => { 
+    try{
+
+        const grupo = await Grupo.findById(id_grupo);
+        const categorias_grupo = await CategoriaGrupo.find({id_grupo: grupo})
+        const tareas_grupo = await TareaGrupo.find({id_categoria_grupo: categorias_grupo})
+        res.status(200).json(tareas_grupo)
+
+    }catch(error){
+        res.status(500).json({ message: error.message });
+    }
+}
+
+
+
 export const assignMemberToATask = asyncHandler(async(req, res) => { //CU08
 
         //aqui usar tarea miembro
+    const { id_tarea_grupo, id_usuario, id_grupo } = req.body;
+    try {
+        const usuario = await Usuario.findById(id_usuario);
+        const GrupoExiste = usuario.id_grupos.some(grupo => grupo._id.toString() === id_grupo);
+        
+        if (!usuario) {
+            return res.status(404).json({ message: "El usuario no existe" });
+        }
+        if (!GrupoExiste) {
+            return res.status(409).json({ message: "El usuario no pertenece a este grupo" });
+        }
+        
+
+        const tareas_del_grupo = await getTasksMember(id_grupo);
+        const tarea = tareas_del_grupo.some(tarea => tarea._id.toString() === id_tarea_grupo);
+        if (!tarea) {
+            return res.status(404).json({ message: "La tarea no existe en el grupo" });
+        }
+
+        const tareaMiembroExistente = await TareaMiembro.findOne({ id_tarea_grupo, id_usuario });
+        if (tareaMiembroExistente) {
+            return res.status(409).json({ message: "El usuario ya ha sido asignado a esta tarea anteriormente" });
+        }
+
+        // Asignar el miembro a la tarea
+        const nuevaTareaMiembro = new TareaMiembro({
+            id_tarea_grupo: tarea,
+            id_usuario: usuario,
+        });
+
+        await nuevaTareaMiembro.save();
+        res.status(201).json({ message: "El miembro ha sido asignado a la tarea correctamente", tareaMiembro: nuevaTareaMiembro });
+
+    }
+    catch (error) {
+    }
+
 })

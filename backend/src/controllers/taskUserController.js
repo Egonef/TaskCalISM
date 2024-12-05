@@ -55,7 +55,7 @@ export const createTaskUser = asyncHandler(async (req, res) => { //CU11
 });
 
 ///api/tasks/modify/:id
-export const modifyTask = asyncHandler(async (req, res) => { //CU12
+export const modifyTaskUser = asyncHandler(async (req, res) => { //CU12
     const { id } = req.params; // ID de la tarea a modificar
     const { nombre, descripcion, fecha_vencimiento, estado, id_categoria_usuario } = req.body;
 
@@ -82,7 +82,7 @@ export const modifyTask = asyncHandler(async (req, res) => { //CU12
 });
 
 ///api/tasks/delete/:id
-export const deleteTask = asyncHandler(async (req, res) => { //CU13
+export const deleteTaskUser = asyncHandler(async (req, res) => { //CU13
     const { id } = req.params; // ID de la tarea a eliminar
 
     try {
@@ -115,7 +115,7 @@ export const getTaskUser = asyncHandler(async(req,res) => { //CU10
     }
 })
 ///api/tasks/endtask/:id
-export const endTask = asyncHandler(async(req,res) => { //CU15
+export const endTaskUser = asyncHandler(async(req,res) => { //CU15
     const { id } = req.params;
     try{
         const tarea = await TareaUsuario.findById(id);
@@ -137,7 +137,7 @@ export const endTask = asyncHandler(async(req,res) => { //CU15
     }
 });
 ///api/tasks/tasksToday/:id
-export const tareasDiarias = asyncHandler (async(req,res) => { //CU18
+export const tareasDiariasUser = asyncHandler (async(req,res) => { //CU18
     const { id_categoria_usuario } = req.params;
 
     const fechaActual = new Date();
@@ -154,7 +154,7 @@ export const tareasDiarias = asyncHandler (async(req,res) => { //CU18
     }
 })
 ///api/tasks/calendar/:id
-export const calendarioTareas = asyncHandler (async(req,res) => { //CU16
+export const calendarioTareasUser = asyncHandler (async(req,res) => { //CU16
     const { id_categoria_usuario } = req.params;
 
     const fechaActual = new Date();
