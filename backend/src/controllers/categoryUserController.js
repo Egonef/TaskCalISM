@@ -33,7 +33,11 @@ export const createCategoryUser = asyncHandler(async (req, res) => { //CU14
         if (!usuarioExistente) {
             return res.status(404).json({ message: "El usuario asociado no existe" });
         }
-
+        const categoriaExistente = await CategoriaUsuario.find({ nombre });
+        if (categoriaExistente.length = 0) {
+            return res.status(409).json({ message: "La categoria ya existe." });
+        }
+        
         // Crear una nueva categoría
         const Categoria = new CategoriaUsuario({
             nombre,
@@ -45,7 +49,7 @@ export const createCategoryUser = asyncHandler(async (req, res) => { //CU14
         await Categoria.save();
 
         // Responder con éxito
-        res.status(200).json({ message: "La categoría ha sido creada correctamente", categoria: nuevaCategoria });
+        res.status(200).json({ message: "La categoría ha sido creada correctamente", categoria: Categoria });
     } catch (error) {
         // Capturar errores y enviar una respuesta adecuada
         res.status(500).json({ message: "Error al crear la categoría", error: error.message });
