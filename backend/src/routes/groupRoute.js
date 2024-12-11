@@ -4,9 +4,10 @@ const router = express.Router()
 
 
 router.route('/').get(ctr.getGroups)
-router.route('/:id').post(ctr.createGroup)
+router.route('/create/:user').post(ctr.createGroup)
+router.route('/:id').get(ctr.getGroup)
 router.route('/delete/:id').delete(ctr.deleteGroup)
-router.route('/deleteUser/:id').delete(ctr.deleteUserGroup)
+router.route('/deleteUser/:admin').delete(ctr.deleteUserGroup)
 
 
 

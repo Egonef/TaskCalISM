@@ -41,7 +41,7 @@ export const createUser = asyncHandler(async(req, res) => { //CU23
     try {
         const usuarioExistente = await Usuario.findOne({ nombre_usuario });
         if (usuarioExistente) {
-            return res.status(409).json({ message: "El nombre de usuario ya está en uso" });
+            return res.status(409).json({ message: "Este usuario ya existe" });
         }
 
         const contraseña_hashed = await bcrypt.hash(contraseña, saltRounds);
@@ -94,8 +94,7 @@ export const modifyUser = asyncHandler(async(req, res) => { //CU02
         res.status(200).json({ message: 'El usuario ha sido actualizado', usuario });
     } catch (error) {
         // Manejar cualquier otro error
-        //console.log(error);
-        res.status(500).json({ message: "Error al actualizar el usuario", error });
+        res.status(500).json({ message: error.message });
         
     }
 })
@@ -154,13 +153,13 @@ export const acceptInvitationGroup = asyncHandler(async(req, res) => { //CU06
             return res.status(404).json({ message: 'Usuario no encontrado' });
         }
 
-        const grupo = await Grupo.findById(req.params.id);
+        const grupo = await Grupo.findById(req.params.grupo);
         if (!grupo) {
             return res.status(404).json({ message: 'Grupo no encontrado' });
         }
 
         
-        if (usuario.id_grupos.some(grupo => grupo.equals(grupo._id))) {
+        if (grupo.id_admin.equals(usuario._id)) {
             return res.status(409).json({ message: 'El usuario ya está en el grupo' });
         }
         usuario.id_grupos.push(grupo);
@@ -168,7 +167,7 @@ export const acceptInvitationGroup = asyncHandler(async(req, res) => { //CU06
 
 
         grupo.id_usuarios.push(usuario);
-        await grupoo.save();
+        await grupo.save();
 
         res.status(200).json({ message: 'Invitación aceptada correctamente' });
     } catch (error) {

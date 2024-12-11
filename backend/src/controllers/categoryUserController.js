@@ -11,10 +11,19 @@ import TareaUsuario from '../models/TareaUsuario.js';
 */
 
 ///api/categories/user?id_usuario=0
+
+//CAMBIAR POR COMO ESTA EL DE GROUPS
 export const getCategoriesUser = asyncHandler(async(req, res) => { //CU22
+
+    const {id_user} = req.query
+
     try{
-        const {id_usuario} = req.query
-        const categories = await CategoriaUsuario.find({id_usuario})
+
+        if(!usuario){
+            return res.status(404).json({ message: "Usuario no encontrado" });  
+        }
+
+        const categories = await CategoriaUsuario.find({id_usuarios: id_user})
         res.status(200).json(categories)
 
     }catch(error){
@@ -25,16 +34,21 @@ export const getCategoriesUser = asyncHandler(async(req, res) => { //CU22
 
 ///api/categories/user
 export const createCategoryUser = asyncHandler(async (req, res) => { //CU14
-    const { nombre, descripcion, id_usuario } = req.body;
+    const { nombre, descripcion } = req.body;
 
     try {
         // Verificar si el usuario asociado existe
-        const usuarioExistente = await Usuario.findById(id_usuario);
+        const usuarioExistente = await Usuario.findById(req.params.iduser);
+
+        console.log(usuarioExistente);
+
         if (!usuarioExistente) {
-            return res.status(404).json({ message: "El usuario asociado no existe" });
+            return res.status(404).json({ message: "El usuario no existe" });
         }
-        const categoriaExistente = await CategoriaUsuario.find({ nombre });
-        if (categoriaExistente.length = 0) {
+
+        const categoriaExistente = await CategoriaUsuario.findOne({ nombre });
+
+        if (categoriaExistente) {
             return res.status(409).json({ message: "La categoria ya existe." });
         }
         
@@ -42,7 +56,7 @@ export const createCategoryUser = asyncHandler(async (req, res) => { //CU14
         const Categoria = new CategoriaUsuario({
             nombre,
             descripcion,
-            id_usuario,
+            id_usuario: usuarioExistente,
         });
 
         // Guardar la categoría en la base de datos

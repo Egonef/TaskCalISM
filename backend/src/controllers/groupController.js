@@ -19,14 +19,26 @@ export const getGroups = asyncHandler(async(req, res) => { //NO TIENE CU
     }
 })
 
-//no es necesario un getGroup??
+export const getGroup = asyncHandler(async(req, res) => { 
+    
+    try{
+        const group = await Grupo.findById(req.params.id);
+        if(group)
+            res.status(200).json(group)
+        else
+            res.status(404).json({ message: "Grupo no encontrado" });
+
+    }catch(error){
+        res.status(500).json({ message: error.message });
+    }
+})
 
 export const createGroup = asyncHandler(async(req, res) => { //CU03
 
     const { nombre , descripcion} = req.body;
 
     try {
-        const admin = await Usuario.findById(req.params.id)  
+        const admin = await Usuario.findById(req.params.user)  
         const grupoExistente = await Grupo.findOne({ nombre });
         if (grupoExistente) {
             return res.status(409).json({ message: "El grupo ya existe" });
@@ -47,9 +59,9 @@ export const createGroup = asyncHandler(async(req, res) => { //CU03
         });
 
         admin.id_grupos.push(newGroup);
-        //grupo.id_usuarios.push(admin);
-
         await newGroup.save();
+        await admin.save();
+        
         res.status(200).json({ message: "El grupo ha sido creado correctamente" });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -71,14 +83,19 @@ export const deleteGroup = asyncHandler(async(req, res) => { //CU07
 
         
 
-        if(grupo.id_admin.some(usuario => usuario.equals(usuario._id))){ //revisar esto pq esta mal
+        if(!grupo.id_admin.equals(usuario._id)){ 
             res.status(409).json({ message: "El usuario no es el administrador del grupo" });
-
         }
         else{
-            await Grupo.findByIdAndDelete(grupo._id);
-            usuario.id_grupos = usuario.id_grupos.filter(id_grupo => id_grupo != grupo._id);
-            await usuarioAEliminar.save();
+            await Grupo.findByIdAndDelete(grupo._id);            
+            const usuarios = await Usuario.find({ _id: { $in: grupo.id_usuarios } });
+            for (const usuario of usuarios) {
+                usuario.id_grupos = usuario.id_grupos.filter(id_grupo => !id_grupo.equals(grupo._id));
+                await usuario.save();
+            }
+            
+
+            //await usuario.save();
             res.status(200).json({ message: 'El grupo ha sido eliminado' });
         }
 
@@ -93,12 +110,12 @@ export const addUserToAGroup = asyncHandler(async(req, res) => { //CU04, diria q
 
 export const deleteUserGroup = asyncHandler(async(req, res) => { //CU05
 
-    const {nombre_usuario, nombre, nombre_usuario_a_eliminar} = req.body;
+    const {nombre_usuario, nombre} = req.body; //nombre es el nombre de grupo
     try {
 
-        const usuario = await Usuario.findOne({nombre_usuario});
-        const usuarioAEliminar = await Usuario.findOne({nombre_usuario_a_eliminar});
-        
+        const usuario = await Usuario.findById(req.params.admin);
+        const usuarioAEliminar = await Usuario.findOne({nombre_usuario});
+
         if(!usuario){
             return res.status(404).json({ message: "Usuario no encontrado" });
         }
@@ -107,17 +124,21 @@ export const deleteUserGroup = asyncHandler(async(req, res) => { //CU05
             return res.status(404).json({ message: "Usuario no encontrado" });
         }
 
-        const grupo = await Grupo.findOne(nombre);
+        if(usuario._id.equals(usuarioAEliminar._id)){
+            return res.status(409).json({ message: "No puedes eliminarte a ti mismo" });
+        }
+        const grupo = await Grupo.findOne({nombre});
 
-        if(grupo.id_admin != usuario._id){
+        if(!grupo.id_admin.equals(usuario._id)){ 
             res.status(409).json({ message: "El usuario no es el administrador del grupo" });
         }
         else{
-            usuarioAEliminar.id_grupos = usuarioAEliminar.id_grupos.filter(id_grupo => id_grupo != grupo._id);
+            usuarioAEliminar.id_grupos = usuarioAEliminar.id_grupos.filter(id_grupo => !id_grupo.equals(grupo._id));
             await usuarioAEliminar.save();
-            grupo.id_usuarios = grupo.id_usuarios.filter(id_usuario => id_usuario != usuarioAEliminar._id);
+            
+            grupo.id_usuarios = grupo.id_usuarios.filter(id_usuario => !id_usuario.equals(usuarioAEliminar._id));
             await grupo.save();
-            res.status(200).json({ message: 'El grupo ha sido eliminado' });
+            res.status(200).json({ message: 'El usuario ha sido eliminado del grupo' });
         }
 
     } catch (error) {

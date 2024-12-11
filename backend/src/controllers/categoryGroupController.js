@@ -2,6 +2,7 @@ import asyncHandler from 'express-async-handler'
 import Grupo from '../models/Grupo.js';
 import CategoriaGrupo from '../models/CategoriaGrupo.js';
 import TareaGrupo from '../models/TareaGrupo.js';
+import mongoose from 'mongoose';
 
 
 /*
@@ -13,7 +14,11 @@ import TareaGrupo from '../models/TareaGrupo.js';
 export const getCategoriesGroup = asyncHandler(async(req, res) => { 
     try{
         const {id_grupo} = req.query
-        const categories = await CategoriaGrupo.find({id_grupo})
+        //COMO COMPRUEBO QUE EL GRUPO EXISTEEEEEE
+        if (!grupo) {
+            return res.status(404).json({ message: "El grupo no existe" });
+        }
+        const categories = await CategoriaGrupo.find({id_grupos: id_grupo})
         res.status(200).json(categories)
 
     }catch(error){
@@ -29,21 +34,28 @@ export const createCategoryGroup = asyncHandler(async (req, res) => {
         // Verificar si el usuario asociado existe
         const grupoExistente = await Grupo.findById(id_grupo);
         if (!grupoExistente) {
-            return res.status(404).json({ message: "El usuario asociado no existe" });
+            return res.status(404).json({ message: "El grupo no existe" });
+        }
+
+        categoriaExistente = await CategoriaGrupo.findOne({ nombre});
+        if(categoriaExistente){
+            return res.status(409).json({ message: "La categoría ya existe"});
         }
 
         // Crear una nueva categoría
-        const Categoria = new CategoriaUsuario({
+        const Categoria = new CategoriaGrupo({
             nombre,
             descripcion,
             id_grupo,
         });
 
+        
+
         // Guardar la categoría en la base de datos
         await Categoria.save();
 
         // Responder con éxito
-        res.status(200).json({ message: "La categoría ha sido creada correctamente", categoria: nuevaCategoria });
+        res.status(200).json({ message: "La categoría ha sido creada correctamente"});
     } catch (error) {
         // Capturar errores y enviar una respuesta adecuada
         res.status(500).json({ message: "Error al crear la categoría", error: error.message });
