@@ -13,12 +13,18 @@ import mongoose from 'mongoose';
 ///api/categories/group?id_grupo=0
 export const getCategoriesGroup = asyncHandler(async(req, res) => { 
     try{
-        const {id_grupo} = req.query
-        //COMO COMPRUEBO QUE EL GRUPO EXISTEEEEEE
-        if (!grupo) {
+        //const {id_g} = req.body
+        const grupoExistente = await Grupo.findById(req.params.idgrupo);
+
+        if (!grupoExistente) {
             return res.status(404).json({ message: "El grupo no existe" });
         }
-        const categories = await CategoriaGrupo.find({id_grupos: id_grupo})
+        const categories = await CategoriaGrupo.find({ id_grupo: grupoExistente });
+
+        if (categories.length === 0) {
+            return res.status(404).json({ message: "No se encontraron categorías para este grupo" });
+        }
+        
         res.status(200).json(categories)
 
     }catch(error){
@@ -28,28 +34,27 @@ export const getCategoriesGroup = asyncHandler(async(req, res) => {
 
 ///api/categories/group
 export const createCategoryGroup = asyncHandler(async (req, res) => {
-    const { nombre, descripcion, id_grupo } = req.body;
+    const { nombre, descripcion} = req.body;
 
     try {
         // Verificar si el usuario asociado existe
-        const grupoExistente = await Grupo.findById(id_grupo);
+        const grupoExistente = await Grupo.findById(req.params.idgrupo);
+
         if (!grupoExistente) {
             return res.status(404).json({ message: "El grupo no existe" });
         }
 
-        categoriaExistente = await CategoriaGrupo.findOne({ nombre});
+        const categoriaExistente = await CategoriaGrupo.findOne({ id_grupo: grupoExistente._id, nombre: nombre });
         if(categoriaExistente){
-            return res.status(409).json({ message: "La categoría ya existe"});
+            return res.status(409).json({ message: "La categoría ya existe" });
         }
 
         // Crear una nueva categoría
         const Categoria = new CategoriaGrupo({
             nombre,
             descripcion,
-            id_grupo,
+            id_grupo: grupoExistente,
         });
-
-        
 
         // Guardar la categoría en la base de datos
         await Categoria.save();
@@ -64,12 +69,12 @@ export const createCategoryGroup = asyncHandler(async (req, res) => {
 
 ///api/categories/group/modify/:id_categoria
 export const modifyCategoryGroup= asyncHandler(async (req, res) => { 
-    const { id_categoria } = req.params; // ID de la categoria a modificar
+    //const { id_categoria } = req.params; // ID de la categoria a modificar
     const { nombre, descripcion} = req.body;
 
     try {
         // Verificar si la categoría existe
-        const categoria = await CategoriaGrupo.findById(id_categoria);
+        const categoria = await CategoriaGrupo.findById(req.params.id);
         if (!categoria) {
             return res.status(404).json({ message: "La categoria no existe" });
         }
@@ -87,16 +92,22 @@ export const modifyCategoryGroup= asyncHandler(async (req, res) => {
 });
 ///api/categories/group/delete/:id
 export const deleteCategoryGroup = asyncHandler(async (req, res) => {
-    const { id_categoria } = req.params;  // ID de la categoría a eliminar
+    //const { id_categoria } = req.params;  // ID de la categoría a eliminar
 
     try {
         // Buscar y eliminar la categoría por su ID
-        const categoriaEliminada = await CategoriaGrupo.findByIdAndDelete(id_categoria);
+        const categoria = await CategoriaGrupo.findByIdAndDelete(req.params.id);
 
         // Verificar si la categoría fue eliminada
-        if (!categoriaEliminada) {
+        if (!categoria) {
             return res.status(404).json({ message: "Categoría no encontrada" });
         }
+
+        //eliminar tareas asociadas
+
+        await TareaGrupo.findByIdAndDelete(categoria._id)
+
+        await TareaGrupo.deleteMany({ id_categoria_grupo: req.params.id })
 
         // Responder con un mensaje de éxito
         res.status(200).json({ message: "Categoría eliminada correctamente" });
@@ -106,11 +117,11 @@ export const deleteCategoryGroup = asyncHandler(async (req, res) => {
 });
 ///api/categories/group/tasks/:id
 export const getTasksByCategoryGroup = asyncHandler(async (req,res) => {
-    const { id_categoria} = req.params;
+    //const { id_categoria} = req.params;
 
     try {
         //Buscar tareas de la categoría
-        const tareas = await TareaGrupo.find({id_categoria_grupo : id_categoria});
+        const tareas = await TareaGrupo.find({id_categoria_grupo : req.params.id});
 
         if (!tareas || tareas.length === 0) {
             return res.status(404).json({ message: "No se encontraron tareas para esta categoría" });

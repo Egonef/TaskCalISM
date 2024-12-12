@@ -27,7 +27,7 @@ export const createTaskGroup = asyncHandler(async (req, res) => { //CU11
 
     try {
         // Verificar si el usuario asociado existe
-        const grupoExistente = await Grupo.findById(id_grupo);
+        const grupoExistente = await Grupo.findById(req.params.idgrupo);
         if (!grupoExistente) {
             return res.status(404).json({ message: "El grupo asociado no existe" });
         }
@@ -39,12 +39,12 @@ export const createTaskGroup = asyncHandler(async (req, res) => { //CU11
         }
 
         // Crear una nueva tarea
-        const nuevaTarea = new Tarea({
+        const nuevaTarea = new TareaGrupo({
             nombre,
             descripcion,
             fecha_vencimiento,
             estado,
-            id_categoria_grupo,
+            id_categoria_grupo,//ponerla como obligatoria
         });
 
         // Guardar la tarea en la base de datos

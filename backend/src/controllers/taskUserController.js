@@ -12,7 +12,7 @@ import asyncHandler from 'express-async-handler'
 export const getTasksUser = asyncHandler(async(req, res) => {  //CU09, que diferencia hay con el getTasksByCategoryUser de categoryUserController.js??
     try{
         const {id_categoria_usuario} = req.query
-        const tasks = await Tarea.find({id_categoria_usuario})
+        const tasks = await TareaUsuario.find({id_categoria_usuario})
         res.status(200).json(tasks)
 
     }catch(error){
@@ -25,7 +25,7 @@ export const createTaskUser = asyncHandler(async (req, res) => { //CU11
 
     try {
         // Verificar si el usuario asociado existe
-        const usuarioExistente = await Usuario.findById(id_usuario);
+        const usuarioExistente = await Usuario.findById(req.params.idusuario);
         if (!usuarioExistente) {
             return res.status(404).json({ message: "El usuario asociado no existe" });
         }
@@ -37,7 +37,7 @@ export const createTaskUser = asyncHandler(async (req, res) => { //CU11
         }
 
         // Crear una nueva tarea
-        const nuevaTarea = new Tarea({
+        const nuevaTarea = new TareaUsuario({
             nombre,
             descripcion,
             fecha_vencimiento,
@@ -47,7 +47,7 @@ export const createTaskUser = asyncHandler(async (req, res) => { //CU11
 
         // Guardar la tarea en la base de datos
         await nuevaTarea.save();
-        res.status(201).json({ message: "La tarea ha sido creada correctamente", tarea: nuevaTarea });
+        res.status(201).json({ message: "La tarea ha sido creada correctamente" });
     } catch (error) {
         // Capturar errores y enviar una respuesta adecuada
         res.status(500).json({ message: "Error al crear la tarea", error: error.message });
@@ -56,12 +56,12 @@ export const createTaskUser = asyncHandler(async (req, res) => { //CU11
 
 ///api/tasks/modify/:id
 export const modifyTaskUser = asyncHandler(async (req, res) => { //CU12
-    const { id } = req.params; // ID de la tarea a modificar
+    //const { id } = req.params; // ID de la tarea a modificar
     const { nombre, descripcion, fecha_vencimiento, estado, id_categoria_usuario } = req.body;
 
     try {
         // Verificar si la tarea existe
-        const tarea = await TareaUsuario.findById(id);
+        const tarea = await TareaUsuario.findById(req.params.id);
         if (!tarea) {
             return res.status(404).json({ message: "La tarea no existe" });
         }
@@ -83,11 +83,11 @@ export const modifyTaskUser = asyncHandler(async (req, res) => { //CU12
 
 ///api/tasks/delete/:id
 export const deleteTaskUser = asyncHandler(async (req, res) => { //CU13
-    const { id } = req.params; // ID de la tarea a eliminar
+    //const { id } = req.params; // ID de la tarea a eliminar
 
     try {
         // Verificar si la tarea existe
-        const tarea = await TareaUsuario.findById(id);
+        const tarea = await TareaUsuario.findById(req.params.id);
         if (!tarea) {
             return res.status(404).json({ message: "La tarea no existe" });
         }
@@ -101,10 +101,10 @@ export const deleteTaskUser = asyncHandler(async (req, res) => { //CU13
 });
 ///api/tasks/gettask/:id
 export const getTaskUser = asyncHandler(async(req,res) => { //CU10
-    const { id } = req.params;
+    //const { id } = req.params;
 
     try{
-        const tarea = await TareaUsuario.findById(id);
+        const tarea = await TareaUsuario.findById(req.params.id);
         if (!tarea) {
             return res.status(404).json({ message: "La tarea no existe" });
         }
@@ -116,9 +116,9 @@ export const getTaskUser = asyncHandler(async(req,res) => { //CU10
 })
 ///api/tasks/endtask/:id
 export const endTaskUser = asyncHandler(async(req,res) => { //CU15
-    const { id } = req.params;
+    //const { id } = req.params;
     try{
-        const tarea = await TareaUsuario.findById(id);
+        const tarea = await TareaUsuario.findById(req.params.id);
 
         if (!tarea) {
             return res.status(404).json({ message: "La tarea no existe." });
@@ -144,7 +144,7 @@ export const tareasDiariasUser = asyncHandler (async(req,res) => { //CU18
     const fechaLimite = new Date();
     fechaLimite.setMonth(fechaActual.getDay() + 1);
     try{
-        const tareas = await Tarea.find({
+        const tareas = await TareaUsuario.find({
             id_categoria_usuario: id_categoria_usuario, // Filtrar por el ID de la categoria
             fecha_vencimiento: { $gte: fechaActual, $lte: fechaLimite } // Fecha de vencimiento dentro del rango
         });

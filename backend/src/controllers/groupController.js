@@ -68,6 +68,8 @@ export const createGroup = asyncHandler(async(req, res) => { //CU03
     }
 })
 
+
+//CUANDO SE ELIMINA UN GRUPO, HAY QUE ELIMINAR TODAS LAS CATEGORIAS Y TAREAS ASOCIADAS A ESE GRUPO: TO DO!!!!!
 export const deleteGroup = asyncHandler(async(req, res) => { //CU07
    
     const {nombre_usuario} = req.body;
@@ -87,7 +89,9 @@ export const deleteGroup = asyncHandler(async(req, res) => { //CU07
             res.status(409).json({ message: "El usuario no es el administrador del grupo" });
         }
         else{
-            await Grupo.findByIdAndDelete(grupo._id);            
+            await Grupo.findByIdAndDelete(grupo._id); 
+            
+            //bsucamos los usuarios que contengan el id del grupo en su variable
             const usuarios = await Usuario.find({ _id: { $in: grupo.id_usuarios } });
             for (const usuario of usuarios) {
                 usuario.id_grupos = usuario.id_grupos.filter(id_grupo => !id_grupo.equals(grupo._id));
@@ -108,6 +112,8 @@ export const addUserToAGroup = asyncHandler(async(req, res) => { //CU04, diria q
 
 })
 
+
+//CUANDO SE ELIMINA UN USUARIO DE UN GRUPO, HAY QUE ELIMINAR TODAS LAS TAREAS ASOCIADAS A ESE USUARIO: TO DO!!!!!
 export const deleteUserGroup = asyncHandler(async(req, res) => { //CU05
 
     const {nombre_usuario, nombre} = req.body; //nombre es el nombre de grupo

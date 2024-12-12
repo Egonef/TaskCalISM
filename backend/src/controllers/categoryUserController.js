@@ -15,15 +15,22 @@ import TareaUsuario from '../models/TareaUsuario.js';
 //CAMBIAR POR COMO ESTA EL DE GROUPS
 export const getCategoriesUser = asyncHandler(async(req, res) => { //CU22
 
-    const {id_user} = req.query
+    //const {id_user} = req.query
 
     try{
 
-        if(!usuario){
+        const usuarioExistente = await Usuario.findById(req.params.idusuario);
+        
+        if (!usuarioExistente) {
             return res.status(404).json({ message: "Usuario no encontrado" });  
         }
+        
 
-        const categories = await CategoriaUsuario.find({id_usuarios: id_user})
+        const categories = await CategoriaUsuario.find({id_usuario: usuarioExistente})
+        if (categories.length === 0) {
+            return res.status(404).json({ message: "No se encontraron categorías para este grupo" });
+        }
+
         res.status(200).json(categories)
 
     }catch(error){
@@ -38,15 +45,13 @@ export const createCategoryUser = asyncHandler(async (req, res) => { //CU14
 
     try {
         // Verificar si el usuario asociado existe
-        const usuarioExistente = await Usuario.findById(req.params.iduser);
-
-        console.log(usuarioExistente);
+        const usuarioExistente = await Usuario.findById(req.params.idusuario);
 
         if (!usuarioExistente) {
-            return res.status(404).json({ message: "El usuario no existe" });
+            return res.status(404).json({ message: "Usuario no existente" });
         }
 
-        const categoriaExistente = await CategoriaUsuario.findOne({ nombre });
+        const categoriaExistente = await CategoriaUsuario.findOne({ id_usuario: usuarioExistente._id, nombre: nombre });
 
         if (categoriaExistente) {
             return res.status(409).json({ message: "La categoria ya existe." });
@@ -72,12 +77,12 @@ export const createCategoryUser = asyncHandler(async (req, res) => { //CU14
 
 ///api/categories/user/modify/:id_categoria
 export const modifyCategoryUser = asyncHandler(async (req, res) => { //CU20
-    const { id_categoria } = req.params; // ID de la categoria a modificar
+    //const { id_categoria } = req.params; // ID de la categoria a modificar
     const { nombre, descripcion} = req.body;
 
     try {
         // Verificar si la categoría existe
-        const categoria = await CategoriaUsuario.findById(id_categoria);
+        const categoria = await CategoriaUsuario.findById(req.params.id);
         if (!categoria) {
             return res.status(404).json({ message: "La categoria no existe" });
         }
@@ -95,17 +100,20 @@ export const modifyCategoryUser = asyncHandler(async (req, res) => { //CU20
 });
 ///api/categories/user/delete/:id_categoria
 export const deleteCategoryUser = asyncHandler(async (req, res) => { //CU21
-    const { id_categoria } = req.params;  // ID de la categoría a eliminar
+    //const { id_categoria } = req.params;  // ID de la categoría a eliminar
 
     try {
         // Buscar y eliminar la categoría por su ID
-        const categoriaEliminada = await CategoriaUsuario.findByIdAndDelete(id_categoria);
+        const categoria = await CategoriaUsuario.findByIdAndDelete(req.params.id);
 
         // Verificar si la categoría fue eliminada
-        if (!categoriaEliminada) {
+        if (!categoria) {
             return res.status(404).json({ message: "Categoría no encontrada" });
         }
 
+        await TareaUsuario.findByIdAndDelete(categoria._id)
+        
+        await TareaUsuario.deleteMany({ id_categoria_usuario: req.params.id })
         // Responder con un mensaje de éxito
         res.status(200).json({ message: "Categoría eliminada correctamente" });
     } catch (error) {
@@ -114,11 +122,11 @@ export const deleteCategoryUser = asyncHandler(async (req, res) => { //CU21
 });
 ///api/categories/user/tasks/:id_categoria
 export const getTasksByCategoryUser = asyncHandler(async (req,res) => { //CU09
-    const { id_categoria} = req.params;
+    //const { id_categoria} = req.params;
 
     try {
         //Buscar tareas de la categoría
-        const tareas = await TareaUsuario.find({id_categoria_usuario : id_categoria});
+        const tareas = await TareaUsuario.find({id_categoria_usuario : req.params.id});
 
         if (!tareas || tareas.length === 0) {
             return res.status(404).json({ message: "No se encontraron tareas para esta categoría" });
