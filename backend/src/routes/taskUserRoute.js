@@ -9,8 +9,8 @@ router.route('/:idusuario').post(ctr.createTaskUser)
 router.route('/modify/:id').put(ctr.modifyTaskUser)
 router.route('/delete/:id').delete(ctr.deleteTaskUser)
 router.route('/endtask/:id').put(ctr.endTaskUser)
-router.route('/tasksToday/:id').get(ctr.tareasDiariasUser)
-router.route('/calendar/:id').get(ctr.calendarioTareasUser)
+router.route('/tasksToday/:id_categoria_usuario').get(ctr.tareasDiariasUser)
+router.route('/calendar/:id_categoria_usuario').get(ctr.calendarioTareasUser)
 
 
 

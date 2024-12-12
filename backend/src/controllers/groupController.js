@@ -8,7 +8,7 @@ import asyncHandler from 'express-async-handler'
 
 //error 404: no se ha encontrado; error 409: conflicto
 
-///api/groups
+///api/group
 export const getGroups = asyncHandler(async(req, res) => { //NO TIENE CU
     try{
         const groups = await Grupo.find({})

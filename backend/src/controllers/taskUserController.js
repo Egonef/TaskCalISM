@@ -45,6 +45,7 @@ export const createTaskUser = asyncHandler(async (req, res) => { //CU11
             id_categoria_usuario,
         });
 
+
         // Guardar la tarea en la base de datos
         await nuevaTarea.save();
         res.status(201).json({ message: "La tarea ha sido creada correctamente" });
@@ -137,17 +138,25 @@ export const endTaskUser = asyncHandler(async(req,res) => { //CU15
     }
 });
 ///api/tasks/tasksToday/:id
+//Te muestra las tareas pendientes(?) que tienes hoy
 export const tareasDiariasUser = asyncHandler (async(req,res) => { //CU18
-    const { id_categoria_usuario } = req.params;
+    //const { id_categoria_usuario } = req.params;
 
     const fechaActual = new Date();
     const fechaLimite = new Date();
-    fechaLimite.setMonth(fechaActual.getDay() + 1);
+    fechaActual.setHours(0,0,0,0);
+    fechaLimite.setDate(fechaActual.getDate() + 1);
+    fechaLimite.setHours(0,0,0,0);
+
     try{
         const tareas = await TareaUsuario.find({
-            id_categoria_usuario: id_categoria_usuario, // Filtrar por el ID de la categoria
-            fecha_vencimiento: { $gte: fechaActual, $lte: fechaLimite } // Fecha de vencimiento dentro del rango
+            id_categoria_usuario: req.params.id_categoria_usuario, // Filtrar por el ID de la categoria
+            fecha_vencimiento: { $gte: fechaActual, $lte: fechaLimite},// Fecha de vencimiento dentro del rango
+            //estado: false  //y que no esten completas
         });
+        if(tareas.length === 0){
+            return res.status(200).json({ message: "No tienes tareas pendientes para hoy."});
+        }
         res.status(200).json(tareas);
         } catch (error){
         res.status(500).json({message: "Error al buscar las tareas."})
@@ -155,16 +164,19 @@ export const tareasDiariasUser = asyncHandler (async(req,res) => { //CU18
 })
 ///api/tasks/calendar/:id
 export const calendarioTareasUser = asyncHandler (async(req,res) => { //CU16
-    const { id_categoria_usuario } = req.params;
+    //const { id_categoria_usuario } = req.params;
 
     const fechaActual = new Date();
     const fechaLimite = new Date();
     fechaLimite.setMonth(fechaActual.getMonth() + 1);
     try{
-        const tareas = await Tarea.find({
-            id_categoria_usuario: id_categoria_usuario, // Filtrar por el ID de la categoria
+        const tareas = await TareaUsuario.find({
+            id_categoria_usuario: req.params.id_categoria_usuario, // Filtrar por el ID de la categoria
             fecha_vencimiento: { $gte: fechaActual, $lte: fechaLimite } // Fecha de vencimiento dentro del rango
         });
+        if(tareas.length === 0){
+            return res.status(200).json({ message: "No tienes tareas pendientes para este mes."});
+        }
         res.status(200).json(tareas);
         } catch (error){
         res.status(500).json({message: "Error al buscar las tareas."})
