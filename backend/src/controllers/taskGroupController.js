@@ -11,11 +11,23 @@ import asyncHandler from 'express-async-handler'
     // GETS GENERICOS
 
 ///api/tasks?id_usuario=0
-export const getTasksGroup = asyncHandler(async(req, res) => { //que diferencia hay con el getTasksByCategoryGroup de categoryGroupController.js??
+export const getTasksCatGroup = asyncHandler(async(req, res) => { //que diferencia hay con el getTasksByCategoryGroup de categoryGroupController.js??
     try{
-        const {id_categoria_grupo} = req.query
-        const tasks = await TareaGrupo.find({id_categoria_grupo})
-        res.status(200).json(tasks)
+        //LO SUYO SERIA QUE SE MOSTRASE LA TASKS Y LAS PERSONAS ASIGNADAS, ESO LO VEREMOS EN FRONTEND
+        const {id_categoria_grupo} = req.body
+        const tasks = await TareaGrupo.find({id_categoria_grupo : id_categoria_grupo})
+        console.log(tasks)
+        let tasksMembers = []
+        for (const task of tasks){
+            const tasksM = await TareaMiembro.find({id_tarea_grupo : task})
+            tasksMembers = tasksMembers.concat(tasksM)
+        }
+        if(tasksMembers === 0 ){
+            res.status(200).json(tasks)
+        }else{
+            res.status(200).json(tasksMembers)
+        }
+
 
     }catch(error){
         res.status(500).json({ message: error.message });
@@ -141,7 +153,7 @@ export const endTaskGroup = asyncHandler(async(req,res) => {
     }
 });
 ///api/tasks/tasksToday/:id
-export const tareasDiariasGroup = asyncHandler (async(req,res) => {
+export const tareasDiariasCatGroup = asyncHandler (async(req,res) => {
     //const { id_categoria_grupo } = req.params;
 
     const fechaActual = new Date();
@@ -162,8 +174,51 @@ export const tareasDiariasGroup = asyncHandler (async(req,res) => {
         res.status(500).json({message: "Error al buscar las tareas."})
     }
 })
+
+export const tareasDiariasGroup = asyncHandler (async(req,res) => { 
+    //const { id_categoria_usuario } = req.params;
+
+    const fechaActual = new Date();
+    const fechaLimite = new Date();
+    fechaActual.setHours(0,0,0,0);
+    fechaLimite.setDate(fechaActual.getDate() + 1);
+    fechaLimite.setHours(0,0,0,0);
+
+    try{
+        const grupo = await Grupo.findById(req.params.idgrupo)
+
+        if (!grupo) {
+            return res.status(404).json({ message: "Este grupo no existe" });
+        }
+
+        const categorias = await CategoriaGrupo.find({id_grupo : grupo});
+        if (categorias.length === 0) {
+            return res.status(404).json({ message: "Este usuario no tiene categorias existentes" });
+        }
+
+
+        let tareas = [];
+        for (const categoria of categorias) {
+            const tareasCategoria = await TareaGrupo.find({
+                id_categoria_grupo: categoria._id, // Filtrar por el ID de la categoría
+                fecha_vencimiento: { $gte: fechaActual, $lt: fechaLimite }, // Fecha de vencimiento del día
+                // estado: false 
+            });
+            tareas = tareas.concat(tareasCategoria);
+        }
+
+
+
+        if(tareas.length === 0){
+            return res.status(200).json({ message: "No existen tareas pendientes para hoy."});
+        }
+        res.status(200).json(tareas);
+        } catch (error){
+        res.status(500).json({message: "Error al buscar las tareas."})
+    }
+})
 ///api/tasks/calendar/:id
-export const calendarioTareasGroup = asyncHandler (async(req,res) => {
+export const calendarioTareasCatGroup = asyncHandler (async(req,res) => {
     //const { id_categoria_grupo } = req.params;
 
     const fechaActual = new Date();
@@ -183,20 +238,48 @@ export const calendarioTareasGroup = asyncHandler (async(req,res) => {
     }
 })
 
+export const calendarioTareasGroup = asyncHandler (async(req,res) => { 
+    //const { id_categoria_usuario } = req.params;
 
-//obtenemos todas las tareas de un grupo y sus usuarios asignados
-export const getTasksMember = async(id_grupo) => { 
+    const fechaActual = new Date();
+    const fechaLimite = new Date();
+    fechaLimite.setMonth(fechaActual.getMonth() + 1);
+
     try{
+        const grupo = await Grupo.findById(req.params.idgrupo)
 
-        const grupo = await Grupo.findById(id_grupo);
-        const categorias_grupo = await CategoriaGrupo.find({id_grupo: grupo})
-        const tareas_grupo = await TareaGrupo.find({id_categoria_grupo: categorias_grupo})
-        res.status(200).json(tareas_grupo)
+        if (!grupo) {
+            return res.status(404).json({ message: "Este grupo no existe" });
+        }
 
-    }catch(error){
-        res.status(500).json({ message: error.message });
+        const categorias = await CategoriaGrupo.find({id_grupo : grupo});
+        if (categorias.length === 0) {
+            return res.status(404).json({ message: "Este usuario no tiene categorias existentes" });
+        }
+
+
+        let tareas = [];
+        for (const categoria of categorias) {
+            const tareasCategoria = await TareaGrupo.find({
+                id_categoria_grupo: categoria._id, // Filtrar por el ID de la categoría
+                fecha_vencimiento: { $gte: fechaActual, $lt: fechaLimite }, // Fecha de vencimiento del día
+                // estado: false 
+            });
+            tareas = tareas.concat(tareasCategoria);
+        }
+
+
+
+        if(tareas.length === 0){
+            return res.status(200).json({ message: "No existen tareas pendientes para hoy."});
+        }
+        res.status(200).json(tareas);
+        } catch (error){
+        res.status(500).json({message: "Error al buscar las tareas."})
     }
-}
+})
+
+
 
 
 
@@ -206,39 +289,40 @@ export const assignMemberToATask = asyncHandler(async(req, res) => { //CU08
     const { id_tarea_grupo, id_usuario } = req.body;
     try {
         const usuario = await Usuario.findById(id_usuario);
-        const GrupoExiste = await Grupo.findById(req.params.idgrupo);
+        const grupo = await Grupo.findById(req.params.idgrupo);
         
-        console.log(usuario)
-        console.log(GrupoExiste)
         if (!usuario) {
             return res.status(404).json({ message: "El usuario no existe" });
         }
         
-        if (!GrupoExiste) {
+        if (!grupo) {
             return res.status(404).json({ message: "El grupo no existe" });
         }
 
-        //REVISAR A PARTIR DE AQUI ABAJO, SE QUEDA EN UN BUCLE TONTO
-        console.log(usuario.id_grupos.filter(id_grupo => id_grupo.equals(GrupoExiste._id)))
-        if (!usuario.id_grupos.filter(id_grupo => id_grupo.equals(GrupoExiste._id))) {
+        const pertenece = usuario.id_grupos.filter(id_grupo => id_grupo.equals(grupo._id))
+        console.log(pertenece)
+
+        if (pertenece.length === 0) {
             return res.status(404).json({ message: "El usuario no pertenece al grupo" });
         }
         
-        
-        const tareas_del_grupo = await getTasksMember(id_grupo);
-        const tarea = tareas_del_grupo.some(tarea => tarea._id.toString() === id_tarea_grupo);
-        if (!tarea) {
+        const categorias_grupo = await CategoriaGrupo.find({id_grupo: grupo})
+        const tareas_del_grupo = await TareaGrupo.find({id_categoria_grupo: categorias_grupo})
+
+        const tareapertenecegrupo = tareas_del_grupo.filter(tarea => tarea._id.toString() === id_tarea_grupo);
+        if (!tareapertenecegrupo) {
             return res.status(404).json({ message: "La tarea no existe en el grupo" });
         }
 
-        const tareaMiembroExistente = await TareaMiembro.findOne({ id_tarea_grupo, id_usuario });
+        const tareaMiembroExistente = await TareaMiembro.findOne({ id_tarea_grupo: tareapertenecegrupo, id_usuario: usuario });
+        console.log(tareaMiembroExistente)
         if (tareaMiembroExistente) {
             return res.status(409).json({ message: "El usuario ya ha sido asignado a esta tarea anteriormente" });
         }
 
         // Asignar el miembro a la tarea
         const nuevaTareaMiembro = new TareaMiembro({
-            id_tarea_grupo: tarea,
+            id_tarea_grupo: tareapertenecegrupo,
             id_usuario: usuario,
         });
 

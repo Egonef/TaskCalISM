@@ -138,8 +138,8 @@ export const endTaskUser = asyncHandler(async(req,res) => { //CU15
     }
 });
 ///api/tasks/tasksToday/:id
-//Te muestra las tareas pendientes(?) que tienes hoy
-export const tareasDiariasUser = asyncHandler (async(req,res) => { //CU18
+//Te muestra las tareas pendientes(?) que tienes hoy filtrado por categoria
+export const tareasDiariasCatUser = asyncHandler (async(req,res) => { //CU18
     //const { id_categoria_usuario } = req.params;
 
     const fechaActual = new Date();
@@ -149,8 +149,15 @@ export const tareasDiariasUser = asyncHandler (async(req,res) => { //CU18
     fechaLimite.setHours(0,0,0,0);
 
     try{
+
+        const categoria = await CategoriaUsuario.findById(req.params.id_categoria_usuario)
+        console.log(categoria)
+        if (!categoria) {
+            return res.status(404).json({ message: "La categoria no existe." });
+        }
+
         const tareas = await TareaUsuario.find({
-            id_categoria_usuario: req.params.id_categoria_usuario, // Filtrar por el ID de la categoria
+            id_categoria_usuario: categoria, // Filtrar por el ID de la categoria
             fecha_vencimiento: { $gte: fechaActual, $lte: fechaLimite},// Fecha de vencimiento dentro del rango
             //estado: false  //y que no esten completas
         });
@@ -162,8 +169,53 @@ export const tareasDiariasUser = asyncHandler (async(req,res) => { //CU18
         res.status(500).json({message: "Error al buscar las tareas."})
     }
 })
+
+//Te muestra las tareas pendientes(?) que tienes hoy
+export const tareasDiariasUser = asyncHandler (async(req,res) => { 
+    //const { id_categoria_usuario } = req.params;
+
+    const fechaActual = new Date();
+    const fechaLimite = new Date();
+    fechaActual.setHours(0,0,0,0);
+    fechaLimite.setDate(fechaActual.getDate() + 1);
+    fechaLimite.setHours(0,0,0,0);
+
+    try{
+        const usuario = await Usuario.findById(req.params.idusuario)
+
+        if (!usuario) {
+            return res.status(404).json({ message: "Este usuario no existe" });
+        }
+
+        const categorias = await CategoriaUsuario.find({id_usuario : usuario});
+        if (categorias.length === 0) {
+            return res.status(404).json({ message: "Este usuario no tiene categorias existentes" });
+        }
+
+
+        let tareas = [];
+        for (const categoria of categorias) {
+            const tareasCategoria = await TareaUsuario.find({
+                id_categoria_usuario: categoria._id, // Filtrar por el ID de la categoría
+                fecha_vencimiento: { $gte: fechaActual, $lt: fechaLimite }, // Fecha de vencimiento del día
+                // estado: false 
+            });
+            tareas = tareas.concat(tareasCategoria);
+        }
+
+
+
+        if(tareas.length === 0){
+            return res.status(200).json({ message: "No tienes tareas pendientes para hoy."});
+        }
+        res.status(200).json(tareas);
+        } catch (error){
+        res.status(500).json({message: "Error al buscar las tareas."})
+    }
+})
 ///api/tasks/calendar/:id
-export const calendarioTareasUser = asyncHandler (async(req,res) => { //CU16
+//Te muestra las tareas que tienes este mes por categoria
+export const calendarioTareasCatUser = asyncHandler (async(req,res) => { //CU16
     //const { id_categoria_usuario } = req.params;
 
     const fechaActual = new Date();
@@ -176,6 +228,48 @@ export const calendarioTareasUser = asyncHandler (async(req,res) => { //CU16
         });
         if(tareas.length === 0){
             return res.status(200).json({ message: "No tienes tareas pendientes para este mes."});
+        }
+        res.status(200).json(tareas);
+        } catch (error){
+        res.status(500).json({message: "Error al buscar las tareas."})
+    }
+})
+
+//Te muestra las tareas que tienes este mes 
+export const calendarioTareasUser = asyncHandler (async(req,res) => { 
+    //const { id_categoria_usuario } = req.params;
+
+    const fechaActual = new Date();
+    const fechaLimite = new Date();
+    fechaLimite.setMonth(fechaActual.getMonth() + 1);
+
+    try{
+        const usuario = await Usuario.findById(req.params.idusuario)
+
+        if (!usuario) {
+            return res.status(404).json({ message: "Este usuario no existe" });
+        }
+
+        const categorias = await CategoriaUsuario.find({id_usuario : usuario});
+        if (categorias.length === 0) {
+            return res.status(404).json({ message: "Este usuario no tiene categorias existentes" });
+        }
+
+
+        let tareas = [];
+        for (const categoria of categorias) {
+            const tareasCategoria = await TareaUsuario.find({
+                id_categoria_usuario: categoria._id, // Filtrar por el ID de la categoría
+                fecha_vencimiento: { $gte: fechaActual, $lt: fechaLimite }, // Fecha de vencimiento del día
+                // estado: false 
+            });
+            tareas = tareas.concat(tareasCategoria);
+        }
+
+
+
+        if(tareas.length === 0){
+            return res.status(200).json({ message: "No tienes tareas pendientes para hoy."});
         }
         res.status(200).json(tareas);
         } catch (error){
