@@ -83,15 +83,24 @@ export const deleteGroup = asyncHandler(async(req, res) => { //CU07
 
         const grupo = await Grupo.findById(req.params.id);
 
-        
-
         if(!grupo.id_admin.equals(usuario._id)){ 
             res.status(409).json({ message: "El usuario no es el administrador del grupo" });
         }
         else{
+            //HAY QUE PROBARLO
             await Grupo.findByIdAndDelete(grupo._id); 
-            
-            //bsucamos los usuarios que contengan el id del grupo en su variable
+            const categoriasAEliminar = await Categoria.find({id_grupo: grupo._id});
+            if (categoriasAEliminar){
+                for (const categoria of categoriasAEliminar) {
+                    await Categoria.findByIdAndDelete(categoria._id);
+                    await TareaGrupo.findByIdAndDelete(categoria._id)
+                    await TareaGrupo.deleteMany({ id_categoria_grupo: req.params.id })
+                }
+            }else{
+                return res.status(404).json({ message: "No se han encontrado categorias para eliminar" });
+            }
+
+            //buscamos los usuarios que contengan el id del grupo en su variable
             const usuarios = await Usuario.find({ _id: { $in: grupo.id_usuarios } });
             for (const usuario of usuarios) {
                 usuario.id_grupos = usuario.id_grupos.filter(id_grupo => !id_grupo.equals(grupo._id));
@@ -113,7 +122,7 @@ export const addUserToAGroup = asyncHandler(async(req, res) => { //CU04, diria q
 })
 
 
-//CUANDO SE ELIMINA UN USUARIO DE UN GRUPO, HAY QUE ELIMINAR TODAS LAS TAREAS ASOCIADAS A ESE USUARIO: TO DO!!!!!
+//CUANDO SE ELIMINA UN USUARIO DE UN GRUPO, HAY QUE ELIMINAR TODAS LAS ASIGNACIONES AL USUARIO: TO DO!!!!!
 export const deleteUserGroup = asyncHandler(async(req, res) => { //CU05
 
     const {nombre_usuario, nombre} = req.body; //nombre es el nombre de grupo
@@ -144,6 +153,14 @@ export const deleteUserGroup = asyncHandler(async(req, res) => { //CU05
             
             grupo.id_usuarios = grupo.id_usuarios.filter(id_usuario => !id_usuario.equals(usuarioAEliminar._id));
             await grupo.save();
+
+            asignacionesAEliminar = await TareaMiembro.find({id_usuario: usuarioAEliminar._id});
+
+            //SI HAY UNA TAREA DONDE SOLO ESTA ASIGNADO ESE USUARIO, SE ELIMINA LA TAREA??? COMPROBAR LO DE ABAJO
+            for (const tareasM of asignacionesAEliminar){
+                await TareaMiembro.findByIdAndDelete(tareasM._id);
+            }
+
             res.status(200).json({ message: 'El usuario ha sido eliminado del grupo' });
         }
 
