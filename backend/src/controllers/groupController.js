@@ -1,5 +1,8 @@
 import Grupo from '../models/Grupo.js'
 import Usuario from '../models/Usuario.js'
+import CategoriaGrupo from '../models/CategoriaGrupo.js'
+import TareaGrupo from '../models/TareaGrupo.js'
+import TareaMiembro from '../models/TareaMiembro.js'
 import asyncHandler from 'express-async-handler'
 
 
@@ -82,35 +85,66 @@ export const deleteGroup = asyncHandler(async(req, res) => { //CU07
         }
 
         const grupo = await Grupo.findById(req.params.id);
+        if(!grupo){
+            return res.status(404).json({ message: "Grupo no encontrado" });
+        }
 
         if(!grupo.id_admin.equals(usuario._id)){ 
-            res.status(409).json({ message: "El usuario no es el administrador del grupo" });
+            return res.status(409).json({ message: "El usuario no es el administrador del grupo" });
         }
-        else{
-            //HAY QUE PROBARLO
-            await Grupo.findByIdAndDelete(grupo._id); 
-            const categoriasAEliminar = await Categoria.find({id_grupo: grupo._id});
-            if (categoriasAEliminar){
-                for (const categoria of categoriasAEliminar) {
-                    await Categoria.findByIdAndDelete(categoria._id);
-                    await TareaGrupo.findByIdAndDelete(categoria._id)
-                    await TareaGrupo.deleteMany({ id_categoria_grupo: req.params.id })
+        
+        let bool1 = false;
+        let bool2 = false;
+        for (let i = 0; i < usuario.id_grupos.length; i++) {
+            if (usuario.id_grupos[i].equals(grupo._id)) {
+                bool1 = true;
+            }
+        }
+        for (let i = 0; i < grupo.id_usuarios.length; i++) {
+            if (grupo.id_usuarios[i].equals(usuario._id)) {
+                bool2 = true;
+            }
+        }
+        
+        if(bool1 === false && bool2 === false){
+            return res.status(409).json({ message: "El usuario no pertenece al grupo" });
+        }
+
+        
+        //HAY QUE PROBARLO
+        await Grupo.findByIdAndDelete(grupo._id); 
+        const categoriasAEliminar = await CategoriaGrupo.find({id_grupo: grupo._id});
+        if (categoriasAEliminar.length > 0){
+
+            for (const categoria of categoriasAEliminar) { //Eliminamos categorias
+                const tareasAEliminar = await TareaGrupo.find({id_catgeoria_grupo: categoria._id});
+                await CategoriaGrupo.findByIdAndDelete(categoria._id);
+
+                if(tareasAEliminar.length > 0){
+                    for (const tarea of tareasAEliminar){ //Eliminamos tareas
+                        const tareasMiembro = await TareaMiembro.find({id_tarea_grupo: tarea._id});
+                        await TareaGrupo.findByIdAndDelete(tarea._id);
+
+                        if(tareasMiembro.length > 0)
+                        for (const tareaM of tareasMiembro){ //Eliminamos asignaciones
+                            await TareaMiembro.findByIdAndDelete(tareaM._id);
+                        }
+                    }
                 }
-            }else{
-                return res.status(404).json({ message: "No se han encontrado categorias para eliminar" });
             }
-
-            //buscamos los usuarios que contengan el id del grupo en su variable
-            const usuarios = await Usuario.find({ _id: { $in: grupo.id_usuarios } });
-            for (const usuario of usuarios) {
-                usuario.id_grupos = usuario.id_grupos.filter(id_grupo => !id_grupo.equals(grupo._id));
-                await usuario.save();
-            }
-            
-
-            //await usuario.save();
-            res.status(200).json({ message: 'El grupo ha sido eliminado' });
         }
+
+        //buscamos los usuarios que contengan el id del grupo en su variable
+        const usuarios = await Usuario.find({ _id: { $in: grupo.id_usuarios } });
+        for (const usuario of usuarios) {
+            usuario.id_grupos = usuario.id_grupos.filter(id_grupo => !id_grupo.equals(grupo._id));
+            await usuario.save();
+        }
+        
+
+        //await usuario.save();
+        return res.status(200).json({ message: 'El grupo ha sido eliminado correctamente' });
+        
 
     } catch (error) {
         return res.status(500).json({ message: error.message });

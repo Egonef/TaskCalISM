@@ -65,7 +65,9 @@ async function generarNotificacion(tipo, datos, usuario) {
         leida: false,
         id_usuario: usuario,
       });
-      await notificacion.save();
+
+      console.log(`NOTIFICACION A CONTINUACION: ${notificacion}`)
+      //await notificacion.save();
 
     }
   } catch (error) {

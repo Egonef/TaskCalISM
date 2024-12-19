@@ -158,10 +158,12 @@ export const acceptInvitationGroup = asyncHandler(async(req, res) => { //CU06
             return res.status(404).json({ message: 'Grupo no encontrado' });
         }
 
-        
-        if (grupo.id_admin.equals(usuario._id)) {
-            return res.status(409).json({ message: 'El usuario ya está en el grupo' });
+        for (let i = 0; i < usuario.id_grupos.length; i++) {
+            if (usuario.id_grupos[i].equals(grupo._id)) {
+                return res.status(409).json({ message: 'El usuario ya está en el grupo' });
+            }
         }
+
         usuario.id_grupos.push(grupo);
         await usuario.save();
 

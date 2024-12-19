@@ -75,6 +75,7 @@ export const readNotification = asyncHandler(async(req, res) => {
     }
 })
 
+//Esta funcion habria que llamarla cada vez que se registra un usuario
 export const createWelcomeNotification = asyncHandler(async(req, res) => {
 
     try {
@@ -112,7 +113,7 @@ export const createWelcomeNotification = asyncHandler(async(req, res) => {
 
 })
 
-//Tareas usuario pendiente para hoy, REVISAR TO DO:::
+//Esta funcion habria que llamarla cada dia
 export const createPendingTaskUserNotification = asyncHandler(async(req, res) => {
 
     const fechaActual = new Date();
@@ -122,59 +123,65 @@ export const createPendingTaskUserNotification = asyncHandler(async(req, res) =>
     fechaLimite.setHours(0,0,0,0);
     try {
     
+        const {id_categoria_usuario} = req.body
         // Obtener el usuario de la base de datos
         const usuario = await Usuario.findById(req.params.idusuario);
         
         if (!usuario) {
           return res.status(404).json({ error: 'Usuario no encontrado' });
         }
-        
-        const categorias = await CategoriaUsuario.find({id_usuario : usuario});
-        if (categorias.length === 0) {
+        const cat = await CategoriaUsuario.find({ id_usuario: usuario._id });
+
+        for (const categoria of cat) {
+            console.log('VAMOS A VER TODAS LAS CATEGORIAS ASO:')
+            console.log(categoria);
+        }
+        if (cat.length === 0) {
             return res.status(404).json({ message: "Este usuario no tiene categorias existentes" });
         }
-        //console.log(categorias);
+
         
         let tareas = [];
-        for (const categoria of categorias) {
-            console.log(categoria);
+        for (const categoria of cat) {
             const tareasCat = await TareaUsuario.find({
                 id_categoria_usuario: categoria._id, // Filtrar por el ID de la categoría
                 fecha_vencimiento: { $gte: fechaActual, $lt: fechaLimite }, // Fecha de vencimiento del día
                 estado: false 
             });
 
-            console.log(tareasCat);
-            //console.log(tareasCat.nombre);
-
-            // Datos para la notificación
-            const datos = {
-                nombre: usuario.nombre,
-                nombre_tarea: tareasCat.nombre,
-                descripcion_tarea: tareasCat.descripcion,
-                fecha_vencimiento: tareasCat.fecha_vencimiento,
-                categoria_tarea: categoria.nombre
-            };
-        
-            // Generar la notificación de bienvenida
-            const notificacion = await generarNotificacion('tareaPendienteHoy', datos, usuario); 
-            //console.log(notificacion);
-            if (!notificacion) {
-                return res.status(500).json({ error: 'Error al generar la notificación' });
-            }
-
             tareas = tareas.concat(tareasCat);
+
         }
 
         if(tareas.length === 0){
             return res.status(200).json({ message: "No tienes tareas pendientes para hoy."});
         }
 
+        /*for (const task of tareas) {
+            console.log('VAMOS A VER TODAS LAS TAREAS PENDIENTES:')
+            console.log(task);
+        }*/
+
+
+        for (let i = 0; i < tareas.length; i++) {
+            const cattarea = await CategoriaUsuario.findById(tareas[i].id_categoria_usuario);
+            // Datos para la notificación
+            const datos = {
+                nombre: usuario.nombre,
+                nombre_tarea: tareas[i].nombre,
+                descripcion_tarea: tareas[i].descripcion,
+                fecha_vencimiento: tareas[i].fecha_vencimiento,
+                categoria_tarea: cattarea.nombre
+            };
+    
+            // Generar la notificación 
+            await generarNotificacion('tareaPendienteHoy', datos, usuario); 
+
+        }
 
         // Aquí podrías enviar la notificación (email, SMS, etc.)
         return res.status(200).json({
-          message: 'Notificaciónes generada con éxito',
-          notificacion
+          message: 'Notificaciones generada con éxito',
         });
 
     } catch (error) {
@@ -184,6 +191,7 @@ export const createPendingTaskUserNotification = asyncHandler(async(req, res) =>
 
 })
 
+//Esta funcion habria que llamarla cada vez que se asigne una tarea a un usuario
 export const createAssignNotification = asyncHandler(async(req, res) => {
 
     try {
