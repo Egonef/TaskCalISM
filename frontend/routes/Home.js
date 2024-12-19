@@ -20,7 +20,7 @@ import AddPopUp from '../components/AddPopUp';
 //Clave de la api de openweather(Pasar a .env)
 const WEATHER_API = '0410f4e1d48e8b7de2f6529d00e3560f';
 //Direccion ip del backend (Cambiar para desarrollo)
-const BACKEND_IP = '87.223.128.77';
+const BACKEND_IP = 'https://7f31-87-223-128-77.ngrok-free.app';
 
 export default function Home() {
 
@@ -95,11 +95,21 @@ export default function Home() {
         }
     };
 
-    //Solicitud al backend para obtener las tareas
+
+    // Solicitud al backend para obtener las tareas
     const fetchTasks = async () => {
         try {
-            console.log('Fetching the tasks...');
-            const response = await axios.get(`http://${BACKEND_IP}:3000/api/tasks`);
+            const response = await axios.get(
+                `${BACKEND_IP}/api/tasks/user/6751da7588909b8e2b3093e1`,
+                {
+                    params: {
+                        id_categoria_usuario: "675ab3f6a485eb13b594132a"
+                    },
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
             console.log('Tasks fetched:', response.data);
             setTasks(response.data);
         } catch (error) {
