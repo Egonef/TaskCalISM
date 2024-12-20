@@ -6,15 +6,19 @@ import { useRoute } from '@react-navigation/native';
 import * as NavigationBar from 'expo-navigation-bar';
 import axios from 'axios'
 
+//Entorno
+import { BACKEND_IP } from '@env';
+
+
 //Components
 
 
 
 export default function Register() {
-    const [username, setUsername] = useState('');
-    const [name, setName] = useState('');
-    const [birthdate, setBirthdate] = useState('');
-    const [password, setPassword] = useState('');
+    const [nombre_usuario, setNombre_usuario] = useState('');
+    const [nombre, setNombre] = useState('');
+    const [fecha_nacimiento, setFecha_nacimiento] = useState('');
+    const [contraseña, setContraseña] = useState('');
 
     useEffect(() => {
         NavigationBar.setBackgroundColorAsync("#F1F1F1");
@@ -23,11 +27,11 @@ export default function Register() {
 
     const registerUser = async () => {
         try {
-            const response = await axios.post('http://172.21.10.131:3000/api/register', {
-                username,
-                name,
-                birthdate,
-                password
+            const response = await axios.post(`${BACKEND_IP}/api/user/`, {
+                nombre_usuario,
+                nombre,
+                contraseña,
+                fecha_nacimiento
             });
             console.log('User registered:', response.data);
         } catch (error) {
@@ -39,28 +43,28 @@ export default function Register() {
         <View style={styles.container}>
             <Text style={styles.AppName}>TaskCal</Text>
             <TextInput
-                placeholder="Username"
+                placeholder="Nombre de usuario"
                 style={styles.input}
-                value={username}
-                onChangeText={setUsername}
+                value={nombre_usuario}
+                onChangeText={setNombre_usuario}
             />
             <TextInput
-                placeholder="Name"
+                placeholder="Nombre"
                 style={styles.input}
-                value={name}
-                onChangeText={setName}
+                value={nombre}
+                onChangeText={setNombre}
             />
             <TextInput
-                placeholder="Birthdate"
+                placeholder="Fecha de nacimiento"
                 style={styles.input}
-                value={birthdate}
-                onChangeText={setBirthdate}
+                value={fecha_nacimiento}
+                onChangeText={setFecha_nacimiento}
             />
             <TextInput
-                placeholder="Password"
+                placeholder="Contraseña"
                 style={styles.input}
-                value={password}
-                onChangeText={setPassword}
+                value={contraseña}
+                onChangeText={setContraseña}
                 secureTextEntry
             />
             <Pressable style={styles.button} onPress={registerUser}>

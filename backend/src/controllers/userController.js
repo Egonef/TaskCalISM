@@ -34,17 +34,22 @@ export const getUser = asyncHandler(async(req, res) => { //CU01
     }
 })
 
-export const createUser = asyncHandler(async(req, res) => { //CU23
-
+export const createUser = asyncHandler(async (req, res) => { //CU23
     const { nombre_usuario, nombre, contraseña, fecha_nacimiento } = req.body;
-
     try {
         const usuarioExistente = await Usuario.findOne({ nombre_usuario });
         if (usuarioExistente) {
+            console.log("Usuario existente:", usuarioExistente);
             return res.status(409).json({ message: "Este usuario ya existe" });
+        }
+        // Verificar que la contraseña no sea undefined o null
+        if (!contraseña) {
+            console.log("Contraseña no proporcionada");
+            return res.status(400).json({ message: "Contraseña no proporcionada" });
         }
 
         const contraseña_hashed = await bcrypt.hash(contraseña, saltRounds);
+
         const id_calendario = "0"; //Provisional
 
         const newUsu = new Usuario({
@@ -57,11 +62,13 @@ export const createUser = asyncHandler(async(req, res) => { //CU23
         });
 
         await newUsu.save();
+        console.log("Usuario guardado:", newUsu);
         res.status(200).json({ message: "El usuario ha sido creado correctamente" });
     } catch (error) {
+        console.error("Error al crear usuario:", error);
         res.status(500).json({ message: error.message });
     }
-})
+});
 
 
 export const modifyUser = asyncHandler(async(req, res) => { //CU02

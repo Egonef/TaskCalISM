@@ -6,6 +6,12 @@ import axios from 'axios';
 import React from 'react';
 import { useEffect ,useState } from 'react';
 
+//Entorno
+import { WEATHER_API } from '@env';
+import { BACKEND_IP } from '@env';
+
+
+
 //Components
 import Weathersvg from '../components/SvgComponents/Home/Weathersvg1';
 import WeathersvgShadow from '../components/SvgComponents/Home/Weathersvg1Shadow';
@@ -17,10 +23,6 @@ import Rainsvg from '../components/SvgComponents/Home/Rainsvg';
 import Moonsvg from '../components/SvgComponents/Home/Moonsvg';
 import AddPopUp from '../components/AddPopUp';
 
-//Clave de la api de openweather(Pasar a .env)
-const WEATHER_API = '0410f4e1d48e8b7de2f6529d00e3560f';
-//Direccion ip del backend (Cambiar para desarrollo)
-const BACKEND_IP = 'https://ea31-87-223-128-77.ngrok-free.app';
 
 export default function Home() {
 
