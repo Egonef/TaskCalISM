@@ -3,10 +3,6 @@ import React from 'react';
 import { useRef , useEffect , useContext} from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import Home from './routes/Home';
-import UserCalendar from './routes/UserCalendar';
-import Groups from './routes/Groups';
-import Notifications from './routes/Notifications';
 import * as NavigationBar from 'expo-navigation-bar';
 import { GlobalContext } from './GlobalContext';
 
@@ -16,7 +12,11 @@ import { GlobalContext } from './GlobalContext';
 //Components
 import Navbar from './components/Navbar';
 import LogIn from './routes/LogIn';
-
+import Register from './routes/Register'
+import Home from './routes/Home';
+import UserCalendar from './routes/UserCalendar';
+import Groups from './routes/Groups';
+import Notifications from './routes/Notifications';
 
 
 
@@ -35,7 +35,17 @@ export default function MainApp() {
 
     return (
         !LoggedIn ?
-            <LogIn />
+            <NavigationContainer>
+                <Stack.Navigator
+                    initialRouteName="LogIn"
+                    screenOptions={{
+                        headerShown: false, // Ocultar el header
+                    }}
+                >
+                    <Stack.Screen name="LogIn" component={LogIn} />
+                    <Stack.Screen name="Register" component={Register} />
+                </Stack.Navigator>
+            </NavigationContainer>
             :
             <NavigationContainer>
                 <Stack.Navigator

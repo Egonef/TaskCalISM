@@ -1,52 +1,74 @@
 //Imports
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef , useState } from 'react';
 import { StyleSheet, Text, Animated , View, Pressable , TextInput, Button} from 'react-native';
 import { GlobalContext } from '../GlobalContext';
 import { useRoute } from '@react-navigation/native';
 import * as NavigationBar from 'expo-navigation-bar';
-import { useNavigation } from '@react-navigation/native';
+import axios from 'axios'
 
 //Components
-import Googlesvg from '../components/SvgComponents/LogIn/Googlesvg';
-import { G } from 'react-native-svg';
 
 
-export default function LogIn() {
 
-    const navigation = useNavigation();
-    const { LoggedIn , setLoggedIn } = useContext(GlobalContext);
+export default function Register() {
+    const [username, setUsername] = useState('');
+    const [name, setName] = useState('');
+    const [birthdate, setBirthdate] = useState('');
+    const [password, setPassword] = useState('');
 
     useEffect(() => {
         NavigationBar.setBackgroundColorAsync("#F1F1F1");
         NavigationBar.setButtonStyleAsync("dark");
+    }, []);
 
-    }
-    ,[])
+    const registerUser = async () => {
+        try {
+            const response = await axios.post('http://172.21.10.131:3000/api/register', {
+                username,
+                name,
+                birthdate,
+                password
+            });
+            console.log('User registered:', response.data);
+        } catch (error) {
+            console.error('Error registering user:', error);
+        }
+    };
 
     return (
         <View style={styles.container}>
             <Text style={styles.AppName}>TaskCal</Text>
-            <TextInput placeholder="Username" style={styles.input} ></TextInput>
-            <TextInput placeholder="Password" style={styles.input} ></TextInput>
-            <Pressable style={styles.button} onPress={() => setLoggedIn(true)} >
-                <Text style={styles.buttonText}>Log In</Text>
-            </Pressable>
-            <View style={styles.separatorContainer}>
-                <View style={styles.separator} />
-                <Text style={styles.separatorText}>Or</Text>
-                <View style={styles.separator} />
-            </View>
-            <Pressable style={styles.button} onPress={() => navigation.navigate('Register')} >
+            <TextInput
+                placeholder="Username"
+                style={styles.input}
+                value={username}
+                onChangeText={setUsername}
+            />
+            <TextInput
+                placeholder="Name"
+                style={styles.input}
+                value={name}
+                onChangeText={setName}
+            />
+            <TextInput
+                placeholder="Birthdate"
+                style={styles.input}
+                value={birthdate}
+                onChangeText={setBirthdate}
+            />
+            <TextInput
+                placeholder="Password"
+                style={styles.input}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+            />
+            <Pressable style={styles.button} onPress={registerUser}>
                 <Text style={styles.buttonText}>Register</Text>
             </Pressable>
-            <View style={styles.externalLogin}>
-                <View style={styles.externalLoginBox}>
-                    <Googlesvg width={50} height={50} />
-                </View>
-            </View>
         </View>
     );
-}
+};
 
 const styles = StyleSheet.create({
     container: {
