@@ -20,7 +20,7 @@ import AddPopUp from '../components/AddPopUp';
 //Clave de la api de openweather(Pasar a .env)
 const WEATHER_API = '0410f4e1d48e8b7de2f6529d00e3560f';
 //Direccion ip del backend (Cambiar para desarrollo)
-const BACKEND_IP = 'https://7f31-87-223-128-77.ngrok-free.app';
+const BACKEND_IP = 'https://ea31-87-223-128-77.ngrok-free.app';
 
 export default function Home() {
 
