@@ -1,5 +1,6 @@
 //Imports
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useState , useRef } from 'react';
+import axios from 'axios';
 import { StyleSheet, Text, Animated , View, Pressable , TextInput, Button} from 'react-native';
 import { GlobalContext } from '../GlobalContext';
 import { useRoute } from '@react-navigation/native';
@@ -10,11 +11,30 @@ import { useNavigation } from '@react-navigation/native';
 import Googlesvg from '../components/SvgComponents/LogIn/Googlesvg';
 import { G } from 'react-native-svg';
 
+//Entorno
+import { BACKEND_IP } from '@env';
 
 export default function LogIn() {
 
     const navigation = useNavigation();
     const { LoggedIn , setLoggedIn } = useContext(GlobalContext);
+
+    const [nombre_usuario, setNombre_usuario] = useState('');
+    const [contraseña, setContraseña] = useState('');
+    // Solicitud al backend para comrpbar el inicio de sesión
+    const checkLogin = async () => {
+        console.log('Checking login...');
+        try {
+            const response = await axios.post(`${BACKEND_IP}/api/user/login`, {
+                nombre_usuario,
+                contraseña,
+            });
+            console.log('Usuario y contraseña correctos:', response.data);
+            setLoggedIn(true)
+        } catch (error) {
+            console.error('Usuario incorrecto:', "Inténtalo de nuevo");
+        }
+    };
 
     useEffect(() => {
         NavigationBar.setBackgroundColorAsync("#F1F1F1");
@@ -26,9 +46,20 @@ export default function LogIn() {
     return (
         <View style={styles.container}>
             <Text style={styles.AppName}>TaskCal</Text>
-            <TextInput placeholder="Username" style={styles.input} ></TextInput>
-            <TextInput placeholder="Password" style={styles.input} ></TextInput>
-            <Pressable style={styles.button} onPress={() => setLoggedIn(true)} >
+            <TextInput
+                placeholder="Nombre de usuario"
+                style={styles.input}
+                value={nombre_usuario}
+                onChangeText={setNombre_usuario}
+            />
+            <TextInput
+                placeholder="Contraseña"
+                style={styles.input}
+                value={contraseña}
+                onChangeText={setContraseña}
+                secureTextEntry
+            />
+            <Pressable style={styles.button} onPress={() => checkLogin()} >
                 <Text style={styles.buttonText}>Log In</Text>
             </Pressable>
             <View style={styles.separatorContainer}>

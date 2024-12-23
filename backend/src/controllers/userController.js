@@ -106,7 +106,7 @@ export const modifyUser = asyncHandler(async(req, res) => { //CU02
     }
 })
 
-/*export const loginUser = asyncHandler(async(req, res) => { //CU24
+export const loginUser = asyncHandler(async(req, res) => { //CU24
 
     const { nombre_usuario, contraseña } = req.body;
     try {
@@ -120,7 +120,7 @@ export const modifyUser = asyncHandler(async(req, res) => { //CU02
             return res.status(409).json({ message: 'Credenciales incorrectas' });
         }
 
-        req.session.usuarioId = usuario._id.toString();
+        //req.session.usuarioId = usuario._id.toString();
 
         res.status(200).json({ message: 'Inicio de sesión exitoso' });
     } catch (error) {
@@ -128,6 +128,7 @@ export const modifyUser = asyncHandler(async(req, res) => { //CU02
     }
 })
 
+/*
 export const logoutUser = asyncHandler(async(req, res) => { //CU25
     try {
         const usuarioId = req.session.usuarioId; // Almacena el ID del usuario antes de destruir la sesión
