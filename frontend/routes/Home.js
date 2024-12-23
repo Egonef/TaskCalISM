@@ -4,7 +4,8 @@ import { Image , Pressable, StyleSheet, Text, TextInput, View , ScrollView , Fla
 import { Shadow } from 'react-native-shadow-2';
 import axios from 'axios';
 import React from 'react';
-import { useEffect ,useState } from 'react';
+import { useEffect ,useState , useContext} from 'react';
+import { GlobalContext } from '../GlobalContext';
 
 //Entorno
 import { WEATHER_API } from '@env';
@@ -22,7 +23,7 @@ import Cloudsvg from '../components/SvgComponents/Home/Cloudsvg';
 import Rainsvg from '../components/SvgComponents/Home/Rainsvg';
 import Moonsvg from '../components/SvgComponents/Home/Moonsvg';
 import AddPopUp from '../components/AddPopUp';
-
+import Profile from '../components/Profile';
 
 export default function Home() {
 
@@ -32,6 +33,9 @@ export default function Home() {
     const [weather, setWeather] = useState(null);
     //Estado para las tareas
     const [tasks, setTasks] = useState(null);
+
+    //Contexto global para abrir el deplegable del perfil
+    const { OpenProfilePopUp , setOpenProfilePopUp } = useContext(GlobalContext);
 
     //Funcion para saludar segun la hora
     const greet = () => {
@@ -156,7 +160,10 @@ export default function Home() {
             <View style={styles.profileGreeting}>
                 <View >
                     <Text style={styles.headerText}>{greet()}</Text>
-                    <Pressable style={styles.profileButton}>
+                    <Pressable
+                        style={styles.profileButton}
+                        onPress={() => { OpenProfilePopUp === false ? setOpenProfilePopUp(true) : setOpenProfilePopUp(false) }}
+                    >
                         <Image style={styles.profileImage} source={require('../assets/pingu.png')} />
                     </Pressable>
                 </View>
@@ -247,6 +254,7 @@ export default function Home() {
                 </View>
             </View>
             <AddPopUp />
+            <Profile />
         </View>
     );
 }
