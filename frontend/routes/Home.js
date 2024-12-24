@@ -1,10 +1,10 @@
 //Imports
 import { StatusBar } from 'expo-status-bar';
-import { Image , Pressable, StyleSheet, Text, TextInput, View , ScrollView , FlatList } from 'react-native';
+import { Image , Pressable, Animated , StyleSheet, Text, TextInput, View , ScrollView , FlatList } from 'react-native';
 import { Shadow } from 'react-native-shadow-2';
 import axios from 'axios';
 import React from 'react';
-import { useEffect ,useState , useContext} from 'react';
+import { useEffect ,useState , useContext , useRef} from 'react';
 import { GlobalContext } from '../GlobalContext';
 
 //Entorno
@@ -36,6 +36,25 @@ export default function Home() {
 
     //Contexto global para abrir el deplegable del perfil
     const { OpenProfilePopUp , setOpenProfilePopUp } = useContext(GlobalContext);
+
+    //Animaciones
+    const profileAnim = useRef(new Animated.Value(1)).current;
+
+    //Funciones para la animacion de los botones
+    const handlePressIn = (anim) => {
+        Animated.spring(anim, {
+            toValue: 0.95,
+            useNativeDriver: true,
+        }).start();
+    };
+
+    const handlePressOut = (anim) => {
+        Animated.spring(anim, {
+            toValue: 1,
+            useNativeDriver: true,
+        }).start();
+    };
+
 
     //Funcion para saludar segun la hora
     const greet = () => {
@@ -158,15 +177,21 @@ export default function Home() {
         <View style={styles.container}>
             <StatusBar style="auto" />
             <View style={styles.profileGreeting}>
-                <View >
-                    <Text style={styles.headerText}>{greet()}</Text>
+            <View>
+                <Text style={styles.headerText}>{greet()}</Text>
+                <Animated.View
+                    style={{ transform: [{ scale: profileAnim }] }}
+                >
                     <Pressable
                         style={styles.profileButton}
-                        onPress={() => { OpenProfilePopUp === false ? setOpenProfilePopUp(true) : setOpenProfilePopUp(false) }}
+                        onPress={() => setOpenProfilePopUp(!OpenProfilePopUp)}
+                        onPressIn={() => handlePressIn(profileAnim)}
+                        onPressOut={() => handlePressOut(profileAnim)}
                     >
                         <Image style={styles.profileImage} source={require('../assets/pingu.png')} />
                     </Pressable>
-                </View>
+                </Animated.View>
+            </View>
                 <View style={styles.weatherContainer}>
                     {weather == 'Clear' ? <Sunsvg style={styles.climateIcon} /> 
                     : weather == 'Clouds' ?  <Cloudsvg style={styles.climateIcon}/> 

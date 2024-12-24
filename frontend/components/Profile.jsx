@@ -1,24 +1,21 @@
+//Imports
 import React, { useContext, useEffect, useRef } from 'react';
-import { StyleSheet, Text, Animated , View, Pressable } from 'react-native';
+import { StyleSheet, Text, Animated , View, Pressable , Image } from 'react-native';
 import { GlobalContext } from '../GlobalContext';
 import { useRoute } from '@react-navigation/native';
 
 
-
-//El rendimiento de la aplicacion se puede mejorar haciendo que este componente se esconda en la barra de navegacion en lugar de en cada pagina, pero hay que cambiar el sistema mediante el que detecta en que pagina esta
-
-
-
+//Components
+import ClosePopUp from '../components/SvgComponents/Profile/ClosePopUp'
+import Edit from '../components/SvgComponents/Profile/Edit'
 
 export default function AddPopUp() {
     const route = useRoute();
-    const { OpenAddPopUp } = useContext(GlobalContext);
     const { OpenProfilePopUp, setOpenProfilePopUp } = useContext(GlobalContext);
     const horizontalAnim = useRef(new Animated.Value(0)).current;
     const buttonAnim = useRef(new Animated.Value(0)).current;
-    const scaleTask = useRef(new Animated.Value(1)).current;
-    const scaleList = useRef(new Animated.Value(1)).current;
-    const scaleGroup = useRef(new Animated.Value(1)).current;
+    const exitAnim = useRef(new Animated.Value(1)).current;
+
 
     //route.name devuelve el nombre de la pagina actual
 
@@ -54,14 +51,29 @@ export default function AddPopUp() {
 
     return (
         <Animated.View style={[styles.container, { left: horizontalAnim }]}>
-            <Text>prueba</Text>
-            <Animated.View style={[styles.buttonContainer, { opacity: buttonAnim }]}>
+            <Text style={styles.text}>Your Profile</Text>
+            <View style={{ height: 200 }}>
+                <Image style={styles.profileImage} source={require('../assets/pingu.png')} />
                 <Pressable 
-                    style={styles.createButton} 
-                    onPress={() => setOpenProfilePopUp(!OpenProfilePopUp)}
+                    style={styles.editButton} 
+                    onPress={() => console.log('Change Profile Picture')}
+                    onPressIn={() => handlePressIn(exitAnim)}
+                    onPressOut={() => handlePressOut(exitAnim)}
                 >
-                    <Animated.View style={{ transform: [{ scale: scaleTask }] }}>
-                        <Text style={styles.text}>Add Task</Text>
+                    <Animated.View style={{ transform: [{ scale: exitAnim }] }}>
+                        <Edit />
+                    </Animated.View>
+                </Pressable>
+            </View>
+            <Animated.View style={[styles.exitContainer, { opacity: buttonAnim }]}>
+                <Pressable 
+                    style={styles.exitButton} 
+                    onPress={() => setOpenProfilePopUp(!OpenProfilePopUp)}
+                    onPressIn={() => handlePressIn(exitAnim)}
+                    onPressOut={() => handlePressOut(exitAnim)}
+                >
+                    <Animated.View style={{ transform: [{ scale: exitAnim }] }}>
+                        <ClosePopUp />
                     </Animated.View>
                 </Pressable>
             </Animated.View>
@@ -77,14 +89,18 @@ const styles = StyleSheet.create({
         height: '100%',
         backgroundColor: '#B5C18E',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'start',
+        paddingTop: 40,
         zIndex: 4,
     },
-    buttonContainer: {
+    exitContainer: {
+        position: 'absolute',
+        top: 60,
+        right: 20,
         transform: [{ translateY: -30 }],
-        width: '90%',
+        width: '15%',
     },
-    createButton: {
+    exitButton: {
         backgroundColor: '#B4A593',
         padding: 10,
         borderRadius: 10,
@@ -92,11 +108,23 @@ const styles = StyleSheet.create({
         height: 50,
         justifyContent: 'center',
     },
+    editButton: {
+        height: 30,
+        transform: [{ translateX: 75 }, { translateY: -25 }],
+        justifyContent: 'center',
+    },
     text: {
         color: '#FFFFFF',
         fontWeight: 'bold',
         fontSize: 20,
         textAlign: 'center',
+    },
+    profileImage: {
+        width: 150,
+        height: 150,
+        borderRadius: 75,
+        backgroundColor: '#FFFFFF',
+        marginTop: 20,
     },
 });
 
