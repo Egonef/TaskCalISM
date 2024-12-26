@@ -82,18 +82,17 @@ const handleDayPress = (day) => {
                 }}
                 style={styles.calendar}
             />
-            <FlatList style={styles.taskContainer}
-                data={tasksForSelectedDate}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item }) => (
-                    
-                    <View style={styles.listcard}>
-                        <Text style={styles.textList}>{item.nombre}</Text>
-
-                    </View>
-                    
-                )}
-            />
+            <View style={styles.taskContainer}>
+                <FlatList
+                    data={tasksForSelectedDate}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({ item }) => (
+                        <View style={styles.listcard}>
+                            <Text style={styles.textList}>{item.nombre}</Text>
+                        </View>
+                    )}
+                />
+            </View>
             <AddPopUp />
         </View>
     );
@@ -105,10 +104,7 @@ const handleDayPress = (day) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        
         alignItems: 'center',
-        justifyContent: 'center',
-        
     },
     header: {
         fontSize: 24,
@@ -125,21 +121,19 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.6,
         shadowRadius: 2,
         elevation: 5,
-        
-
     },
     listcard: {
-        width: '80%',
-        height: 50,
+        width: '100%',
+        height: 130,
         backgroundColor: '#B5C18E',
-        marginTop: 5,
-        marginBottom: 5,
-        borderRadius: 15,
-        paddingLeft: 20,
-        paddingRight: 20,
-        flexDirection: 'row',
+        borderRadius: 10,
+        marginTop: 10,
+        marginBottom: 10,
         alignItems: 'center',
+        alignContent: 'center',
         justifyContent: 'space-between',
+        flexDirection: 'row',
+        padding: 20,
     },
     textList: {
         color: '#FFFFFF',
@@ -148,8 +142,10 @@ const styles = StyleSheet.create({
     },
     taskContainer: {
         width: '100%',
-        
-        
-
+        height: '100%',
+        backgroundColor: '#e0e0da',
+        alignContent: 'center',
+        marginTop: 20,
+        padding: 30,
     },
 });
