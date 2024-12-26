@@ -82,16 +82,16 @@ const handleDayPress = (day) => {
                 }}
                 style={styles.calendar}
             />
-             <FlatList
+            <FlatList style={styles.taskContainer}
                 data={tasksForSelectedDate}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item }) => (
-                    <View style={styles.tasksContainer}>
-                        <View style={styles.listcard}>
-                            <Text style={styles.textList}>{item.nombre}</Text>
+                    
+                    <View style={styles.listcard}>
+                        <Text style={styles.textList}>{item.nombre}</Text>
 
-                        </View>
                     </View>
+                    
                 )}
             />
             <AddPopUp />
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
 
     },
     listcard: {
-        width: '100%',
+        width: '80%',
         height: 50,
         backgroundColor: '#B5C18E',
         marginTop: 5,
@@ -148,7 +148,8 @@ const styles = StyleSheet.create({
     },
     taskContainer: {
         width: '100%',
-        backgroundColor: '#B5C18E',
+        
+        
 
     },
 });
