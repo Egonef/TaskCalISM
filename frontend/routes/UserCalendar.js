@@ -2,13 +2,29 @@
 import { StatusBar } from 'expo-status-bar';
 import { Button, Pressable, StyleSheet, Text, TextInput, View, ScrollView, FlatList } from 'react-native';
 import { Calendar } from 'react-native-calendars';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+//Entorno
+import { BACKEND_IP } from '@env';
 
 
 //Components
 import AddPopUp from '../components/AddPopUp';
 
-// Solicitud al backend para obtener las tareas
+
+
+export default function UserCalendar() {
+    const [selectedDate, setSelectedDate] = useState('');
+    const [tasks, setTasks] = useState([]);
+    const [tasksForSelectedDate, setTasksForSelectedDate] = useState([]);
+
+    useEffect(() => {
+        fetchTasks(setTasks);
+    }, []);
+
+
+    // Solicitud al backend para obtener las tareas
 const fetchTasks = async () => {
     try {
         const response = await axios.get(
@@ -22,28 +38,38 @@ const fetchTasks = async () => {
                 },
             }
         );
-        console.log('Tasks fetched:', response.data);
-        //setTasks(response.data);
+
+        setTasks(response.data);
+        console.log('Tasks:', response.data);
     } catch (error) {
         console.error('Error fetching the tasks:', error);
     }
 };
 
-export default function UserCalendar() {
-    const [selectedDate, setSelectedDate] = useState('');
-    const [tasks, setTasks] = useState([
-        { id: '1', date: '2024-12-01', task: 'Task 1' },
-        { id: '2', date: '2024-12-01', task: 'Task 2' },
-        { id: '3', date: '2024-12-02', task: 'Task 3' },
-    ]);
+const handleDayPress = (day) => {
+    console.log('Day pressed:', day.dateString);
+    setSelectedDate(day.dateString);
+    const filteredTasks = tasks.filter(task => {
+        if (!task.fecha_vencimiento) {
+            console.log('no hay tareas con esa fecha');
+            return false;
+        }
+        const taskDate = task.fecha_vencimiento.split('T')[0]; // Eliminar la hora de la fecha
+        console.log('Task Date:', taskDate, 'Selected Date:', day.dateString);
+        return taskDate === day.dateString;
+    });
+    console.log('Filtered Tasks:', filteredTasks);
+    setTasksForSelectedDate(filteredTasks);
+};
 
-    const tasksForSelectedDate = tasks.filter(task => task.date === selectedDate);
+
+
 
     return (
         <View style={styles.container}>
             <StatusBar style="auto" />
             <Calendar
-                onDayPress={(day) => setSelectedDate(day.dateString)}
+                onDayPress={handleDayPress}
                 markedDates={{
                     [selectedDate]: { selected: true, marked: true, selectedColor: '#B5C18E' },
                 }}
@@ -58,8 +84,12 @@ export default function UserCalendar() {
             />
              <FlatList
                 data={tasksForSelectedDate}
-                keyExtractor={item => item.id}
-                renderItem={({ item }) => <Text style={styles.task}>{item.task}</Text>}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item }) => (
+                    <View style={styles.taskContainer}>
+                        <Text style={styles.taskName}>{item.nombre}</Text>
+                    </View>
+                )}
             />
             <AddPopUp />
         </View>
@@ -94,7 +124,7 @@ const styles = StyleSheet.create({
         
 
     },
-    task: {
+    taskName: {
         fontSize: 18,
         marginVertical: 10,
     },
