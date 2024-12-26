@@ -86,8 +86,11 @@ const handleDayPress = (day) => {
                 data={tasksForSelectedDate}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item }) => (
-                    <View style={styles.taskContainer}>
-                        <Text style={styles.taskName}>{item.nombre}</Text>
+                    <View style={styles.tasksContainer}>
+                        <View style={styles.listcard}>
+                            <Text style={styles.textList}>{item.nombre}</Text>
+
+                        </View>
                     </View>
                 )}
             />
@@ -102,9 +105,10 @@ const handleDayPress = (day) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        
         alignItems: 'center',
         justifyContent: 'center',
+        
     },
     header: {
         fontSize: 24,
@@ -124,8 +128,27 @@ const styles = StyleSheet.create({
         
 
     },
-    taskName: {
-        fontSize: 18,
-        marginVertical: 10,
+    listcard: {
+        width: '100%',
+        height: 50,
+        backgroundColor: '#B5C18E',
+        marginTop: 5,
+        marginBottom: 5,
+        borderRadius: 15,
+        paddingLeft: 20,
+        paddingRight: 20,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    textList: {
+        color: '#FFFFFF',
+        fontWeight: 'bold',
+        fontSize: 20,
+    },
+    taskContainer: {
+        width: '100%',
+        backgroundColor: '#B5C18E',
+
     },
 });
