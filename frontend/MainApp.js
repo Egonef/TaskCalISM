@@ -34,32 +34,28 @@ export default function MainApp() {
     ,[])
 
     return (
-        !LoggedIn ?
-            <NavigationContainer>
-                <Stack.Navigator
-                    initialRouteName="LogIn"
-                    screenOptions={{
-                        headerShown: false, // Ocultar el header
-                    }}
-                >
-                    <Stack.Screen name="LogIn" component={LogIn} />
-                    <Stack.Screen name="Register" component={Register} />
-                </Stack.Navigator>
-            </NavigationContainer>
-            :
-            <NavigationContainer>
-                <Stack.Navigator
-                    initialRouteName="Home"
-                    screenOptions={{
-                        headerShown: false, // Ocultar el header
-                    }}
-                >
-                    <Stack.Screen name="Home" component={Home} />
-                    <Stack.Screen name="Calendar" component={UserCalendar} />
-                    <Stack.Screen name="Groups" component={Groups} />
-                    <Stack.Screen name="Notifications" component={Notifications} />
-                </Stack.Navigator>
-                <Navbar />
+        <NavigationContainer>
+            <Stack.Navigator
+                initialRouteName={LoggedIn ? "Home" : "LogIn"}
+                screenOptions={{
+                    headerShown: false, // Ocultar el header
+                }}
+            >
+                {!LoggedIn ? (
+                    <>
+                        <Stack.Screen name="LogIn" component={LogIn} />
+                        <Stack.Screen name="Register" component={Register} />
+                    </>
+                ) : (
+                    <>
+                        <Stack.Screen name="Home" component={Home} />
+                        <Stack.Screen name="Calendar" component={UserCalendar} />
+                        <Stack.Screen name="Groups" component={Groups} />
+                        <Stack.Screen name="Notifications" component={Notifications} />
+                    </>
+                )}
+            </Stack.Navigator>
+                {LoggedIn && <Navbar />}
             </NavigationContainer>
     );
 }

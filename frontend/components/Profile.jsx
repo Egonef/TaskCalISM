@@ -1,23 +1,24 @@
 //Imports
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef  } from 'react';
 import { StyleSheet, Text, Animated , View, Pressable , Image } from 'react-native';
 import { GlobalContext } from '../GlobalContext';
 import { useRoute } from '@react-navigation/native';
-
+import { useNavigation } from '@react-navigation/native';
 
 //Components
 import ClosePopUp from '../components/SvgComponents/Profile/ClosePopUp'
 import Edit from '../components/SvgComponents/Profile/Edit'
 
 export default function AddPopUp() {
-    const route = useRoute();
+    //Para controlar las animaciones
     const { OpenProfilePopUp, setOpenProfilePopUp } = useContext(GlobalContext);
     const horizontalAnim = useRef(new Animated.Value(0)).current;
     const buttonAnim = useRef(new Animated.Value(0)).current;
     const exitAnim = useRef(new Animated.Value(1)).current;
 
 
-    //route.name devuelve el nombre de la pagina actual
+    //Para cerrar la sesión (Provisional)
+    const { LoggedIn , setLoggedIn } = useContext(GlobalContext);
 
     //Use Effect para animar el popUp cuando se detecta que se abre o cierra
     useEffect(() => {
@@ -54,8 +55,8 @@ export default function AddPopUp() {
             <Text style={styles.text}>Your Profile</Text>
             <View style={{ height: 200 }}>
                 <Image style={styles.profileImage} source={require('../assets/pingu.png')} />
-                <Pressable 
-                    style={styles.editButton} 
+                <Pressable
+                    style={styles.editButton}
                     onPress={() => console.log('Change Profile Picture')}
                     onPressIn={() => handlePressIn(exitAnim)}
                     onPressOut={() => handlePressOut(exitAnim)}
@@ -65,9 +66,19 @@ export default function AddPopUp() {
                     </Animated.View>
                 </Pressable>
             </View>
+            <View>
+                <Pressable
+                    style={styles.logoutButton}
+                    onPress={() => setLoggedIn(false)}
+                >
+                    <Animated.View style={{ transform: [{ scale: exitAnim }] }}>
+                        <Text style={styles.text}>Log Out</Text>
+                    </Animated.View>
+                </Pressable>
+            </View>
             <Animated.View style={[styles.exitContainer, { opacity: buttonAnim }]}>
-                <Pressable 
-                    style={styles.exitButton} 
+                <Pressable
+                    style={styles.exitButton}
                     onPress={() => setOpenProfilePopUp(!OpenProfilePopUp)}
                     onPressIn={() => handlePressIn(exitAnim)}
                     onPressOut={() => handlePressOut(exitAnim)}
@@ -111,6 +122,12 @@ const styles = StyleSheet.create({
     editButton: {
         height: 30,
         transform: [{ translateX: 75 }, { translateY: -25 }],
+        justifyContent: 'center',
+    },
+    logoutButton: {
+        backgroundColor: '#B4A593',
+        padding: 10,
+        borderRadius: 10,
         justifyContent: 'center',
     },
     text: {
