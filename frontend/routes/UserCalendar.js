@@ -18,9 +18,10 @@ export default function UserCalendar() {
     const [selectedDate, setSelectedDate] = useState('');
     const [tasks, setTasks] = useState([]);
     const [tasksForSelectedDate, setTasksForSelectedDate] = useState([]);
+    const [markedDates, setMarkedDates] = useState({});
 
     useEffect(() => {
-        fetchTasks(setTasks);
+        fetchTasks(setTasks, setMarkedDates);
     }, []);
 
 
@@ -41,6 +42,23 @@ const fetchTasks = async () => {
 
         setTasks(response.data);
         console.log('Tasks:', response.data);
+
+        // Crear el objeto markedDates
+        const markedDates = {};
+        response.data.forEach(task => {
+            if (!task.fecha_vencimiento) {
+                console.log('Task without fecha_vencimiento:', task);
+                return;
+            }
+            const taskDate = task.fecha_vencimiento.split('T')[0]; // Eliminar la hora de la fecha
+            if (!markedDates[taskDate]) {
+                markedDates[taskDate] = { dots: [], marked: true };
+            }
+            markedDates[taskDate].dots.push({ color: task.estado ? 'green' : '#B5C18E' });
+        });
+        setMarkedDates(markedDates);
+
+
     } catch (error) {
         console.error('Error fetching the tasks:', error);
     }
@@ -60,6 +78,7 @@ const handleDayPress = (day) => {
     });
     console.log('Filtered Tasks:', filteredTasks);
     setTasksForSelectedDate(filteredTasks);
+
 };
 
 
@@ -69,10 +88,13 @@ const handleDayPress = (day) => {
         <View style={styles.container}>
             <StatusBar style="auto" />
             <Calendar
+                enableSwipeMonths={true}
                 onDayPress={handleDayPress}
                 markedDates={{
+                    ...markedDates,
                     [selectedDate]: { selected: true, marked: true, selectedColor: '#B5C18E' },
                 }}
+                markingType={'multi-dot'}
                 theme={{
                     selectedDayBackgroundColor: '#B5C18E',
                     todayTextColor: '#B5C18E',
@@ -132,8 +154,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: 'space-between',
-        flexDirection: 'row',
-        padding: 20,
+        
     },
     textList: {
         color: '#FFFFFF',
