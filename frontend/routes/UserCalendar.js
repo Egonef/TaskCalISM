@@ -41,7 +41,7 @@ const fetchTasks = async () => {
         );
 
         setTasks(response.data);
-        console.log('Tasks:', response.data);
+        //console.log('Tasks:', response.data);
 
         // Crear el objeto markedDates
         const markedDates = {};
@@ -154,6 +154,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: 'space-between',
+        padding: 20,
         
     },
     textList: {
