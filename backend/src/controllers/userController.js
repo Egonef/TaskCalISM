@@ -50,6 +50,9 @@ export const createUser = asyncHandler(async (req, res) => { //CU23
 
         const contraseña_hashed = await bcrypt.hash(contraseña, saltRounds);
 
+        const [día, mes, año] = fecha_nacimiento.split('/');
+        const fechaProcesada = new Date(`${año}-${mes}-${día}`);
+
         const id_calendario = "0"; //Provisional
 
         const newUsu = new Usuario({
@@ -57,7 +60,7 @@ export const createUser = asyncHandler(async (req, res) => { //CU23
             nombre,
             id_calendario,
             contraseña: contraseña_hashed,
-            fecha_nacimiento,
+            fecha_nacimiento: fechaProcesada,
             id_grupos: []
         });
 
