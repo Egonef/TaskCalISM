@@ -18,6 +18,7 @@ import Home from './routes/Home';
 import UserCalendar from './routes/UserCalendar';
 import Groups from './routes/Groups';
 import Notifications from './routes/Notifications';
+import TaskForm from './routes/TaskForm';
 
 
 
@@ -59,6 +60,7 @@ export default function MainApp() {
                         <Stack.Screen name="Calendar" component={UserCalendar} />
                         <Stack.Screen name="Groups" component={Groups} />
                         <Stack.Screen name="Notifications" component={Notifications} />
+                        <Stack.Screen name="TaskForm" component={TaskForm} />
                     </>
                 )}
             </Stack.Navigator>
