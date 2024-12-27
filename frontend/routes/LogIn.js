@@ -6,6 +6,7 @@ import { GlobalContext } from '../GlobalContext';
 import { useRoute } from '@react-navigation/native';
 import * as NavigationBar from 'expo-navigation-bar';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //Components
 import Googlesvg from '../components/SvgComponents/LogIn/Googlesvg';
@@ -21,6 +22,7 @@ export default function LogIn() {
 
     const [nombre_usuario, setNombre_usuario] = useState('');
     const [contraseña, setContraseña] = useState('');
+
     // Solicitud al backend para comrpbar el inicio de sesión
     const checkLogin = async () => {
         console.log('Checking login...');
@@ -30,6 +32,8 @@ export default function LogIn() {
                 contraseña,
             });
             console.log('Usuario y contraseña correctos:', response.data);
+            await AsyncStorage.setItem('isLoggedIn', 'true');
+            await AsyncStorage.setItem('userInfo', JSON.stringify(response.data));
             setLoggedIn(true)
         } catch (error) {
             console.error('Usuario incorrecto:', "Inténtalo de nuevo");

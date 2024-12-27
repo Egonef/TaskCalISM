@@ -5,6 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as NavigationBar from 'expo-navigation-bar';
 import { GlobalContext } from './GlobalContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
@@ -27,11 +28,17 @@ export default function MainApp() {
     const { LoggedIn , setLoggedIn } = useContext(GlobalContext);
 
     useEffect(() => {
+        const checkLoginStatus = async () => {
+            const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
+            if (isLoggedIn === 'true') {
+                setLoggedIn(true);
+            }
+        };
+
+        checkLoginStatus();
         NavigationBar.setBackgroundColorAsync("#F1F1F1");
         NavigationBar.setButtonStyleAsync("dark");
-
-    }
-    ,[])
+    }, []);
 
     return (
         <NavigationContainer>

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@expo/ngrok": "github:expo/ngrok",
+    "@react-native-async-storage/async-storage": "^2.1.0",
     "@react-native-community/masked-view": "^0.1.11",
     "@react-navigation/native": "^7.0.0",
     "@react-navigation/stack": "^7.0.0",

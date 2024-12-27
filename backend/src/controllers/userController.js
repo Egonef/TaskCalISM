@@ -122,7 +122,7 @@ export const loginUser = asyncHandler(async(req, res) => { //CU24
 
         //req.session.usuarioId = usuario._id.toString();
 
-        res.status(200).json({ message: 'Inicio de sesión exitoso' });
+        res.status(200).json(usuario);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

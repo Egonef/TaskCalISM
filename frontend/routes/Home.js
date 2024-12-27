@@ -90,7 +90,6 @@ export default function Home() {
         let days = [];
         for (let i = 0; i < 7; i++) {
             days.push(today.getDate() - day + i + 1);
-            console.log(days[i]);
         }
         return days;
     }

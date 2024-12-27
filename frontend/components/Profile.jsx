@@ -4,6 +4,7 @@ import { StyleSheet, Text, Animated , View, Pressable , Image } from 'react-nati
 import { GlobalContext } from '../GlobalContext';
 import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //Components
 import ClosePopUp from '../components/SvgComponents/Profile/ClosePopUp'
@@ -49,6 +50,11 @@ export default function AddPopUp() {
         }).start();
     };
 
+    const handleLogOut = async () => {
+        await AsyncStorage.removeItem('isLoggedIn');
+        await AsyncStorage.removeItem('userInfo');
+        setLoggedIn(false);
+    };
 
     return (
         <Animated.View style={[styles.container, { left: horizontalAnim }]}>
@@ -69,7 +75,7 @@ export default function AddPopUp() {
             <View>
                 <Pressable
                     style={styles.logoutButton}
-                    onPress={() => setLoggedIn(false)}
+                    onPress={() => handleLogOut()}
                 >
                     <Animated.View style={{ transform: [{ scale: exitAnim }] }}>
                         <Text style={styles.text}>Log Out</Text>
