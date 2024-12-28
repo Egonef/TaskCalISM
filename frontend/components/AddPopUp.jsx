@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import { StyleSheet, Text, Animated , View, Pressable } from 'react-native';
 import { GlobalContext } from '../GlobalContext';
-import { useRoute } from '@react-navigation/native';
+import { useRoute , useNavigation} from '@react-navigation/native';
 
 
 
@@ -19,6 +19,8 @@ export default function AddPopUp() {
     const scaleList = useRef(new Animated.Value(1)).current;
     const scaleGroup = useRef(new Animated.Value(1)).current;
 
+
+    const navigation = useNavigation();
     //route.name devuelve el nombre de la pagina actual
 
     //Use Effect para animar el popUp cuando se detecta que se abre o cierra
@@ -56,7 +58,7 @@ export default function AddPopUp() {
             <Animated.View style={[styles.buttonContainer, { opacity: buttonAnim }]}>
                 <Pressable 
                     style={styles.createButton} 
-                    onPress={() => console.log('Añadir Tarea')}
+                    onPress={() => navigation.navigate('TaskForm')}
                     onPressIn={() => handlePressIn(scaleTask)}
                     onPressOut={() => handlePressOut(scaleTask)}
                 >

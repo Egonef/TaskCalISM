@@ -25,6 +25,7 @@ export const createTaskUser = asyncHandler(async (req, res) => { //CU11
 
     try {
         // Verificar si el usuario asociado existe
+        console.log(req.params.idusuario)
         const usuarioExistente = await Usuario.findById(req.params.idusuario);
         if (!usuarioExistente) {
             return res.status(404).json({ message: "El usuario asociado no existe" });

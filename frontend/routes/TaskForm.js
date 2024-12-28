@@ -5,6 +5,8 @@ import { GlobalContext } from '../GlobalContext';
 import { useRoute } from '@react-navigation/native';
 import * as NavigationBar from 'expo-navigation-bar';
 import axios from 'axios'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 //Entorno
 import { BACKEND_IP } from '@env';
@@ -14,34 +16,36 @@ import { BACKEND_IP } from '@env';
 
 
 
-export default function Register() {
+export default function TaskForm() {
     const [nombre, setNombre] = useState('');
     const [descripcion, setDescripcion] = useState('');
-    const [categoria, setCategoria] = useState('');
+    const [id_categoria_usuario, setCategoria] = useState('');
     const [fecha_vencimiento, setFecha_vencimiento] = useState('');
 
+    const userID = AsyncStorage.getItem('userInfo')._id;
+    console.log(userID);
     useEffect(() => {
         NavigationBar.setBackgroundColorAsync("#F1F1F1");
         NavigationBar.setButtonStyleAsync("dark");
     }, []);
 
-    const registerUser = async () => {
+    const createTask = async () => {
         try {
-            const response = await axios.post(`${BACKEND_IP}/api/user/`, {
+            const response = await axios.post(`${BACKEND_IP}/api/task/user/${userID}`, {
                 nombre,
                 descripcion,
                 fecha_vencimiento,
-                categoria
+                id_categoria_usuario
             });
-            console.log('User registered:', response.data);
+            console.log('Task created:', response.data);
         } catch (error) {
-            console.error('Error registering user:', error);
+            console.error('Error creating task:', error);
         }
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.AppName}>TaskCal</Text>
+            <Text style={styles.AppName}>Fill task info</Text>
             <TextInput
                 placeholder="Header"
                 style={styles.input}
@@ -61,13 +65,13 @@ export default function Register() {
                 onChangeText={setFecha_vencimiento}
             />
             <TextInput
-                placeholder="Due date"
+                placeholder="Category"
                 style={styles.input}
                 value={id_categoria_usuario}
                 onChangeText={setCategoria}
             />
-            <Pressable style={styles.button} onPress={registerUser}>
-                <Text style={styles.buttonText}>Register</Text>
+            <Pressable style={styles.button} onPress={createTask}>
+                <Text style={styles.buttonText}>Add Task</Text>
             </Pressable>
         </View>
     );
