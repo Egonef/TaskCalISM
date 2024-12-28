@@ -22,20 +22,22 @@ export default function ListForm() {
     const [id_categoria_usuario, setCategoria] = useState('');
     const [fecha_vencimiento, setFecha_vencimiento] = useState('');
 
-    const userID = AsyncStorage.getItem('userInfo')._id;
-    console.log(userID);
+    
     useEffect(() => {
         NavigationBar.setBackgroundColorAsync("#F1F1F1");
         NavigationBar.setButtonStyleAsync("dark");
     }, []);
 
     const createTask = async () => {
+        const userInfo = await AsyncStorage.getItem('userInfo');
+        const userID = JSON.parse(userInfo)._id;
+        console.log(userID);
         try {
             const response = await axios.post(`${BACKEND_IP}/api/categories/user/${userID}`, {
                 nombre,
                 descripcion,
             });
-            console.log('Task created:', response.data);
+            console.log('Category created:', response.data);
         } catch (error) {
             console.error('Error creating task:', error);
         }
