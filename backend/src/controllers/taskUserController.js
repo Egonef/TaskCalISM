@@ -8,7 +8,9 @@ import asyncHandler from 'express-async-handler'
 // Tus rutas van aquí
     // GETS GENERICOS
 
-
+//Hola soy emilio yo he hecho esto por que queria que en el calendario salieran todas las tareas
+// de el usuario pero al final terminan saliendo todass las tareas de todos los usuarios (excepto las que tengan 
+// alguna categoria asignada) por que la categoria vacia es compartida
 export const getAllTasksUser = asyncHandler(async(req, res) => {  //CU09, que diferencia hay con el getTasksByCategoryUser de categoryUserController.js??
     try{
         const {id_categoria_usuario} = req.query //TIENE QUE SER QUERY, SI SE PONE BODY NO FUNCIONA NO TOCAR BAJO NINGUN CONCEPTO
