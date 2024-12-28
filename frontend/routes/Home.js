@@ -130,7 +130,7 @@ export default function Home() {
                 `${BACKEND_IP}/api/tasks/user/${userID}`,
                 {
                     params: {
-                        id_categoria_usuario: `${userID}`,
+                        id_categoria_usuario: `676fe10a0ac97172dbbe57cf`,
                     },
                     headers: {
                         'Content-Type': 'application/json',

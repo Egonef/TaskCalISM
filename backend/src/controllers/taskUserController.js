@@ -8,6 +8,18 @@ import asyncHandler from 'express-async-handler'
 // Tus rutas van aquí
     // GETS GENERICOS
 
+
+export const getAllTasksUser = asyncHandler(async(req, res) => {  //CU09, que diferencia hay con el getTasksByCategoryUser de categoryUserController.js??
+    try{
+        const {id_categoria_usuario} = req.query //TIENE QUE SER QUERY, SI SE PONE BODY NO FUNCIONA NO TOCAR BAJO NINGUN CONCEPTO
+        const tasks = await TareaUsuario.find()
+        res.status(200).json(tasks)
+
+    }catch(error){
+        res.status(500).json({ messageTareaUsuario: error.message });
+    }
+})
+
 ///api/tasks?id_categoria_usuario=0
 export const getTasksUser = asyncHandler(async(req, res) => {  //CU09, que diferencia hay con el getTasksByCategoryUser de categoryUserController.js??
     try{
@@ -52,6 +64,8 @@ export const createTaskUser = asyncHandler(async (req, res) => { //CU11
 
 
         // Guardar la tarea en la base de datos
+        console.log('nueva tarea')
+        console.log(nuevaTarea)
         await nuevaTarea.save();
         res.status(201).json({ message: "La tarea ha sido creada correctamente" });
     } catch (error) {

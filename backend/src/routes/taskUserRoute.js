@@ -3,6 +3,7 @@ import express from 'express'
 const router = express.Router()
 
 ///api/tasks/user
+router.route('/all/:idusuario').get(ctr.getAllTasksUser)
 router.route('/:idusuario').get(ctr.getTasksUser)
 router.route('/gettask/:id').get(ctr.getTaskUser)
 router.route('/:idusuario').post(ctr.createTaskUser)

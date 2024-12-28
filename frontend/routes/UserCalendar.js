@@ -4,7 +4,7 @@ import { Button, Pressable, StyleSheet, Text, TextInput, View, ScrollView, FlatL
 import { Calendar } from 'react-native-calendars';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 //Entorno
 import { BACKEND_IP } from '@env';
 
@@ -28,12 +28,13 @@ export default function UserCalendar() {
     // Solicitud al backend para obtener las tareas
 const fetchTasks = async () => {
     try {
+
+        const userInfo = await AsyncStorage.getItem('userInfo');
+        const userID = JSON.parse(userInfo)._id;
+
         const response = await axios.get(
-            `${BACKEND_IP}/api/tasks/user/6751da7588909b8e2b3093e1`,
+            `${BACKEND_IP}/api/tasks/user/all/${userID}`,
             {
-                params: {
-                    id_categoria_usuario: "675ab3f6a485eb13b594132a"
-                },
                 headers: {
                     'Content-Type': 'application/json',
                 },
