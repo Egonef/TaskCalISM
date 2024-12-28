@@ -6,7 +6,7 @@ import axios from 'axios';
 import React from 'react';
 import { useEffect ,useState , useContext , useRef} from 'react';
 import { GlobalContext } from '../GlobalContext';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 //Entorno
 import { WEATHER_API } from '@env';
 import { BACKEND_IP } from '@env';
@@ -123,11 +123,14 @@ export default function Home() {
     // Solicitud al backend para obtener las tareas
     const fetchTasks = async () => {
         try {
+            //Para obtener informacion del usuario de la sesion
+            const userInfo = await AsyncStorage.getItem('userInfo');
+            const userID = JSON.parse(userInfo)._id;
             const response = await axios.get(
-                `${BACKEND_IP}/api/tasks/user/6751da7588909b8e2b3093e1`,
+                `${BACKEND_IP}/api/tasks/user/${userID}`,
                 {
                     params: {
-                        id_categoria_usuario: "675ab3f6a485eb13b594132a"
+                        id_categoria_usuario: `${userID}`,
                     },
                     headers: {
                         'Content-Type': 'application/json',

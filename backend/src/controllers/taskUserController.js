@@ -30,12 +30,16 @@ export const createTaskUser = asyncHandler(async (req, res) => { //CU11
         if (!usuarioExistente) {
             return res.status(404).json({ message: "El usuario asociado no existe" });
         }
+        console.log('usuario existe')
 
         // Verificar si la categoría asociada existe
         const categoriaExistente = await CategoriaUsuario.findById(id_categoria_usuario);
+        
         if (!categoriaExistente) {
             return res.status(404).json({ message: "La categoría asociada no existe" });
         }
+
+        console.log('categoria existe')
 
         // Crear una nueva tarea
         const nuevaTarea = new TareaUsuario({

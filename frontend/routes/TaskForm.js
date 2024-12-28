@@ -34,7 +34,7 @@ export default function TaskForm() {
         const userID = JSON.parse(userInfo)._id;
         console.log(userID);
         try {
-            const response = await axios.post(`${BACKEND_IP}/api/task/user/${userID}`, {
+            const response = await axios.post(`${BACKEND_IP}/api/tasks/user/${userID}`, {
                 nombre,
                 descripcion,
                 fecha_vencimiento,
