@@ -68,7 +68,7 @@ export default function AddPopUp() {
                 </Pressable>
                 <Pressable 
                     style={styles.createButton} 
-                    onPress={() => console.log('Añadir Categoría')}
+                    onPress={() => navigation.navigate('ListForm')}
                     onPressIn={() => handlePressIn(scaleList)}
                     onPressOut={() => handlePressOut(scaleList)}
                 >
