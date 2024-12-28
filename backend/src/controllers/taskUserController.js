@@ -22,7 +22,7 @@ export const getTasksUser = asyncHandler(async(req, res) => {  //CU09, que difer
 ///api/tasks
 export const createTaskUser = asyncHandler(async (req, res) => { //CU11
     const { nombre, descripcion, fecha_vencimiento, id_categoria_usuario } = req.body;
-
+    console.log(req.params.idusuario)
     try {
         // Verificar si el usuario asociado existe
         console.log(req.params.idusuario)

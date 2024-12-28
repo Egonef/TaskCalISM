@@ -23,13 +23,16 @@ export default function TaskForm() {
     const [fecha_vencimiento, setFecha_vencimiento] = useState('');
 
     const userID = AsyncStorage.getItem('userInfo')._id;
-    console.log(userID);
+
     useEffect(() => {
         NavigationBar.setBackgroundColorAsync("#F1F1F1");
         NavigationBar.setButtonStyleAsync("dark");
     }, []);
 
     const createTask = async () => {
+        const userInfo = await AsyncStorage.getItem('userInfo');
+        const userID = JSON.parse(userInfo)._id;
+        console.log(userID);
         try {
             const response = await axios.post(`${BACKEND_IP}/api/task/user/${userID}`, {
                 nombre,

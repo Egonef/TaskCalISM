@@ -34,6 +34,9 @@ export default function LogIn() {
             console.log('Usuario y contraseña correctos:', response.data);
             await AsyncStorage.setItem('isLoggedIn', 'true');
             await AsyncStorage.setItem('userInfo', JSON.stringify(response.data));
+
+            const info = await AsyncStorage.getItem('userInfo');
+            console.log('Logged in session:', JSON.parse(info));
             setLoggedIn(true)
         } catch (error) {
             console.error('Usuario incorrecto:', "Inténtalo de nuevo");
