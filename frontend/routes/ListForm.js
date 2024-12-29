@@ -28,7 +28,7 @@ export default function ListForm() {
         NavigationBar.setButtonStyleAsync("dark");
     }, []);
 
-    const createTask = async () => {
+    const createList = async () => {
         const userInfo = await AsyncStorage.getItem('userInfo');
         const userID = JSON.parse(userInfo)._id;
         console.log(userID);
@@ -58,7 +58,7 @@ export default function ListForm() {
                 value={descripcion}
                 onChangeText={setDescripcion}
             />
-            <Pressable style={styles.button} onPress={createTask}>
+            <Pressable style={styles.button} onPress={createList}>
                 <Text style={styles.buttonText}>Add Category</Text>
             </Pressable>
         </View>

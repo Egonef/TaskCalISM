@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef , useState} from 'react';
 import { StyleSheet, Text, Animated , View, Pressable } from 'react-native';
 import { GlobalContext } from '../GlobalContext';
 import { useRoute , useNavigation} from '@react-navigation/native';
@@ -19,6 +19,8 @@ export default function AddPopUp() {
     const scaleList = useRef(new Animated.Value(1)).current;
     const scaleGroup = useRef(new Animated.Value(1)).current;
 
+    //varieble para indicar que el display del componente sea none
+    const [displayMode, setDisplayMode] = useState(false);
 
     const navigation = useNavigation();
     //route.name devuelve el nombre de la pagina actual
@@ -36,6 +38,15 @@ export default function AddPopUp() {
             duration: OpenAddPopUp ? 600 : 200,
             useNativeDriver: false,
         }).start();
+
+        if(!OpenAddPopUp){
+            setTimeout(() => {
+                setDisplayMode(false);
+            }, 300);
+        }else{
+            setDisplayMode(true);
+        }
+
     }, [OpenAddPopUp]);
 
     const handlePressIn = (anim) => {
@@ -54,7 +65,7 @@ export default function AddPopUp() {
 
 
     return (
-        <Animated.View style={[styles.container, { height: heightAnim }]}>
+        <Animated.View style={[styles.container, { height: heightAnim } , { display: displayMode ? 'flex' : 'none' }]}>
             <Animated.View style={[styles.buttonContainer, { opacity: buttonAnim }]}>
                 <Pressable 
                     style={styles.createButton} 

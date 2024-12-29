@@ -30,7 +30,7 @@ export const getTasksUser = asyncHandler(async(req, res) => {  //CU09, que difer
         res.status(200).json(tasks)
 
     }catch(error){
-        res.status(500).json({ message: error.message });
+        //res.status(500).json({ message: error.message });
     }
 })
 ///api/tasks

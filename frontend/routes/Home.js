@@ -3,7 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Image , Pressable, Animated , StyleSheet, Text, TextInput, View , ScrollView , FlatList } from 'react-native';
 import { Shadow } from 'react-native-shadow-2';
 import axios from 'axios';
-import React from 'react';
+import React, { use } from 'react';
 import { useEffect ,useState , useContext , useRef} from 'react';
 import { GlobalContext } from '../GlobalContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -33,6 +33,10 @@ export default function Home() {
     const [weather, setWeather] = useState(null);
     //Estado para las tareas
     const [tasks, setTasks] = useState(null);
+    //Estado para las listas
+    const [lists, setLists] = useState(null);
+    //Estado para la lista seleccionada
+    const [selectedList, setSelectedList] = useState(lists ? lists[0]._id : null);
 
     //Contexto global para abrir el deplegable del perfil
     const { OpenProfilePopUp , setOpenProfilePopUp } = useContext(GlobalContext);
@@ -126,11 +130,13 @@ export default function Home() {
             //Para obtener informacion del usuario de la sesion
             const userInfo = await AsyncStorage.getItem('userInfo');
             const userID = JSON.parse(userInfo)._id;
+            const listID = selectedList;
+            console.log(listID);
             const response = await axios.get(
                 `${BACKEND_IP}/api/tasks/user/${userID}`,
                 {
                     params: {
-                        id_categoria_usuario: `676fe10a0ac97172dbbe57cf`,
+                        id_categoria_usuario: `${listID}`,
                     },
                     headers: {
                         'Content-Type': 'application/json',
@@ -144,18 +150,24 @@ export default function Home() {
         }
     };
 
+
     //Solicitud al backend para obtener las listas
     const fetchLists = async () => {
+        const userInfo = await AsyncStorage.getItem('userInfo');
+        const userID = JSON.parse(userInfo)._id;
+        console.log(userID);
         try {
-            console.log('Fetching the lists...');
-            const response = await axios.get(`http://${BACKEND_IP}:3000/api/lists`);
-            console.log('Lists fetched:', response.data);
+            const response = await axios.get(`${BACKEND_IP}/api/categories/user/${userID}`);
+            console.log('Lists:', response.data);
             setLists(response.data);
+            if (selectedList == null) {
+                setSelectedList(response.data[0]._id);
+            }
+
         } catch (error) {
-            console.error('Error fetching the lists:', error);
+            console.error('Error creating task:', error);
         }
     };
-
 
 
     //useEffect sive par ejecutar lo de dentro cuando se modifique lo que hay
@@ -172,8 +184,15 @@ export default function Home() {
 
         fetchWeather();
 
+        fetchLists();
+
         fetchTasks();
     }, []);
+
+    useEffect(() => {
+        console.log('Selected list:', selectedList);
+        fetchTasks();
+    }, [selectedList]);
 
     return (
         <View style={styles.container}>
@@ -261,21 +280,25 @@ export default function Home() {
                 <Text style={styles.headerText}>Lists</Text>
                 <View style={styles.listList} >
                     <FlatList horizontal={false} showsVerticalScrollIndicator={false}
-                        data={[
-                            { key: 'List 1' },
-                            { key: 'List 2' },
-                            { key: 'List 3' },
-                            { key: 'List 4' },
-                            { key: 'List 5' },
-                        ]}
+                        data={lists}
                         renderItem={({ item }) => 
                         <View style={styles.tasksContainer}>
-                                <View style={styles.listcard}>
-                                    <Text style={styles.textList}>{item.key}</Text>
-                                    <Pressable>
+                            <Pressable
+                                onPress={() => setSelectedList(item._id)}
+                            >
+                                {selectedList == item._id ?
+                                    <View style={styles.biglistcard}>
+                                        <Text style={styles.textList}>{item.nombre}</Text>
                                         <Text>+</Text>
-                                    </Pressable>
-                                </View>
+
+                                    </View>
+                                    :
+                                    <View style={styles.listcard}>
+                                        <Text style={styles.textList}>{item.nombre}</Text>
+                                        <Text>+</Text>
+                                    </View>
+                                }
+                            </Pressable>
                         </View>}
                     />
                 </View>
@@ -435,6 +458,19 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 50,
         backgroundColor: '#B5C18E',
+        marginTop: 5,
+        marginBottom: 5,
+        borderRadius: 15,
+        paddingLeft: 20,
+        paddingRight: 20,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    biglistcard: {
+        width: '100%',
+        height: 70,
+        backgroundColor: '#7a9c5a',
         marginTop: 5,
         marginBottom: 5,
         borderRadius: 15,
