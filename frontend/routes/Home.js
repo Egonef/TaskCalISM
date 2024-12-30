@@ -1,6 +1,6 @@
 //Imports
 import { StatusBar } from 'expo-status-bar';
-import { Image , Pressable, Animated , StyleSheet, Text, TextInput, View , ScrollView , FlatList } from 'react-native';
+import { Image , Pressable, Animated , StyleSheet, Text, TextInput, View , ScrollView , FlatList , Modal, TouchableOpacity } from 'react-native';
 import { Shadow } from 'react-native-shadow-2';
 import axios from 'axios';
 import React, { use } from 'react';
@@ -294,9 +294,8 @@ export default function Home() {
                 ) : tasks.message === "No tienes tareas pendientes para hoy." ? (
                     // Mostrar mensaje cuando no hay tareas para hoy
                     <View style={styles.taskList}>
-                                <Text style={styles.noTasksText}>No tiene tareas pendientes para hoy!</Text>
-                            </View>
-                    
+                        <Text style={styles.noTasksText}>No tiene tareas pendientes para hoy!</Text>
+                    </View>
                 ) : (
                     // Mostrar las tareas reales una vez cargadas
                     <FlatList style={styles.taskList} 
