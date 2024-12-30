@@ -6,6 +6,7 @@ import { useRoute } from '@react-navigation/native';
 import * as NavigationBar from 'expo-navigation-bar';
 import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import RNPickerSelect from 'react-native-picker-select';
 
 
 //Entorno
@@ -22,11 +23,29 @@ export default function TaskForm() {
     const [id_categoria_usuario, setCategoria] = useState('');
     const [fecha_vencimiento, setFecha_vencimiento] = useState('');
 
+    const [categories, setCategories] = useState([]);
+
     const userID = AsyncStorage.getItem('userInfo')._id;
 
     useEffect(() => {
         NavigationBar.setBackgroundColorAsync("#F1F1F1");
         NavigationBar.setButtonStyleAsync("dark");
+
+        //Solicitud al backend para obtener las categorias
+    const fetchCategories = async () => {
+        const userInfo = await AsyncStorage.getItem('userInfo');
+        const userID = JSON.parse(userInfo)._id;
+        console.log(userID);
+        try {
+            const response = await axios.get(`${BACKEND_IP}/api/categories/user/${userID}`);
+            console.log('Lists:', response.data);
+            setCategories(response.data);
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+        }
+    };
+
+        fetchCategories();
     }, []);
 
     const createTask = async () => {
@@ -67,11 +86,11 @@ export default function TaskForm() {
                 value={fecha_vencimiento}
                 onChangeText={setFecha_vencimiento}
             />
-            <TextInput
-                placeholder="Category"
-                style={styles.input}
-                value={id_categoria_usuario}
-                onChangeText={setCategoria}
+            <RNPickerSelect
+                onValueChange={(value) => setCategoria(value)}
+                items={categories}
+                style={pickerSelectStyles}
+                placeholder={{ label: "Select a category", value: null }}
             />
             <Pressable style={styles.button} onPress={createTask}>
                 <Text style={styles.buttonText}>Add Task</Text>
@@ -148,3 +167,25 @@ const styles = StyleSheet.create({
 });
 
 
+const pickerSelectStyles = StyleSheet.create({
+    inputIOS: {
+        fontSize: 16,
+        paddingVertical: 12,
+        paddingHorizontal: 10,
+        borderWidth: 1,
+        borderColor: 'gray',
+        borderRadius: 4,
+        color: 'black',
+        paddingRight: 30, // to ensure the text is never behind the icon
+    },
+    inputAndroid: {
+        fontSize: 16,
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        borderWidth: 0.5,
+        borderColor: 'purple',
+        borderRadius: 8,
+        color: 'black',
+        paddingRight: 30, // to ensure the text is never behind the icon
+    },
+});
