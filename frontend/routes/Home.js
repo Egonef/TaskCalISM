@@ -25,7 +25,7 @@ import Moonsvg from '../components/SvgComponents/Home/Moonsvg';
 import AddPopUp from '../components/AddPopUp';
 import Profile from '../components/Profile';
 import SkeletonTask from '../components/Skeletons/SkeletonTask';
-
+import CategoryTasksModal from '../components/CategoryTasksModal';
 
 
 export default function Home() {
@@ -38,11 +38,16 @@ export default function Home() {
     const [tasks, setTasks] = useState(null);
     //Estado para las listas
     const [lists, setLists] = useState(null);
+
+    const [isCategoryTasksModalVisible, setCategoryTasksModalVisible] = useState(false);
+    const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+
     //Estado para la lista seleccionada
     const [selectedList, setSelectedList] = useState(null);
 
     //Contexto global para abrir el deplegable del perfil
     const { OpenProfilePopUp , setOpenProfilePopUp } = useContext(GlobalContext);
+
 
     //Animaciones
     const profileAnim = useRef(new Animated.Value(1)).current;
@@ -208,6 +213,11 @@ export default function Home() {
         fetchTasks();
     }, [selectedList]);
 
+    const handleCategoryPress = (categoryId) => {
+        setSelectedCategoryId(categoryId);
+        setCategoryTasksModalVisible(true);
+    };
+
     return (
         <View style={styles.container}>
             <StatusBar style="auto" />
@@ -318,28 +328,25 @@ export default function Home() {
                         data={lists}
                         renderItem={({ item }) => 
                         <View style={styles.tasksContainer}>
-                            <Pressable
-                                onPress={() => setSelectedList(item._id)}
+                            <TouchableOpacity
+                                onPress={() => handleCategoryPress(item._id)}
                             >
-                                {selectedList == item._id ?
-                                    <View style={styles.biglistcard}>
-                                        <Text style={styles.textList}>{item.nombre}</Text>
-                                        <Text>+</Text>
-
-                                    </View>
-                                    :
-                                    <View style={styles.listcard}>
-                                        <Text style={styles.textList}>{item.nombre}</Text>
-                                        <Text>+</Text>
-                                    </View>
-                                }
-                            </Pressable>
+                                <View style={styles.listcard}>
+                                    <Text style={styles.textList}>{item.nombre}</Text>
+                                    <Text>+</Text>
+                                </View>
+                            </TouchableOpacity>
                         </View>}
                     />
                 </View>
             </View>
             <AddPopUp />
             <Profile />
+            <CategoryTasksModal
+                visible={isCategoryTasksModalVisible}
+                onClose={() => setCategoryTasksModalVisible(false)}
+                categoryId={selectedCategoryId}
+            />
         </View>
     );
 }

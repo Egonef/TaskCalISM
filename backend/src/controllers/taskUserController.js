@@ -17,7 +17,6 @@ export const getAllTasksUser = asyncHandler(async(req, res) => {  //CU09, que di
         
         const categorias = await CategoriaUsuario.find({id_usuario : req.params.id_usuario});
         if (categorias.length === 0) {
-            console.log("0 porongas")
             return res.status(404).json({ message: "Este usuario no tiene categorias existentes" });
         }
 
