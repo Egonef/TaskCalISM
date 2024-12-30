@@ -313,7 +313,7 @@ export default function Home() {
                 )}
             </View>
             <View style={styles.listContainer}>
-                <Text style={styles.headerText}>Lists</Text>
+                <Text style={styles.headerText}>Categories</Text>
                 <View style={styles.listList} >
                     <FlatList horizontal={false} showsVerticalScrollIndicator={false}
                         data={lists}
