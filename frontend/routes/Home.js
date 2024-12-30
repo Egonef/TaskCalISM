@@ -275,7 +275,7 @@ export default function Home() {
                 </Shadow>
             </View>
             <View style={styles.taskHeaderWrapper}>
-                <Text style={styles.headerText}>Tasks</Text>
+                <Text style={styles.headerText}>Today Tasks</Text>
             </View>
             <View style={styles.tasksContainer}>
                 {tasks === null ? (
