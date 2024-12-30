@@ -275,7 +275,7 @@ export default function Home() {
                 </Shadow>
             </View>
             <View style={styles.taskHeaderWrapper}>
-                <Text style={styles.headerText}>Tasks</Text>
+                <Text style={styles.headerText}>Today Tasks</Text>
             </View>
             <View style={styles.tasksContainer}>
                 {tasks === null ? (
@@ -312,7 +312,7 @@ export default function Home() {
                 )}
             </View>
             <View style={styles.listContainer}>
-                <Text style={styles.headerText}>Lists</Text>
+                <Text style={styles.headerText}>Categories</Text>
                 <View style={styles.listList} >
                     <FlatList horizontal={false} showsVerticalScrollIndicator={false}
                         data={lists}
