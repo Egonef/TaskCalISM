@@ -146,28 +146,22 @@ export default function Home() {
 
     // Solicitud al backend para obtener las tareas
     const fetchTasks = async () => {
-        try {
+
             //Para obtener informacion del usuario de la sesion
             const userInfo = await AsyncStorage.getItem('userInfo');
             const userID = JSON.parse(userInfo)._id;
             const listID = selectedList;
             console.log(listID);
-            const response = await axios.get(
-                `${BACKEND_IP}/api/tasks/user/${userID}`,
-                {
-                    params: {
-                        id_categoria_usuario: `${listID}`,
-                    },
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                }
-            );
-            console.log('Tasks fetched:', response.data);
-            setTasks(response.data);
-        } catch (error) {
-            console.error('Error fetching the tasks:', error);
-        }
+            try {
+                const response = await axios.get(`${BACKEND_IP}/api/tasks/user/tasksToday/${userID}`);
+                console.log('Tasks:', response.data);
+                setTasks(response.data);
+
+
+            } catch (error) {
+                console.error('Error creating task:', error);
+            }
+
     };
 
 
@@ -185,7 +179,7 @@ export default function Home() {
             }
 
         } catch (error) {
-            console.error('Error creating task:', error);
+            console.error('Error creating lists:', error);
         }
     };
 
@@ -297,6 +291,12 @@ export default function Home() {
                             </View>
                         }
                     />
+                ) : tasks.message === "No tienes tareas pendientes para hoy." ? (
+                    // Mostrar mensaje cuando no hay tareas para hoy
+                    <View style={styles.taskList}>
+                                <Text style={styles.noTasksText}>No tiene tareas pendientes para hoy!</Text>
+                            </View>
+                    
                 ) : (
                     // Mostrar las tareas reales una vez cargadas
                     <FlatList style={styles.taskList} 
@@ -523,5 +523,11 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontWeight: 'bold',
         fontSize: 20,
+    },
+    noTasksText: {
+        fontSize: 18,
+        color: '#888',
+        textAlign: 'center',
+        marginTop: 20,
     },
 });
