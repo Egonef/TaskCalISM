@@ -4,6 +4,7 @@ import CategoriaGrupo from '../models/CategoriaGrupo.js'
 import TareaGrupo from '../models/TareaGrupo.js'
 import TareaMiembro from '../models/TareaMiembro.js'
 import asyncHandler from 'express-async-handler'
+import { generarNotificacion } from '../notificationServices/notificationsServices.js'
 
 
 // Tus rutas van aquí
@@ -75,10 +76,10 @@ export const createGroup = asyncHandler(async(req, res) => { //CU03
 //CUANDO SE ELIMINA UN GRUPO, HAY QUE ELIMINAR TODAS LAS CATEGORIAS Y TAREAS ASOCIADAS A ESE GRUPO: TO DO!!!!!
 export const deleteGroup = asyncHandler(async(req, res) => { //CU07
    
-    const {nombre_usuario} = req.body;
+    const {id_admin} = req.body;
     try {
 
-        const usuario = await Usuario.findOne({nombre_usuario});
+        const usuario = await Usuario.findOne({id_admin});
         
         if(!usuario){
             return res.status(404).json({ message: "Usuario no encontrado" });
@@ -117,7 +118,7 @@ export const deleteGroup = asyncHandler(async(req, res) => { //CU07
         if (categoriasAEliminar.length > 0){
 
             for (const categoria of categoriasAEliminar) { //Eliminamos categorias
-                const tareasAEliminar = await TareaGrupo.find({id_catgeoria_grupo: categoria._id});
+                const tareasAEliminar = await TareaGrupo.find({id_categoria_grupo: categoria._id});
                 await CategoriaGrupo.findByIdAndDelete(categoria._id);
 
                 if(tareasAEliminar.length > 0){
@@ -151,8 +152,44 @@ export const deleteGroup = asyncHandler(async(req, res) => { //CU07
     }
 })
 
-export const addUserToAGroup = asyncHandler(async(req, res) => { //CU04, diria que no es nada de backend
+export const inviteUserGroup = asyncHandler(async(req,res) => { //CU04
+    //const { id_user } = req.params; // ID del usuario a modificar
+    const {id_admin, id_group} = req.body;
+    try {
+        const usuario = await Usuario.findById(req.params.id_user);   
+        if(!usuario){
+            return res.status(404).json({ message: "Usuario no encontrado" });
+        }
 
+        const grupo = await Grupo.findById(id_group);
+        if(!grupo){
+            return res.status(404).json({ message: "Grupo no encontrado" });
+        }
+
+        const admin = await Usuario.findById(id_admin);   
+        if(!admin || !admin._id.equals(grupo.id_admin)){
+            return res.status(403).json({ message: "Solo el administrador puede invitar usuarios." });
+        }
+
+        const usuarioEnGrupo = grupo.id_usuarios.some(u => u.usuario.toString() === req.params.id_user);
+        if (usuarioEnGrupo) {
+            return res.status(409).json({ message: "El usuario ya está en este grupo" });
+        }
+
+        const grupoEnUsuario= usuario.id_grupos.some(g => g.grupo.toString() === id_group);
+        if (grupoEnUsuario) {
+            return res.status(409).json({ message: "El grupo ya está asociado a ese usuario." });
+        }
+        // Generar notificacion de invitación. TO DO
+
+        res.status(200).json({ message: 'Se ha invitado el usuario al grupo.' });
+    } catch (error){
+        return res.status(500).json({ message: error.message});
+    }
+})
+///api/group/add/:id_user
+export const addUserToAGroup = asyncHandler(async(req, res) => { 
+    
 })
 
 
