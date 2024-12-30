@@ -39,7 +39,11 @@ export default function TaskForm() {
         try {
             const response = await axios.get(`${BACKEND_IP}/api/categories/user/${userID}`);
             console.log('Lists:', response.data);
-            setCategories(response.data);
+            const categoryOptions = response.data.map(category => ({
+                label: category.nombre,
+                value: category._id,
+            }));
+            setCategories(categoryOptions);
         } catch (error) {
             console.error('Error fetching categories:', error);
         }
@@ -169,6 +173,8 @@ const styles = StyleSheet.create({
 
 const pickerSelectStyles = StyleSheet.create({
     inputIOS: {
+        width: '80%',
+        alignSelf: 'center',
         fontSize: 16,
         paddingVertical: 12,
         paddingHorizontal: 10,
@@ -179,6 +185,8 @@ const pickerSelectStyles = StyleSheet.create({
         paddingRight: 30, // to ensure the text is never behind the icon
     },
     inputAndroid: {
+        width: '80%',
+        alignSelf: 'center',
         fontSize: 16,
         paddingHorizontal: 10,
         paddingVertical: 8,
