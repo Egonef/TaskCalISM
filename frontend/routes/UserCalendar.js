@@ -5,6 +5,8 @@ import { Calendar } from 'react-native-calendars';
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { EditPencil } from 'iconoir-react-native';
+
 //Entorno
 import { BACKEND_IP } from '@env';
 
@@ -147,6 +149,9 @@ const handleDayPress = (day) => {
                          <Text style={styles.modalText}>Descripción: {selectedTask.descripcion}</Text>
                          <Text style={styles.modalText}>Fecha de vencimiento: {selectedTask.fecha_vencimiento}</Text>
                          <Text style={styles.modalText}>Estado: {selectedTask.estado ? 'Completada' : 'Pendiente'}</Text>
+                         <TouchableOpacity style={styles.editButton} onPress={() => {/* Lógica para editar la tarea */}}>
+                                <EditPencil width={24} height={24} color="#FFF" />
+                         </TouchableOpacity>
                          <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
                              <Text style={styles.closeButtonText}>Cerrar</Text>
                          </TouchableOpacity>
@@ -214,8 +219,9 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalView: {
-        width: 300,
-        backgroundColor: 'white',
+        width: 315,
+        height: 315,
+        backgroundColor: '#B5C18E',
         borderRadius: 20,
         padding: 35,
         alignItems: 'center',
@@ -239,7 +245,7 @@ const styles = StyleSheet.create({
     },
     closeButton: {
         marginTop: 20,
-        backgroundColor: '#B5C18E',
+        backgroundColor: '#B4A593',
         borderRadius: 10,
         padding: 10,
         elevation: 2,
@@ -248,5 +254,10 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: 'bold',
         textAlign: 'center',
+    },
+    editButton: {
+        position: 'absolute',
+        top: 20,
+        right: 20,
     },
 });
