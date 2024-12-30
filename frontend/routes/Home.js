@@ -24,6 +24,9 @@ import Rainsvg from '../components/SvgComponents/Home/Rainsvg';
 import Moonsvg from '../components/SvgComponents/Home/Moonsvg';
 import AddPopUp from '../components/AddPopUp';
 import Profile from '../components/Profile';
+import SkeletonTask from '../components/Skeletons/SkeletonTask';
+
+
 
 export default function Home() {
 
@@ -36,7 +39,7 @@ export default function Home() {
     //Estado para las listas
     const [lists, setLists] = useState(null);
     //Estado para la lista seleccionada
-    const [selectedList, setSelectedList] = useState(lists ? lists[0]._id : null);
+    const [selectedList, setSelectedList] = useState(null);
 
     //Contexto global para abrir el deplegable del perfil
     const { OpenProfilePopUp , setOpenProfilePopUp } = useContext(GlobalContext);
@@ -87,16 +90,33 @@ export default function Home() {
         return day;
     }
 
-    //Funcion para obtener los dias de la semana
+    // Función auxiliar para obtener el número de días en el mes
+    const getDaysInMonth = (month, year) => {
+        return new Date(year, month + 1, 0).getDate();
+    };
+
+    // Función para obtener los días de la semana
     const getWeekDays = () => {
         let today = new Date();
         let day = today.getDay();
+        let date = today.getDate();
+        let month = today.getMonth();
+        let year = today.getFullYear();
+        let daysInMonth = getDaysInMonth(month, year);
         let days = [];
+
         for (let i = 0; i < 7; i++) {
-            days.push(today.getDate() - day + i + 1);
+            let currentDay = date - day + i + 1;
+            if (currentDay > daysInMonth) {
+                currentDay -= daysInMonth;
+            } else if (currentDay < 1) {
+                let prevMonthDays = getDaysInMonth(month - 1, year);
+                currentDay += prevMonthDays;
+            }
+            days.push(currentDay);
         }
         return days;
-    }
+    };
 
     //Función para obtener la temperatura con la api de openweather
     const getTemperature = async () => {
@@ -264,17 +284,33 @@ export default function Home() {
                 <Text style={styles.headerText}>Tasks</Text>
             </View>
             <View style={styles.tasksContainer}>
-                <FlatList style={styles.taskList} 
-                horizontal={true} 
-                showsHorizontalScrollIndicator={false}
-                data={tasks}
-                renderItem={({ item }) => 
-                    <Shadow offset={[10,15]} distance={3}>
-                        <View style={styles.taskcard}>
-                            <Text>{item.descripcion}</Text>
-                        </View>
-                    </Shadow>}
-                />
+                {tasks === null ? (
+                    // Mostrar skeleton loading mientras se cargan las tareas
+                    <FlatList style={styles.taskList} 
+                        horizontal={true} 
+                        showsHorizontalScrollIndicator={false}
+                        data={[1, 2, 3, 4, 5]} // Datos ficticios para mostrar múltiples skeletons
+                        keyExtractor={(item) => item.toString()}
+                        renderItem={() => 
+                            <View style={styles.skeletonContainer}>
+                                <SkeletonTask />
+                            </View>
+                        }
+                    />
+                ) : (
+                    // Mostrar las tareas reales una vez cargadas
+                    <FlatList style={styles.taskList} 
+                        horizontal={true} 
+                        showsHorizontalScrollIndicator={false}
+                        data={tasks}
+                    renderItem={({ item }) => 
+                        <Shadow offset={[10,15]} distance={3}>
+                            <View style={styles.taskcard}>
+                                <Text>{item.descripcion}</Text>
+                            </View>
+                        </Shadow>}
+                    />
+                )}
             </View>
             <View style={styles.listContainer}>
                 <Text style={styles.headerText}>Lists</Text>
@@ -428,6 +464,9 @@ const styles = StyleSheet.create({
     tasksContainer: {
         width: '100%',
     },
+    skeletonContainer: {
+        margin: 10,
+    },
     taskHeaderWrapper: {
         width: '80%',
         marginTop: 20,
@@ -451,7 +490,7 @@ const styles = StyleSheet.create({
     },
     listList: {
         width: '100%',
-        height: 250,
+        height: 190,
         marginTop: 10,
     },
     listcard: {

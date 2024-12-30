@@ -20,6 +20,7 @@
     "expo-status-bar": "~1.12.1",
     "ngrok": "^4.3.3",
     "react": "18.2.0",
+    "react-content-loader": "^7.0.2",
     "react-native": "0.74.5",
     "react-native-calendars": "^1.1307.0",
     "react-native-dotenv": "^3.4.11",
