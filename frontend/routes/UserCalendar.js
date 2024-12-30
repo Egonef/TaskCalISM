@@ -1,8 +1,8 @@
 //Imports
 import { StatusBar } from 'expo-status-bar';
-import { Button, Pressable, StyleSheet, Text, TextInput, View, ScrollView, FlatList } from 'react-native';
+import { Button, Pressable, StyleSheet, Text, TextInput, View, ScrollView, FlatList, Modal, TouchableOpacity, Animated} from 'react-native';
 import { Calendar } from 'react-native-calendars';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 //Entorno
@@ -19,6 +19,10 @@ export default function UserCalendar() {
     const [tasks, setTasks] = useState([]);
     const [tasksForSelectedDate, setTasksForSelectedDate] = useState([]);
     const [markedDates, setMarkedDates] = useState({});
+    const [selectedTask, setSelectedTask] = useState(null);
+    const [modalVisible, setModalVisible] = useState(false);
+    const scaleValue = useRef(new Animated.Value(0)).current;
+
 
     useEffect(() => {
         fetchTasks(setTasks, setMarkedDates);
@@ -26,7 +30,7 @@ export default function UserCalendar() {
 
 
     // Solicitud al backend para obtener las tareas
-const fetchTasks = async () => {
+    const fetchTasks = async () => {
     try {
 
         const userInfo = await AsyncStorage.getItem('userInfo');
@@ -81,7 +85,17 @@ const handleDayPress = (day) => {
     console.log('Filtered Tasks:', filteredTasks);
     setTasksForSelectedDate(filteredTasks);
 
-};
+    };
+
+    const handleTaskPress = (task) => {
+        setSelectedTask(task);
+        setModalVisible(true);
+    };
+
+    const closeModal = () => {
+        setModalVisible(false);
+        setSelectedTask(null);
+    };
 
 
 
@@ -111,13 +125,35 @@ const handleDayPress = (day) => {
                     data={tasksForSelectedDate}
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={({ item }) => (
-                        <View style={styles.listcard}>
-                            <Text style={styles.textList}>{item.nombre}</Text>
-                        </View>
+                        <TouchableOpacity onPress={() => handleTaskPress(item)}>
+                            <View style={styles.listcard}>
+                                <Text style={styles.textList}>{item.nombre}</Text>
+                            </View>
+                        </TouchableOpacity>
                     )}
                 />
             </View>
             <AddPopUp />
+            {selectedTask && (
+                 <Modal
+                 animationType="fade"
+                 transparent={true}
+                 visible={modalVisible}
+                 onRequestClose={closeModal}
+             >
+                 <View style={styles.modalContainer}>
+                     <View style={styles.modalView}>
+                         <Text style={styles.modalTitle}>{selectedTask.nombre}</Text>
+                         <Text style={styles.modalText}>Descripción: {selectedTask.descripcion}</Text>
+                         <Text style={styles.modalText}>Fecha de vencimiento: {selectedTask.fecha_vencimiento}</Text>
+                         <Text style={styles.modalText}>Estado: {selectedTask.estado ? 'Completada' : 'Pendiente'}</Text>
+                         <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+                             <Text style={styles.closeButtonText}>Cerrar</Text>
+                         </TouchableOpacity>
+                     </View>
+                 </View>
+             </Modal>
+            )}
         </View>
     );
 }
@@ -170,5 +206,47 @@ const styles = StyleSheet.create({
         alignContent: 'center',
         marginTop: 20,
         padding: 30,
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalView: {
+        width: 300,
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 35,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    modalTitle: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 15,
+    },
+    modalText: {
+        fontSize: 18,
+        marginBottom: 10,
+    },
+    closeButton: {
+        marginTop: 20,
+        backgroundColor: '#B5C18E',
+        borderRadius: 10,
+        padding: 10,
+        elevation: 2,
+    },
+    closeButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        textAlign: 'center',
     },
 });
