@@ -13,9 +13,23 @@ import asyncHandler from 'express-async-handler'
 // alguna categoria asignada) por que la categoria vacia es compartida
 export const getAllTasksUser = asyncHandler(async(req, res) => {  //CU09, que diferencia hay con el getTasksByCategoryUser de categoryUserController.js??
     try{
-        const {id_categoria_usuario} = req.query //TIENE QUE SER QUERY, SI SE PONE BODY NO FUNCIONA NO TOCAR BAJO NINGUN CONCEPTO
-        const tasks = await TareaUsuario.find()
-        res.status(200).json(tasks)
+        //const {id_usuario} = req.query //TIENE QUE SER QUERY, SI SE PONE BODY NO FUNCIONA NO TOCAR BAJO NINGUN CONCEPTO
+        
+        const categorias = await CategoriaUsuario.find({id_usuario : req.params.id_usuario});
+        if (categorias.length === 0) {
+            console.log("0 porongas")
+            return res.status(404).json({ message: "Este usuario no tiene categorias existentes" });
+        }
+
+        let tareas = [];
+        for (const categoria of categorias) {
+            const tareasCategoria = await TareaUsuario.find({
+                id_categoria_usuario: categoria._id, // Filtrar por el ID de la categoría 
+            });
+            tareas = tareas.concat(tareasCategoria);
+        }
+
+        res.status(200).json(tareas)
 
     }catch(error){
         res.status(500).json({ messageTareaUsuario: error.message });
@@ -31,6 +45,21 @@ export const getTasksUser = asyncHandler(async(req, res) => {  //CU09, que difer
 
     }catch(error){
         //res.status(500).json({ message: error.message });
+    }
+})
+///api/tasks/gettask/:id
+export const getTaskUser = asyncHandler(async(req,res) => { //CU10
+    //const { id } = req.params; //id tarea
+
+    try{
+        const tarea = await TareaUsuario.findById(req.params.id);
+        if (!tarea) {
+            return res.status(404).json({ message: "La tarea no existe" });
+        }
+
+        res.status(200).json(tarea);
+    } catch (error){
+        res.status(500).json({message: "Error al buscar la tarea."});
     }
 })
 ///api/tasks
@@ -124,21 +153,6 @@ export const deleteTaskUser = asyncHandler(async (req, res) => { //CU13
         res.status(500).json({ message: "Error al eliminar la tarea", error: error.message });
     }
 });
-///api/tasks/gettask/:id
-export const getTaskUser = asyncHandler(async(req,res) => { //CU10
-    //const { id } = req.params;
-
-    try{
-        const tarea = await TareaUsuario.findById(req.params.id);
-        if (!tarea) {
-            return res.status(404).json({ message: "La tarea no existe" });
-        }
-
-        res.status(200).json(tarea);
-    } catch (error){
-        res.status(500).json({message: "Error al buscar la tarea."});
-    }
-})
 ///api/tasks/endtask/:id
 export const endTaskUser = asyncHandler(async(req,res) => { //CU15
     //const { id } = req.params;

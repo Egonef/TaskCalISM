@@ -31,6 +31,7 @@ const fetchTasks = async () => {
 
         const userInfo = await AsyncStorage.getItem('userInfo');
         const userID = JSON.parse(userInfo)._id;
+        console.log(userID);
 
         const response = await axios.get(
             `${BACKEND_IP}/api/tasks/user/all/${userID}`,
