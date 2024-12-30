@@ -55,11 +55,14 @@ export const createTaskUser = asyncHandler(async (req, res) => { //CU11
 
         console.log('categoria existe')
 
+        const [día, mes, año] = fecha_vencimiento.split('/');
+        const fechaProcesada = new Date(`${año}-${mes}-${día}`);
+
         // Crear una nueva tarea
         const nuevaTarea = new TareaUsuario({
             nombre,
             descripcion,
-            fecha_vencimiento,
+            fecha_vencimiento: fechaProcesada,
             estado: false,
             id_categoria_usuario,
         });

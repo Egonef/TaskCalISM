@@ -51,11 +51,14 @@ export const createTaskGroup = asyncHandler(async (req, res) => { //CU11
             return res.status(404).json({ message: "La categoría asociada no existe" });
         }
 
+        const [día, mes, año] = fecha_vencimiento.split('/');
+        const fechaProcesada = new Date(`${año}-${mes}-${día}`);
+
         // Crear una nueva tarea
         const nuevaTarea = new TareaGrupo({
             nombre,
             descripcion,
-            fecha_vencimiento,
+            fecha_vencimiento: fechaProcesada,
             estado,
             id_categoria_grupo,//ponerla como obligatoria
         });

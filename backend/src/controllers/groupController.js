@@ -181,6 +181,8 @@ export const inviteUserGroup = asyncHandler(async(req,res) => { //CU04
             return res.status(409).json({ message: "El grupo ya está asociado a ese usuario." });
         }
         // Generar notificacion de invitación. TO DO
+        // Debe incluirse el nombre del admin en la notificación, para evitar problemas de seguridad en
+        // accept invitation group. (Cualquiera podría autoinvitarse si obtiene el id del grupo.)
 
         res.status(200).json({ message: 'Se ha invitado el usuario al grupo.' });
     } catch (error){

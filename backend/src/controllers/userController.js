@@ -1,5 +1,6 @@
 import Usuario from '../models/Usuario.js'
 import Grupo from '../models/Grupo.js'
+import CategoriaUsuario from '../models/CategoriaUsuario.js';
 import asyncHandler from 'express-async-handler'
 import bcrypt from 'bcrypt'
 const saltRounds = 10;
@@ -63,9 +64,18 @@ export const createUser = asyncHandler(async (req, res) => { //CU23
             fecha_nacimiento: fechaProcesada,
             id_grupos: []
         });
-
         await newUsu.save();
         console.log("Usuario guardado:", newUsu);
+
+
+        const Categoria = new CategoriaUsuario({ //Categoria "Sin categoria"
+            nombre: "Sin Categoria",
+            descripcion: "Tareas sin categoria definida",
+            id_usuario: newUsu._id,
+        });
+        await Categoria.save();
+        console.log("categoria guardada:", Categoria);
+
         res.status(200).json({ message: "El usuario ha sido creado correctamente" });
     } catch (error) {
         console.error("Error al crear usuario:", error);
