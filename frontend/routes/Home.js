@@ -7,6 +7,8 @@ import React, { use } from 'react';
 import { useEffect ,useState , useContext , useRef} from 'react';
 import { GlobalContext } from '../GlobalContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { TrashSolid } from 'iconoir-react-native';
+
 //Entorno
 import { WEATHER_API } from '@env';
 import { BACKEND_IP } from '@env';
@@ -26,6 +28,7 @@ import AddPopUp from '../components/AddPopUp';
 import Profile from '../components/Profile';
 import SkeletonTask from '../components/Skeletons/SkeletonTask';
 import CategoryTasksModal from '../components/CategoryTasksModal';
+import CategoryDeleteModal from '../components/CategoryDeleteModal';
 
 
 export default function Home() {
@@ -40,6 +43,8 @@ export default function Home() {
     const [lists, setLists] = useState(null);
 
     const [isCategoryTasksModalVisible, setCategoryTasksModalVisible] = useState(false);
+    const [isCategoryDeleteModalVisible, setCategoryDeleteModalVisible] = useState(false);
+
     const [selectedCategoryId, setSelectedCategoryId] = useState(null);
 
     //Estado para la lista seleccionada
@@ -218,6 +223,17 @@ export default function Home() {
         setCategoryTasksModalVisible(true);
     };
 
+    const handleCategoryDeletePress = (categoryId) => {
+        setSelectedCategoryId(categoryId);
+        setCategoryDeleteModalVisible(true);
+    };
+
+    const refreshAfterCategoryDelete = () => {
+        fetchLists();
+        fetchTasks();
+        setCategoryDeleteModalVisible(false);
+    }
+
     return (
         <View style={styles.container}>
             <StatusBar style="auto" />
@@ -333,7 +349,9 @@ export default function Home() {
                             >
                                 <View style={styles.listcard}>
                                     <Text style={styles.textList}>{item.nombre}</Text>
-                                    <Text>+</Text>
+                                    <TouchableOpacity onPress={() => {handleCategoryDeletePress(item._id)}}>
+                                        <TrashSolid width={24} height={24} color="#FFF" />
+                                    </TouchableOpacity>
                                 </View>
                             </TouchableOpacity>
                         </View>}
@@ -345,6 +363,11 @@ export default function Home() {
             <CategoryTasksModal
                 visible={isCategoryTasksModalVisible}
                 onClose={() => setCategoryTasksModalVisible(false)}
+                categoryId={selectedCategoryId}
+            />
+            <CategoryDeleteModal
+                visible={isCategoryDeleteModalVisible}
+                onClose={() => refreshAfterCategoryDelete()}
                 categoryId={selectedCategoryId}
             />
         </View>

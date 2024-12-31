@@ -46,7 +46,7 @@ const CategoryTasksModal = ({ visible, onClose, categoryId }) => {
         >
             <View style={styles.container}>
                 <View style={styles.content}>
-                    <Text style={styles.header}>Monthly tasks</Text>
+                    <Text style={styles.header}>Tasks from this category:</Text>
                     <FlatList
                         data={tasks}
                         keyExtractor={(item) => item._id}
