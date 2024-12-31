@@ -13,7 +13,7 @@ import { BACKEND_IP } from '@env';
 
 
 //Components
-
+import SuccessModal from '../components/SuccessModal';
 
 
 export default function ListForm() {
@@ -21,7 +21,7 @@ export default function ListForm() {
     const [descripcion, setDescripcion] = useState('');
     const [id_categoria_usuario, setCategoria] = useState('');
     const [fecha_vencimiento, setFecha_vencimiento] = useState('');
-
+    const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
     
     useEffect(() => {
         NavigationBar.setBackgroundColorAsync("#F1F1F1");
@@ -38,6 +38,7 @@ export default function ListForm() {
                 descripcion,
             });
             console.log('Category created:', response.data);
+            setIsSuccessModalVisible(true);
         } catch (error) {
             console.error('Error creating task:', error);
         }
@@ -61,6 +62,10 @@ export default function ListForm() {
             <TouchableOpacity style={styles.button} onPress={createList}>
                 <Text style={styles.buttonText}>Add Category</Text>
             </TouchableOpacity>
+            <SuccessModal
+                visible={isSuccessModalVisible}
+                onClose={() => setIsSuccessModalVisible(false)}
+            />
         </View>
     );
 };
