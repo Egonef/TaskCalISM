@@ -1,6 +1,6 @@
 //Imports
 import React, { useContext, useEffect, useRef , useState } from 'react';
-import { StyleSheet, Text, Animated , View, Pressable , TextInput, Button} from 'react-native';
+import { StyleSheet, Text, Animated , View, Pressable , TextInput, Button , TouchableOpacity} from 'react-native';
 import { GlobalContext } from '../GlobalContext';
 import { useRoute } from '@react-navigation/native';
 import * as NavigationBar from 'expo-navigation-bar';
@@ -14,7 +14,7 @@ import { BACKEND_IP } from '@env';
 
 
 //Components
-
+import SuccessModal from '../components/SuccessModal'; // Ensure this import is correct
 
 
 export default function TaskForm() {
@@ -22,6 +22,7 @@ export default function TaskForm() {
     const [descripcion, setDescripcion] = useState('');
     const [id_categoria_usuario, setCategoria] = useState('');
     const [fecha_vencimiento, setFecha_vencimiento] = useState('');
+    const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
 
     const [categories, setCategories] = useState([]);
 
@@ -64,6 +65,7 @@ export default function TaskForm() {
                 id_categoria_usuario
             });
             console.log('Task created:', response.data);
+            setIsSuccessModalVisible(true);
         } catch (error) {
             console.error('Error creating task:', error);
         }
@@ -96,9 +98,13 @@ export default function TaskForm() {
                 style={pickerSelectStyles}
                 placeholder={{ label: "Select a category", value: null }}
             />
-            <Pressable style={styles.button} onPress={createTask}>
+            <TouchableOpacity style={styles.button} onPress={createTask}>
                 <Text style={styles.buttonText}>Add Task</Text>
-            </Pressable>
+            </TouchableOpacity>
+            <SuccessModal
+                visible={isSuccessModalVisible}
+                onClose={() => setIsSuccessModalVisible(false)}
+            />
         </View>
     );
 };

@@ -1,6 +1,6 @@
 //Imports
 import React, { useContext, useEffect, useRef , useState } from 'react';
-import { StyleSheet, Text, Animated , View, Pressable , TextInput, Button} from 'react-native';
+import { StyleSheet, Text, Animated , View, Pressable , TextInput, Button , TouchableOpacity} from 'react-native';
 import { GlobalContext } from '../GlobalContext';
 import { useRoute } from '@react-navigation/native';
 import * as NavigationBar from 'expo-navigation-bar';
@@ -58,9 +58,9 @@ export default function ListForm() {
                 value={descripcion}
                 onChangeText={setDescripcion}
             />
-            <Pressable style={styles.button} onPress={createList}>
+            <TouchableOpacity style={styles.button} onPress={createList}>
                 <Text style={styles.buttonText}>Add Category</Text>
-            </Pressable>
+            </TouchableOpacity>
         </View>
     );
 };

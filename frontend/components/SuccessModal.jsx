@@ -1,28 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, FlatList } from 'react-native';
-import axios from 'axios';
-import { BACKEND_IP } from '@env';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { WarningTriangleSolid } from 'iconoir-react-native';
 
-const CategoryDeleteModal = ({ visible, onClose, categoryId }) => {
+const SuccessfulModal = ({ visible, onClose }) => {
 
-    const deleteCategory = async () => {
-        try {
-            const userInfo = await AsyncStorage.getItem('userInfo');
-            const userID = JSON.parse(userInfo)._id;
-            console.log(userID);
-            const response = await axios.delete(
-                `${BACKEND_IP}/api/categories/user/delete/${categoryId}`, {
-                    data: { id: categoryId },
-                });
-            console.log('Category deleted:', response.data);
-            onClose();
-        } catch (error) {
-            console.error('Error deleting the category:', error);
-            onClose();
-        }
-    };
 
     return (
         <Modal
@@ -34,16 +15,10 @@ const CategoryDeleteModal = ({ visible, onClose, categoryId }) => {
             <View style={styles.container}>
                 <View style={styles.content}>
                     <WarningTriangleSolid width={50} height={50} color="#c71616" />
-                    <Text style={styles.header}>Are you sure you want to delete this category?</Text>
-                    <Text style={styles.warningText}>That will delete every task it has assigned</Text>
-                    <View style={styles.buttonContainer}>
-                        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                            <Text style={styles.closeButtonText}>Cancel</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.deleteButton} onPress={deleteCategory}>
-                            <Text style={styles.deleteButtonText}>Delete</Text>
-                        </TouchableOpacity>
-                    </View>
+                    <Text style={styles.header}>Operation completed Successfully!</Text>
+                    <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                        <Text style={styles.closeButtonText}>Cancel</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
         </Modal>
@@ -112,4 +87,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default CategoryDeleteModal;
+export default SuccessfulModal;
