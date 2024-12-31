@@ -20,6 +20,7 @@ import Groups from './routes/Groups';
 import Notifications from './routes/Notifications';
 import TaskForm from './routes/TaskForm';
 import ListForm from './routes/ListForm';
+import GroupForm from './routes/GroupForm';
 
 
 
@@ -63,6 +64,7 @@ export default function MainApp() {
                         <Stack.Screen name="Notifications" component={Notifications} />
                         <Stack.Screen name="TaskForm" component={TaskForm} />
                         <Stack.Screen name="ListForm" component={ListForm} />
+                        <Stack.Screen name="GroupForm" component={GroupForm} />
                     </>
                 )}
             </Stack.Navigator>

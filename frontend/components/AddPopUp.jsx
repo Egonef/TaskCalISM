@@ -89,7 +89,7 @@ export default function AddPopUp() {
                 </Pressable>
                 <Pressable 
                     style={styles.createButton} 
-                    onPress={() => console.log('Crear Grupo')}
+                    onPress={() => navigation.navigate('GroupForm')}
                     onPressIn={() => handlePressIn(scaleGroup)}
                     onPressOut={() => handlePressOut(scaleGroup)}
                 >

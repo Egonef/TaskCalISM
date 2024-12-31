@@ -16,7 +16,7 @@ import AddPopUp from '../components/AddPopUp';
 
 
 
-export default function UserCalendar() {
+export default function Groups() {
     const [selectedDate, setSelectedDate] = useState('');
     const [tasks, setTasks] = useState([]);
     const [tasksForSelectedDate, setTasksForSelectedDate] = useState([]);
@@ -49,6 +49,7 @@ export default function UserCalendar() {
             <Text style={styles.header}>Your Groups</Text>
             <View style={styles.taskContainer}>
                 <FlatList
+                    showsVerticalScrollIndicator={false}
                     data={groups}
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={({ item }) => (
@@ -98,7 +99,7 @@ const styles = StyleSheet.create({
     },
     taskContainer: {
         width: '100%',
-        height: '100%',
+        height: '85%',
         alignContent: 'center',
         padding: 30,
     },
