@@ -26,29 +26,32 @@ export default function TaskFormGroup() {
 
     const [categories, setCategories] = useState([]);
 
-    const userID = AsyncStorage.getItem('userInfo')._id;
+    const route = useRoute();
+
 
     useEffect(() => {
         NavigationBar.setBackgroundColorAsync("#F1F1F1");
         NavigationBar.setButtonStyleAsync("dark");
+        console.log('TaskFormGroup route:', route);
+
 
         //Solicitud al backend para obtener las categorias
-    const fetchCategories = async () => {
-        const userInfo = await AsyncStorage.getItem('userInfo');
-        const userID = JSON.parse(userInfo)._id;
-        console.log(userID);
-        try {
-            const response = await axios.get(`${BACKEND_IP}/api/categories/user/${userID}`);
-            console.log('Lists:', response.data);
-            const categoryOptions = response.data.map(category => ({
-                label: category.nombre,
-                value: category._id,
-            }));
-            setCategories(categoryOptions);
-        } catch (error) {
-            console.error('Error fetching categories:', error);
-        }
-    };
+        const fetchCategories = async () => {
+            const userInfo = await AsyncStorage.getItem('userInfo');
+            const userID = JSON.parse(userInfo)._id;
+            console.log(userID);
+            try {
+                const response = await axios.get(`${BACKEND_IP}/api/categories/user/${userID}`);
+                console.log('Lists:', response.data);
+                const categoryOptions = response.data.map(category => ({
+                    label: category.nombre,
+                    value: category._id,
+                }));
+                setCategories(categoryOptions);
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            }
+        };
 
         fetchCategories();
     }, []);
