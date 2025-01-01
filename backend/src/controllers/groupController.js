@@ -59,7 +59,7 @@ export const getMembersGroup = asyncHandler(async(req, res) => { //NO TIENE CU
         if (!group) {
             return res.status(404).json({ message: "El grupo no existe." });
         }
-        const users = group.id_usuarios
+        const users = await Grupo.find({ _id: { $in: group.id_usuarios } });
         res.status(200).json(users)
 
     }catch(error){
