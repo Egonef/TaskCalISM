@@ -27,6 +27,8 @@ export default function AddPopUp() {
     //route.name devuelve el nombre de la pagina actual
     const [groupMode, setGroupMode] = useState(false);
 
+    
+
     //Use Effect para animar el popUp cuando se detecta que se abre o cierra
     useEffect(() => {
         Animated.timing(heightAnim, {
@@ -82,7 +84,7 @@ export default function AddPopUp() {
                     onPressIn={() => handlePressIn(scaleTask)}
                     onPressOut={() => handlePressOut(scaleTask)}
                 >
-                    <Animated.View style={{ transform: [{ scale: scaleTask }] }}>
+                    <Animated.View style={{ transform: [{ scale: scaleTask }]}}>
                         <Text style={styles.text}>Add Task</Text>
                     </Animated.View>
                 </Pressable>

@@ -13,7 +13,6 @@ import asyncHandler from 'express-async-handler'
 export const getAllTasksGroup = asyncHandler(async(req, res) => {  //CU09, que diferencia hay con el getTasksByCategoryUser de categoryUserController.js??
     try{
         //const {id_grupo} = req.query //TIENE QUE SER QUERY, SI SE PONE BODY NO FUNCIONA NO TOCAR BAJO NINGUN CONCEPTO
-        
         const categorias = await CategoriaGrupo.find({id_grupo : req.params.id_grupo});
         if (categorias.length === 0) {
             return res.status(404).json({ message: "Este grupo no tiene categorias existentes" });
@@ -59,12 +58,12 @@ export const getTasksCatGroup = asyncHandler(async(req, res) => { //que diferenc
 ///api/tasks
 //se pueden crear dos tareas o categorias iguales?????
 export const createTaskGroup = asyncHandler(async (req, res) => { //CU11
-    const { nombre, descripcion, fecha_vencimiento, estado, id_categoria_grupo } = req.body;
-
+    const { nombre, descripcion, fecha_vencimiento, id_categoria_grupo } = req.body;
     try {
         // Verificar si el usuario asociado existe
         const grupoExistente = await Grupo.findById(req.params.idgrupo);
         if (!grupoExistente) {
+            console.log("Grupo no encontrado")
             return res.status(404).json({ message: "El grupo asociado no existe" });
         }
 
@@ -82,7 +81,7 @@ export const createTaskGroup = asyncHandler(async (req, res) => { //CU11
             nombre,
             descripcion,
             fecha_vencimiento: fechaProcesada,
-            estado,
+            estado: false,
             id_categoria_grupo,//ponerla como obligatoria
         });
 

@@ -8,8 +8,15 @@ export const GlobalProvider = ({ children }) => {
     const [OpenProfilePopUp, setOpenProfilePopUp] = useState(false);
     const [LoggedIn, setLoggedIn] = useState(false);
 
+    const [CurrentGroup, setCurrentGroup] = useState(null);
+
     return (
-        <GlobalContext.Provider value={{ OpenAddPopUp, setOpenAddPopUp, OpenProfilePopUp, setOpenProfilePopUp , LoggedIn, setLoggedIn}}>
+        <GlobalContext.Provider value={{ 
+            OpenAddPopUp, setOpenAddPopUp, 
+            OpenProfilePopUp, setOpenProfilePopUp , 
+            LoggedIn, setLoggedIn,
+            CurrentGroup, setCurrentGroup,
+            }}>
             {children}
         </GlobalContext.Provider>
     );

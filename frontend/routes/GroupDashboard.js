@@ -2,11 +2,12 @@
 import { StatusBar } from 'expo-status-bar';
 import { Button, Pressable, StyleSheet, Text, TextInput, View, ScrollView, FlatList, Modal, TouchableOpacity, Animated} from 'react-native';
 import { Calendar } from 'react-native-calendars';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef , useContext} from 'react';
 import { useRoute } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { EditPencil } from 'iconoir-react-native';
+import { GlobalContext } from '../GlobalContext';
 
 //Entorno
 import { BACKEND_IP } from '@env';
@@ -29,10 +30,20 @@ export default function GroupDashboard() {
     const route = useRoute();
     const { groupID } = route.params;
 
+    const { CurrentGroup, setCurrentGroup } = useContext(GlobalContext);
+
     useEffect(() => {
-        console.log('GroupDashboard:', groupID );
-        fetchTasks(setTasks, setMarkedDates);
-    }, []);
+        console.log('GroupDashboard:', groupID);
+        setCurrentGroup(groupID);
+    }, [groupID]);
+
+    useEffect(() => {
+        if (CurrentGroup) {
+            console.log('CurrentGroup:', CurrentGroup);
+            fetchTasks();
+        }
+    }, [CurrentGroup]);
+
 
 
     // Solicitud al backend para obtener las tareas
@@ -44,7 +55,7 @@ export default function GroupDashboard() {
         console.log(userID);
 
         const response = await axios.get(
-            `${BACKEND_IP}/api/tasks/user/all/${userID}`,
+            `${BACKEND_IP}/api/tasks/group/all/${CurrentGroup}`,
             {
                 headers: {
                     'Content-Type': 'application/json',

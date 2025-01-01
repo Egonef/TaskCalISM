@@ -8,7 +8,6 @@ import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNPickerSelect from 'react-native-picker-select';
 
-
 //Entorno
 import { BACKEND_IP } from '@env';
 
@@ -20,7 +19,7 @@ import SuccessModal from '../components/SuccessModal';
 export default function TaskFormGroup() {
     const [nombre, setNombre] = useState('');
     const [descripcion, setDescripcion] = useState('');
-    const [id_categoria_usuario, setCategoria] = useState('');
+    const [id_categoria_grupo, setCategoria] = useState('');
     const [fecha_vencimiento, setFecha_vencimiento] = useState('');
     const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
 
@@ -28,6 +27,7 @@ export default function TaskFormGroup() {
 
     const route = useRoute();
 
+    const { CurrentGroup } = useContext(GlobalContext);
 
     useEffect(() => {
         NavigationBar.setBackgroundColorAsync("#F1F1F1");
@@ -37,11 +37,9 @@ export default function TaskFormGroup() {
 
         //Solicitud al backend para obtener las categorias
         const fetchCategories = async () => {
-            const userInfo = await AsyncStorage.getItem('userInfo');
-            const userID = JSON.parse(userInfo)._id;
-            console.log(userID);
+            console.log('CurrentGroup fetching categories:', CurrentGroup);
             try {
-                const response = await axios.get(`${BACKEND_IP}/api/categories/user/${userID}`);
+                const response = await axios.get(`${BACKEND_IP}/api/categories/group/${CurrentGroup}`);
                 console.log('Lists:', response.data);
                 const categoryOptions = response.data.map(category => ({
                     label: category.nombre,
@@ -57,15 +55,12 @@ export default function TaskFormGroup() {
     }, []);
 
     const createTask = async () => {
-        const userInfo = await AsyncStorage.getItem('userInfo');
-        const userID = JSON.parse(userInfo)._id;
-        console.log(userID);
         try {
-            const response = await axios.post(`${BACKEND_IP}/api/tasks/user/${userID}`, {
+            const response = await axios.post(`${BACKEND_IP}/api/tasks/group/${CurrentGroup}`, {
                 nombre,
                 descripcion,
                 fecha_vencimiento,
-                id_categoria_usuario
+                id_categoria_grupo
             });
             console.log('Task created:', response.data);
             setIsSuccessModalVisible(true);
