@@ -3,7 +3,6 @@ import { Schema, model } from 'mongoose'
 const grupoSchema = new Schema({
     nombre: String,
     descripcion: String,
-    id_calendario: String,
     id_admin: { type: Schema.Types.ObjectId, ref: 'Usuario' },
     id_usuarios: [
         {
