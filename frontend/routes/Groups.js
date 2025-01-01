@@ -6,7 +6,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { EditPencil } from 'iconoir-react-native';
-
+import { useNavigation } from '@react-navigation/native';
 //Entorno
 import { BACKEND_IP } from '@env';
 
@@ -27,6 +27,16 @@ export default function Groups() {
 
     const [groups, setGroups] = useState([]);
 
+    const navigation = useNavigation();
+    /*
+    const goIntoGroup = (group) => {
+        navigation.navigate('GroupDashboard', { group });
+    }
+    */
+
+    const goIntoGroup = (groupID) => {
+        navigation.navigate('GroupDashboard', { groupID });
+    }
 
     const getGroups = async () => {
         try {
@@ -53,7 +63,7 @@ export default function Groups() {
                     data={groups}
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={({ item }) => (
-                        <TouchableOpacity >
+                        <TouchableOpacity onPress={() => goIntoGroup(item._id)}>
                             <View style={styles.listcard}>
                                 <Text style={styles.textList}>{item.nombre}</Text>
                             </View>

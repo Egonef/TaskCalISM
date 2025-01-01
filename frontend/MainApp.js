@@ -21,7 +21,7 @@ import Notifications from './routes/Notifications';
 import TaskForm from './routes/TaskForm';
 import ListForm from './routes/ListForm';
 import GroupForm from './routes/GroupForm';
-
+import GroupDashboard from './routes/GroupDashboard';
 
 
 const Stack = createStackNavigator();
@@ -65,6 +65,7 @@ export default function MainApp() {
                         <Stack.Screen name="TaskForm" component={TaskForm} />
                         <Stack.Screen name="ListForm" component={ListForm} />
                         <Stack.Screen name="GroupForm" component={GroupForm} />
+                        <Stack.Screen name="GroupDashboard" component={GroupDashboard} />
                     </>
                 )}
             </Stack.Navigator>
