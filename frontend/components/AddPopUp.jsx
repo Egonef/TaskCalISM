@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useRef , useState} from 'react';
 import { StyleSheet, Text, Animated , View, Pressable } from 'react-native';
 import { GlobalContext } from '../GlobalContext';
 import { useRoute , useNavigation} from '@react-navigation/native';
+import { Group } from 'iconoir-react-native';
 
 
 
@@ -24,6 +25,7 @@ export default function AddPopUp() {
 
     const navigation = useNavigation();
     //route.name devuelve el nombre de la pagina actual
+    const [groupMode, setGroupMode] = useState(false);
 
     //Use Effect para animar el popUp cuando se detecta que se abre o cierra
     useEffect(() => {
@@ -47,6 +49,13 @@ export default function AddPopUp() {
             setDisplayMode(true);
         }
 
+        if(route.name == 'GroupDashboard'){
+            setGroupMode(true);
+            console.log('GroupMode:', groupMode);
+        }else{
+            setGroupMode(false);
+            console.log('GroupMode:', groupMode);
+        }
     }, [OpenAddPopUp]);
 
     const handlePressIn = (anim) => {
@@ -67,9 +76,9 @@ export default function AddPopUp() {
     return (
         <Animated.View style={[styles.container, { height: heightAnim } , { display: displayMode ? 'flex' : 'none' }]}>
             <Animated.View style={[styles.buttonContainer, { opacity: buttonAnim }]}>
-                <Pressable 
-                    style={styles.createButton} 
-                    onPress={() => navigation.navigate('TaskForm')}
+                <Pressable
+                    style={styles.createButton}
+                    onPress={() => { groupMode ?  navigation.navigate('TaskFormGroup') : navigation.navigate('TaskForm') }}
                     onPressIn={() => handlePressIn(scaleTask)}
                     onPressOut={() => handlePressOut(scaleTask)}
                 >
@@ -77,9 +86,9 @@ export default function AddPopUp() {
                         <Text style={styles.text}>Add Task</Text>
                     </Animated.View>
                 </Pressable>
-                <Pressable 
-                    style={styles.createButton} 
-                    onPress={() => navigation.navigate('ListForm')}
+                <Pressable
+                    style={styles.createButton}
+                    onPress={() =>{ groupMode ? navigation.navigate('ListFormGroup') : navigation.navigate('ListForm')}}
                     onPressIn={() => handlePressIn(scaleList)}
                     onPressOut={() => handlePressOut(scaleList)}
                 >
@@ -87,8 +96,8 @@ export default function AddPopUp() {
                         <Text style={styles.text}>Add List</Text>
                     </Animated.View>
                 </Pressable>
-                <Pressable 
-                    style={styles.createButton} 
+                {groupMode ? <View></View> : <Pressable
+                    style={styles.createButton}
                     onPress={() => navigation.navigate('GroupForm')}
                     onPressIn={() => handlePressIn(scaleGroup)}
                     onPressOut={() => handlePressOut(scaleGroup)}
@@ -96,7 +105,7 @@ export default function AddPopUp() {
                     <Animated.View style={{ transform: [{ scale: scaleGroup }] }}>
                         <Text style={styles.text}>Create Group</Text>
                     </Animated.View>
-                </Pressable>
+                </Pressable>}
             </Animated.View>
         </Animated.View>
     );
