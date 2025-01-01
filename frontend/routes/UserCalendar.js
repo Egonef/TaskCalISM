@@ -146,9 +146,9 @@ const handleDayPress = (day) => {
                  <View style={styles.modalContainer}>
                      <View style={styles.modalView}>
                          <Text style={styles.modalTitle}>{selectedTask.nombre}</Text>
-                         <Text style={styles.modalText}>Descripción: {selectedTask.descripcion}</Text>
-                         <Text style={styles.modalText}>Fecha de vencimiento: {selectedTask.fecha_vencimiento}</Text>
-                         <Text style={styles.modalText}>Estado: {selectedTask.estado ? 'Completada' : 'Pendiente'}</Text>
+                         <Text style={styles.modalText}>Description: {selectedTask.descripcion}</Text>
+                         <Text style={styles.modalText}>Due date: {selectedTask.fecha_vencimiento.split('T')[0]}</Text>
+                         <Text style={styles.modalText}>Status: {selectedTask.estado ? 'Complete' : 'Pending'}</Text>
                          <TouchableOpacity style={styles.editButton} onPress={() => {/* Lógica para editar la tarea */}}>
                                 <EditPencil width={24} height={24} color="#FFF" />
                          </TouchableOpacity>
@@ -235,13 +235,15 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     modalTitle: {
-        fontSize: 24,
+        fontSize: 30,
         fontWeight: 'bold',
         marginBottom: 15,
+        color: 'white',
     },
     modalText: {
-        fontSize: 18,
+        fontSize: 23,
         marginBottom: 10,
+        color: 'white',
     },
     closeButton: {
         marginTop: 20,
@@ -249,11 +251,15 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 10,
         elevation: 2,
+        width: 100,
+        height: 55,
     },
     closeButtonText: {
         color: 'white',
         fontWeight: 'bold',
         textAlign: 'center',
+        padding: 5,
+        fontSize: 18,
     },
     editButton: {
         position: 'absolute',

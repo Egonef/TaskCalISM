@@ -320,7 +320,7 @@ export default function Home() {
                 ) : tasks.message === "No tienes tareas pendientes para hoy." ? (
                     // Mostrar mensaje cuando no hay tareas para hoy
                     <View style={styles.taskList}>
-                        <Text style={styles.noTasksText}>No tiene tareas pendientes para hoy!</Text>
+                        <Text style={styles.noTasksText}>No pending tasks for today!</Text>
                     </View>
                 ) : (
                     // Mostrar las tareas reales una vez cargadas
