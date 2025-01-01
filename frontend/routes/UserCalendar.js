@@ -62,13 +62,32 @@ export default function UserCalendar() {
             if (!markedDates[taskDate]) {
                 markedDates[taskDate] = { dots: [], marked: true };
             }
-            markedDates[taskDate].dots.push({ color: task.estado ? 'green' : '#B5C18E' });
+            markedDates[taskDate].dots.push({ color: task.estado ? 'red' : '#B5C18E' });
         });
         setMarkedDates(markedDates);
 
 
     } catch (error) {
         console.error('Error fetching the tasks:', error);
+    }
+};
+
+const finishTask = async () => {
+    try {
+        const response = await axios.put(
+            `${BACKEND_IP}/api/tasks/user/endtask/${selectedTask._id}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+        console.log('Task finished:', response.data);
+        setSelectedTask({ ...selectedTask, estado: true });
+        // Actualizar la lista de tareas
+        fetchTasks();
+    } catch (error) {
+        console.error('Error finishing the task:', error);
     }
 };
 
@@ -97,6 +116,10 @@ const handleDayPress = (day) => {
     const closeModal = () => {
         setModalVisible(false);
         setSelectedTask(null);
+    };
+
+    const finish = () => {
+        finishTask();
     };
 
 
@@ -152,9 +175,14 @@ const handleDayPress = (day) => {
                          <TouchableOpacity style={styles.editButton} onPress={() => {/* Lógica para editar la tarea */}}>
                                 <EditPencil width={24} height={24} color="#FFF" />
                          </TouchableOpacity>
-                         <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
-                             <Text style={styles.closeButtonText}>Close</Text>
-                         </TouchableOpacity>
+                        <View style={styles.buttons}>
+                            <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+                                <Text style={styles.closeButtonText}>Close</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.closeButton} onPress={finish}>
+                                <Text style={styles.closeButtonText}>Finish</Text>
+                            </TouchableOpacity>
+                        </View>
                      </View>
                  </View>
              </Modal>
@@ -251,6 +279,7 @@ const styles = StyleSheet.create({
         elevation: 2,
         width: 100,
         height: 55,
+        margin: 10,
     },
     closeButtonText: {
         color: 'white',
@@ -263,5 +292,9 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 20,
         right: 20,
+    },
+    buttons: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
 });
