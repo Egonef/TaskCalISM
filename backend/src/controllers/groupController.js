@@ -26,7 +26,7 @@ export const getGroups = asyncHandler(async(req, res) => { //NO TIENE CU
 ///api/group/user/:id_usuario
 export const getGroupsUser = asyncHandler(async(req, res) => { //NO TIENE CU
     try{
-        const usuario = await Usuario.findById(req.params.id_usuario);
+        const usuario = await Usuario.findById(req.params.id_usuario).populate('id_grupos');
         if (!usuario) {
             return res.status(404).json({ message: "El usuario asociado no existe" });
         }
