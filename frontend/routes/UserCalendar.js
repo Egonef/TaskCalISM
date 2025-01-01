@@ -62,7 +62,7 @@ export default function UserCalendar() {
             if (!markedDates[taskDate]) {
                 markedDates[taskDate] = { dots: [], marked: true };
             }
-            markedDates[taskDate].dots.push({ color: task.estado ? 'red' : '#B5C18E' });
+            markedDates[taskDate].dots.push({ color: task.estado ? '#EADBC8' : '#B5C18E' });
         });
         setMarkedDates(markedDates);
 
@@ -179,9 +179,11 @@ const handleDayPress = (day) => {
                             <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
                                 <Text style={styles.closeButtonText}>Close</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.closeButton} onPress={finish}>
-                                <Text style={styles.closeButtonText}>Finish</Text>
-                            </TouchableOpacity>
+                            {!selectedTask.estado && (
+                                    <TouchableOpacity style={styles.closeButton} onPress={finishTask}>
+                                        <Text style={styles.closeButtonText}>Finish</Text>
+                                    </TouchableOpacity>
+                            )}
                         </View>
                      </View>
                  </View>
