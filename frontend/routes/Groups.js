@@ -28,6 +28,7 @@ export default function Groups() {
     const [groups, setGroups] = useState([]);
 
     const navigation = useNavigation();
+
     /*
     const goIntoGroup = (group) => {
         navigation.navigate('GroupDashboard', { group });
@@ -40,8 +41,9 @@ export default function Groups() {
 
     const getGroups = async () => {
         try {
-            const token = await AsyncStorage.getItem('token');
-            const response = await axios.get(`${BACKEND_IP}/api/group`);
+            const userInfo = await AsyncStorage.getItem('userInfo');
+            const userID = JSON.parse(userInfo)._id;
+            const response = await axios.get(`${BACKEND_IP}/api/group/user/${userID}`);
             console.log(response.data);
             setGroups(response.data);
         } catch (error) {
