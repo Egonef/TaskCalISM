@@ -23,6 +23,21 @@ export const getGroups = asyncHandler(async(req, res) => { //NO TIENE CU
     }
 })
 
+///api/group/user/:id_usuario
+export const getGroupsUser = asyncHandler(async(req, res) => { //NO TIENE CU
+    try{
+        const usuario = await Usuario.findById(req.params.id_usuario);
+        if (!usuario) {
+            return res.status(404).json({ message: "El usuario asociado no existe" });
+        }
+        const groups = usuario.id_grupos
+        res.status(200).json(groups)
+
+    }catch(error){
+        res.status(500).json({ message: error.message });
+    }
+})
+
 export const getGroup = asyncHandler(async(req, res) => { 
     
     try{
@@ -31,6 +46,21 @@ export const getGroup = asyncHandler(async(req, res) => {
             res.status(200).json(group)
         else
             res.status(404).json({ message: "Grupo no encontrado" });
+
+    }catch(error){
+        res.status(500).json({ message: error.message });
+    }
+})
+
+///api/group/members/:id_grupo
+export const getMembersGroup = asyncHandler(async(req, res) => { //NO TIENE CU
+    try{
+        const group = await Grupo.findById(req.params.id_grupo);
+        if (!group) {
+            return res.status(404).json({ message: "El grupo no existe." });
+        }
+        const users = group.id_usuarios
+        res.status(200).json(users)
 
     }catch(error){
         res.status(500).json({ message: error.message });

@@ -9,7 +9,30 @@ import asyncHandler from 'express-async-handler'
 
 // Tus rutas van aquí
     // GETS GENERICOS
+///api/tasks/group/all/:id_grupo
+export const getAllTasksGroup = asyncHandler(async(req, res) => {  //CU09, que diferencia hay con el getTasksByCategoryUser de categoryUserController.js??
+    try{
+        //const {id_grupo} = req.query //TIENE QUE SER QUERY, SI SE PONE BODY NO FUNCIONA NO TOCAR BAJO NINGUN CONCEPTO
+        
+        const categorias = await CategoriaGrupo.find({id_grupo : req.params.id_grupo});
+        if (categorias.length === 0) {
+            return res.status(404).json({ message: "Este grupo no tiene categorias existentes" });
+        }
 
+        let tareas = [];
+        for (const categoria of categorias) {
+            const tareasCategoria = await TareaGrupo.find({
+                id_categoria_grupo: categoria._id, // Filtrar por el ID de la categoría 
+            });
+            tareas = tareas.concat(tareasCategoria);
+        }
+
+        res.status(200).json(tareas)
+
+    }catch(error){
+        res.status(500).json({ messageTareaUsuario: error.message });
+    }
+})
 ///api/tasks?id_usuario=0
 export const getTasksCatGroup = asyncHandler(async(req, res) => { //que diferencia hay con el getTasksByCategoryGroup de categoryGroupController.js??
     try{

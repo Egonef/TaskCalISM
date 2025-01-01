@@ -4,6 +4,7 @@ const router = express.Router()
 
 ///api/tasks/group
 router.route('/').get(ctr.getTasksCatGroup)
+router.route('/all/:id_grupo').get(ctr.getAllTasksGroup)
 router.route('/gettask/:id').get(ctr.getTaskGroup)
 router.route('/:idgrupo').post(ctr.createTaskGroup)
 router.route('/modify/:id').put(ctr.modifyTaskGroup)
