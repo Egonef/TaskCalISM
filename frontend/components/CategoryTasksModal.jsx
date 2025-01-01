@@ -83,6 +83,8 @@ const styles = StyleSheet.create({
     header: {
         fontSize: 20,
         marginBottom: 20,
+        color: '#B4A593',
+        fontWeight: 'bold',
     },
     taskCard: {
         backgroundColor: '#B5C18E',
@@ -96,20 +98,23 @@ const styles = StyleSheet.create({
     taskText: {
         flex: 1,
         fontSize: 20,
+        color: '#fff',
     },
     taskText2: {
         flex: 1,
         fontSize: 16,
+        color: '#fff',
     },
     closeButton: {
         marginTop: 20,
         padding: 10,
-        backgroundColor: '#B5C18E',
+        backgroundColor: '#B4A593',
         borderRadius: 15,
     },
     closeButtonText: {
         color: '#fff',
         textAlign: 'center',
+        fontWeight : 'bold',
     },
 });
 

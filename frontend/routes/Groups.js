@@ -88,6 +88,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         marginTop: 50,
+        color: '#B4A593',
     },
     listcard: {
         width: '100%',
