@@ -24,7 +24,9 @@ async function generarNotificacion(tipo, datos, usuario) {
   try {
      // Ruta de la plantilla
      const templatePath = path.join(templatesDir, `${tipo}.hbs`);
-     //console.log(templatePath);
+     console.log(templatePath);
+
+     console.log(tipo);
     
      // Verificar si el archivo existe
      if (!fs.existsSync(templatePath)) {
@@ -77,6 +79,8 @@ async function generarNotificacion(tipo, datos, usuario) {
         leida: false,
         id_usuario: usuario,
       });
+      await notificacion.save();
+      console.log(`Invitao`)
     }
   } catch (error) {
     console.error(`Error al generar la notificación: ${error.message}`);

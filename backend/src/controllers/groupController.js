@@ -77,8 +77,6 @@ export const createGroup = asyncHandler(async(req, res) => { //CU03
         if (grupoExistente) {
             return res.status(409).json({ message: "El grupo ya existe" });
         }
-
-        const id_calendario = "0"; //Provisional
         
         if (!admin) {
             return res.status(404).json({ message: 'Usuario no encontrado' });
@@ -87,7 +85,6 @@ export const createGroup = asyncHandler(async(req, res) => { //CU03
         const newGroup = new Grupo({
             nombre,
             descripcion,
-            id_calendario, 
             id_admin:admin,
             id_usuarios:admin //deberiamos de ponerlo en el models
         });

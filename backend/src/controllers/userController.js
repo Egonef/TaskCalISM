@@ -48,18 +48,17 @@ export const createUser = asyncHandler(async (req, res) => { //CU23
             console.log("Contraseña no proporcionada");
             return res.status(400).json({ message: "Contraseña no proporcionada" });
         }
-
+        //CIFRAR CONTRASEÑA
         const contraseña_hashed = await bcrypt.hash(contraseña, saltRounds);
 
+        //PROCESAR FECHA
         const [día, mes, año] = fecha_nacimiento.split('/');
         const fechaProcesada = new Date(`${año}-${mes}-${día}`);
 
-        const id_calendario = "0"; //Provisional
-
+        //CREAR OBJETO USUARIO
         const newUsu = new Usuario({
             nombre_usuario,
             nombre,
-            id_calendario,
             contraseña: contraseña_hashed,
             fecha_nacimiento: fechaProcesada,
             id_grupos: []
@@ -67,7 +66,7 @@ export const createUser = asyncHandler(async (req, res) => { //CU23
         await newUsu.save();
         console.log("Usuario guardado:", newUsu);
 
-
+        // CREAR CATEGORIA SIN CATEGORA
         const Categoria = new CategoriaUsuario({ //Categoria "Sin categoria"
             nombre: "Sin Categoria",
             descripcion: "Tareas sin categoria definida",
@@ -75,6 +74,9 @@ export const createUser = asyncHandler(async (req, res) => { //CU23
         });
         await Categoria.save();
         console.log("categoria guardada:", Categoria);
+
+        //NOTIFICACION BIENVENIDA
+        //llamarla desde el frontend
 
         res.status(200).json({ message: "El usuario ha sido creado correctamente" });
     } catch (error) {
