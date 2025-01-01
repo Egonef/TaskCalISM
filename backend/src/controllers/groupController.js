@@ -95,6 +95,14 @@ export const createGroup = asyncHandler(async(req, res) => { //CU03
         admin.id_grupos.push(newGroup);
         await newGroup.save();
         await admin.save();
+
+        const Categoria = new CategoriaGrupo({ //Categoria "Sin categoria"
+            nombre: "Sin Categoria",
+            descripcion: "Tareas sin categoria definida",
+            id_grupo: newGroup._id,
+        });
+        await Categoria.save();
+        console.log("categoria guardada:", Categoria);
         
         res.status(200).json({ message: "El grupo ha sido creado correctamente" });
     } catch (error) {
@@ -201,18 +209,34 @@ export const inviteUserGroup = asyncHandler(async(req,res) => { //CU04
             return res.status(403).json({ message: "Solo el administrador puede invitar usuarios." });
         }
 
-        const usuarioEnGrupo = grupo.id_usuarios.some(u => u.usuario.toString() === req.params.id_user);
+        const usuarioEnGrupo = grupo.id_usuarios.some(u => u.usuario && u.usuario.toString() === req.params.id_user);
         if (usuarioEnGrupo) {
             return res.status(409).json({ message: "El usuario ya está en este grupo" });
         }
 
-        const grupoEnUsuario= usuario.id_grupos.some(g => g.grupo.toString() === id_group);
+        const grupoEnUsuario = usuario.id_grupos.some(g => g.grupo && g.grupo.toString() === id_group);
         if (grupoEnUsuario) {
             return res.status(409).json({ message: "El grupo ya está asociado a ese usuario." });
         }
         // Generar notificacion de invitación. TO DO
         // Debe incluirse el nombre del admin en la notificación, para evitar problemas de seguridad en
         // accept invitation group. (Cualquiera podría autoinvitarse si obtiene el id del grupo.)
+        // invitacionAGrupo
+        const tipo = 'invitacionAGrupo'; // Tipo de notificación
+        const datos = {
+        nombre_usuario: usuario.nombre_usuario,
+        nombre_usuario_asignador: admin.nombre_usuario,
+        nombre_grupo: grupo.nombre
+        };
+
+        (async () => {
+            try {
+              await generarNotificacion(tipo, datos, req.params.id_user);
+              console.log('Notificación generada exitosamente.');
+            } catch (error) {
+              console.error('Error al generar la notificación:', error.message);
+            }
+          })();
 
         res.status(200).json({ message: 'Se ha invitado el usuario al grupo.' });
     } catch (error){

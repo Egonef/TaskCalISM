@@ -68,7 +68,15 @@ async function generarNotificacion(tipo, datos, usuario) {
 
       console.log(`NOTIFICACION A CONTINUACION: ${notificacion}`)
       //await notificacion.save();
+    }
 
+    if(tipo == 'invitacionAGrupo'){
+      notificacion = new Notificacion({
+        titulo: `Notificación de ${tipo}`, // Puedes personalizar el título según el tipo
+        descripcion: content,
+        leida: false,
+        id_usuario: usuario,
+      });
     }
   } catch (error) {
     console.error(`Error al generar la notificación: ${error.message}`);
