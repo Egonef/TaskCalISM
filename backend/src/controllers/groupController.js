@@ -22,6 +22,20 @@ export const getGroups = asyncHandler(async(req, res) => { //NO TIENE CU
         res.status(500).json({ message: error.message });
     }
 })
+///api/group/:id
+export const getGroup = asyncHandler(async(req, res) => { 
+    console.log(req.params.id)
+    try{
+        const group = await Grupo.findById(req.params.id);
+        if(group)
+            res.status(200).json(group)
+        else
+            res.status(404).json({ message: "Grupo no encontrado" });
+
+    }catch(error){
+        res.status(500).json({ message: error.message });
+    }
+})
 
 ///api/group/user/:id_usuario
 export const getGroupsUser = asyncHandler(async(req, res) => { //NO TIENE CU
@@ -32,20 +46,6 @@ export const getGroupsUser = asyncHandler(async(req, res) => { //NO TIENE CU
         }
         const groups = await Grupo.find({ _id: { $in: usuario.id_grupos } });
         res.status(200).json(groups)
-
-    }catch(error){
-        res.status(500).json({ message: error.message });
-    }
-})
-
-export const getGroup = asyncHandler(async(req, res) => { 
-    console.log(req.params.id)
-    try{
-        const group = await Grupo.findById(req.params.id);
-        if(group)
-            res.status(200).json(group)
-        else
-            res.status(404).json({ message: "Grupo no encontrado" });
 
     }catch(error){
         res.status(500).json({ message: error.message });
@@ -66,7 +66,7 @@ export const getMembersGroup = asyncHandler(async(req, res) => { //NO TIENE CU
         res.status(500).json({ message: error.message });
     }
 })
-
+///api/user/:user
 export const createGroup = asyncHandler(async(req, res) => { //CU03
 
     const { nombre , descripcion} = req.body;
@@ -107,8 +107,63 @@ export const createGroup = asyncHandler(async(req, res) => { //CU03
     }
 })
 
+///api/group/invite/:id_user
+export const inviteUserGroup = asyncHandler(async(req,res) => { //CU04
+    //const { id_user } = req.params; // ID del usuario a modificar
+    const {id_admin, id_group} = req.body;
+    try {
+        const usuario = await Usuario.findById(req.params.id_user);   
+        if(!usuario){
+            return res.status(404).json({ message: "Usuario no encontrado" });
+        }
+
+        const grupo = await Grupo.findById(id_group);
+        if(!grupo){
+            return res.status(404).json({ message: "Grupo no encontrado" });
+        }
+
+        const admin = await Usuario.findById(id_admin);   
+        if(!admin || !admin._id.equals(grupo.id_admin)){
+            return res.status(403).json({ message: "Solo el administrador puede invitar usuarios." });
+        }
+
+        const usuarioEnGrupo = grupo.id_usuarios.some(u => u.usuario && u.usuario.toString() === req.params.id_user);
+        if (usuarioEnGrupo) {
+            return res.status(409).json({ message: "El usuario ya está en este grupo" });
+        }
+
+        const grupoEnUsuario = usuario.id_grupos.some(g => g.grupo && g.grupo.toString() === id_group);
+        if (grupoEnUsuario) {
+            return res.status(409).json({ message: "El grupo ya está asociado a ese usuario." });
+        }
+        // Generar notificacion de invitación. TO DO
+        // Debe incluirse el nombre del admin en la notificación, para evitar problemas de seguridad en
+        // accept invitation group. (Cualquiera podría autoinvitarse si obtiene el id del grupo.)
+        // invitacionAGrupo
+        const tipo = 'invitacionAGrupo'; // Tipo de notificación
+        const datos = {
+        nombre_usuario: usuario.nombre_usuario,
+        nombre_usuario_asignador: admin.nombre_usuario,
+        nombre_grupo: grupo.nombre
+        };
+
+        (async () => {
+            try {
+              await generarNotificacion(tipo, datos, req.params.id_user);
+              console.log('Notificación generada exitosamente.');
+            } catch (error) {
+              console.error('Error al generar la notificación:', error.message);
+            }
+          })();
+
+        res.status(200).json({ message: 'Se ha invitado el usuario al grupo.' });
+    } catch (error){
+        return res.status(500).json({ message: error.message});
+    }
+})
 
 //CUANDO SE ELIMINA UN GRUPO, HAY QUE ELIMINAR TODAS LAS CATEGORIAS Y TAREAS ASOCIADAS A ESE GRUPO: TO DO!!!!!
+///api/group/delete/:id
 export const deleteGroup = asyncHandler(async(req, res) => { //CU07
    
     const {id_admin} = req.body;
@@ -187,66 +242,8 @@ export const deleteGroup = asyncHandler(async(req, res) => { //CU07
     }
 })
 
-export const inviteUserGroup = asyncHandler(async(req,res) => { //CU04
-    //const { id_user } = req.params; // ID del usuario a modificar
-    const {id_admin, id_group} = req.body;
-    try {
-        const usuario = await Usuario.findById(req.params.id_user);   
-        if(!usuario){
-            return res.status(404).json({ message: "Usuario no encontrado" });
-        }
-
-        const grupo = await Grupo.findById(id_group);
-        if(!grupo){
-            return res.status(404).json({ message: "Grupo no encontrado" });
-        }
-
-        const admin = await Usuario.findById(id_admin);   
-        if(!admin || !admin._id.equals(grupo.id_admin)){
-            return res.status(403).json({ message: "Solo el administrador puede invitar usuarios." });
-        }
-
-        const usuarioEnGrupo = grupo.id_usuarios.some(u => u.usuario && u.usuario.toString() === req.params.id_user);
-        if (usuarioEnGrupo) {
-            return res.status(409).json({ message: "El usuario ya está en este grupo" });
-        }
-
-        const grupoEnUsuario = usuario.id_grupos.some(g => g.grupo && g.grupo.toString() === id_group);
-        if (grupoEnUsuario) {
-            return res.status(409).json({ message: "El grupo ya está asociado a ese usuario." });
-        }
-        // Generar notificacion de invitación. TO DO
-        // Debe incluirse el nombre del admin en la notificación, para evitar problemas de seguridad en
-        // accept invitation group. (Cualquiera podría autoinvitarse si obtiene el id del grupo.)
-        // invitacionAGrupo
-        const tipo = 'invitacionAGrupo'; // Tipo de notificación
-        const datos = {
-        nombre_usuario: usuario.nombre_usuario,
-        nombre_usuario_asignador: admin.nombre_usuario,
-        nombre_grupo: grupo.nombre
-        };
-
-        (async () => {
-            try {
-              await generarNotificacion(tipo, datos, req.params.id_user);
-              console.log('Notificación generada exitosamente.');
-            } catch (error) {
-              console.error('Error al generar la notificación:', error.message);
-            }
-          })();
-
-        res.status(200).json({ message: 'Se ha invitado el usuario al grupo.' });
-    } catch (error){
-        return res.status(500).json({ message: error.message});
-    }
-})
-///api/group/add/:id_user
-export const addUserToAGroup = asyncHandler(async(req, res) => { 
-    
-})
-
-
 //CUANDO SE ELIMINA UN USUARIO DE UN GRUPO, HAY QUE ELIMINAR TODAS LAS ASIGNACIONES AL USUARIO: TO DO!!!!!
+///api/group/deleteUser/:admin
 export const deleteUserGroup = asyncHandler(async(req, res) => { //CU05
 
     const {nombre_usuario, nombre} = req.body; //nombre es el nombre de grupo

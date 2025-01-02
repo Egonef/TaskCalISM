@@ -10,7 +10,7 @@ const saltRounds = 10;
 
 //error 404: no se ha encontrado; error 409: conflicto
 
-///api/users
+///api/user
 export const getUsers = asyncHandler(async(req, res) => { //NO TIENE CU
     try{
         const users = await Usuario.find({})
@@ -20,7 +20,7 @@ export const getUsers = asyncHandler(async(req, res) => { //NO TIENE CU
         res.status(500).json({ message: error.message });
     }
 })
-
+///api/user/:id
 export const getUser = asyncHandler(async(req, res) => { //CU01
     
     try{
@@ -34,7 +34,7 @@ export const getUser = asyncHandler(async(req, res) => { //CU01
         res.status(500).json({ message: error.message });
     }
 })
-
+///api/user
 export const createUser = asyncHandler(async (req, res) => { //CU23
     const { nombre_usuario, nombre, contraseña, fecha_nacimiento } = req.body;
     try {
@@ -93,7 +93,30 @@ export const createUser = asyncHandler(async (req, res) => { //CU23
     }
 });
 
+///api/user/login
+export const loginUser = asyncHandler(async(req, res) => { //CU24
 
+    const { nombre_usuario, contraseña } = req.body;
+    try {
+        const usuario = await Usuario.findOne({ nombre_usuario });
+        if (!usuario) {
+            return res.status(404).json({ message: 'Usuario incorrecto' });
+        }
+
+        const contraseñaValida = await bcrypt.compare(contraseña, usuario.contraseña);
+        if (!contraseñaValida) {
+            return res.status(409).json({ message: 'Credenciales incorrectas' });
+        }
+
+        //req.session.usuarioId = usuario._id.toString();
+
+        res.status(200).json(usuario);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+})
+
+///api/user/modifyProfile/:id
 export const modifyUser = asyncHandler(async(req, res) => { //CU02
     
     const { nombre_usuario, nombre} = req.body;
@@ -123,7 +146,7 @@ export const modifyUser = asyncHandler(async(req, res) => { //CU02
         
     }
 })
-
+///api/user/modifyPassword
 export const modifyPassword = asyncHandler(async(req, res) => { 
     const { contraseña } = req.body;
     try {
@@ -144,28 +167,6 @@ export const modifyPassword = asyncHandler(async(req, res) => {
         // Manejar cualquier otro error
         res.status(500).json({ message: error.message });
     }     
-})
-
-export const loginUser = asyncHandler(async(req, res) => { //CU24
-
-    const { nombre_usuario, contraseña } = req.body;
-    try {
-        const usuario = await Usuario.findOne({ nombre_usuario });
-        if (!usuario) {
-            return res.status(404).json({ message: 'Usuario incorrecto' });
-        }
-
-        const contraseñaValida = await bcrypt.compare(contraseña, usuario.contraseña);
-        if (!contraseñaValida) {
-            return res.status(409).json({ message: 'Credenciales incorrectas' });
-        }
-
-        //req.session.usuarioId = usuario._id.toString();
-
-        res.status(200).json(usuario);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
 })
 
 /*
@@ -190,7 +191,7 @@ export const logoutUser = asyncHandler(async(req, res) => { //CU25
         res.status(500).json({ message: error.message });
     }
 }) */
-
+///api/user/invitation/:grupo
 export const acceptInvitationGroup = asyncHandler(async(req, res) => { //CU06
 
     const {nombre_usuario} = req.body
