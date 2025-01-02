@@ -111,6 +111,8 @@ export const createTaskUser = asyncHandler(async (req, res) => { //CU11
 export const modifyTaskUser = asyncHandler(async (req, res) => { //CU12
     //const { id } = req.params; // ID de la tarea a modificar
     const { nombre, descripcion, fecha_vencimiento, estado, id_categoria_usuario } = req.body;
+    const [día, mes, año] = fecha_vencimiento.split('/');
+    const fechaProcesada = new Date(`${año}-${mes}-${día}`);
 
     try {
         // Verificar si la tarea existe
@@ -122,7 +124,7 @@ export const modifyTaskUser = asyncHandler(async (req, res) => { //CU12
         // Actualizar los campos con los nuevos valores si están presentes
         tarea.nombre = nombre || tarea.nombre;
         tarea.descripcion = descripcion || tarea.descripcion;
-        tarea.fecha_vencimiento = fecha_vencimiento || tarea.fecha_vencimiento;
+        tarea.fecha_vencimiento = fechaProcesada || tarea.fecha_vencimiento;
         tarea.estado = estado !== undefined ? estado : tarea.estado;
         //tarea.id_categoria_usuario = id_categoria_usuario || tarea.id_categoria_usuario;
 

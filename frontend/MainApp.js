@@ -24,6 +24,7 @@ import GroupForm from './routes/GroupForm';
 import GroupDashboard from './routes/GroupDashboard';
 import TaskFormGroup from './routes/TaskFormGroup';
 import ListFormGroup from './routes/ListFormGroup';
+import EditTaskForm from './routes/EditTaskForm';
 
 const Stack = createStackNavigator();
 
@@ -69,6 +70,7 @@ export default function MainApp() {
                         <Stack.Screen name="GroupDashboard" component={GroupDashboard} />
                         <Stack.Screen name="TaskFormGroup" component={TaskFormGroup} />
                         <Stack.Screen name="ListFormGroup" component={ListFormGroup} />
+                        <Stack.Screen name="EditTaskForm" component={EditTaskForm} />
                     </>
                 )}
             </Stack.Navigator>

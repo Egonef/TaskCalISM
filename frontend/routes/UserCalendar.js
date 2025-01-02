@@ -6,6 +6,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { EditPencil } from 'iconoir-react-native';
+import { useRoute , useNavigation} from '@react-navigation/native';
 
 //Entorno
 import { BACKEND_IP } from '@env';
@@ -25,6 +26,7 @@ export default function UserCalendar() {
     const [modalVisible, setModalVisible] = useState(false);
     const scaleValue = useRef(new Animated.Value(0)).current;
 
+    const navigation = useNavigation();
 
     useEffect(() => {
         fetchTasks(setTasks, setMarkedDates);
@@ -172,7 +174,7 @@ const handleDayPress = (day) => {
                          <Text style={styles.modalText}>Description: {selectedTask.descripcion}</Text>
                          <Text style={styles.modalText}>Due date: {selectedTask.fecha_vencimiento.split('T')[0]}</Text>
                          <Text style={styles.modalText}>Status: {selectedTask.estado ? 'Complete' : 'Pending'}</Text>
-                         <TouchableOpacity style={styles.editButton} onPress={() => {/* Lógica para editar la tarea */}}>
+                         <TouchableOpacity style={styles.editButton} onPress={() => {navigation.navigate('EditTaskForm', {task: selectedTask}); closeModal();}}>
                                 <EditPencil width={24} height={24} color="#FFF" />
                          </TouchableOpacity>
                         <View style={styles.buttons}>
