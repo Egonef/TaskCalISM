@@ -12,6 +12,7 @@ import { generarNotificacion } from '../notificationServices/notificationsServic
 //eliiminarnotificciones, vernotificaciones
 //api/notification/:idusuario
 export const getNotifications = asyncHandler(async(req, res) => { //que diferencia hay con el getTasksByCategoryGroup de categoryGroupController.js??
+    console.log('entrando a getNotifications')
     try{
         const notificaciones = await Notificacion.find({id_usuario: req.params.idusuario})
     

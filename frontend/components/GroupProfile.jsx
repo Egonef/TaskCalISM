@@ -107,12 +107,18 @@ export default function GroupProfile() {
     }
     , [groupInfo]);
 
+    useEffect(() => {
+        console.log('Invited user:', invitedUser);
+    }, [invitedUser]);
+
     // Funcion para invitar a un usuario a un grupo
-    const inviteUser = async (Username) => {
+    const inviteUser = async () => {
+        console.log('Inviting user:', invitedUser);
         try {
             const userInfo = await AsyncStorage.getItem('userInfo');
             const userID = JSON.parse(userInfo)._id;
-            const response = await axios.put(`${BACKEND_IP}/api/group/invite/${Username}`, {
+            const response = await axios.post(`${BACKEND_IP}/api/group/invite/`, {
+                nombre_usuario: invitedUser,
                 id_admin: userID,
                 id_group: CurrentGroup,
             });
