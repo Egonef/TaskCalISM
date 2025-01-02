@@ -31,6 +31,7 @@ export default function GroupDashboard() {
     const { groupID } = route.params;
 
     const { CurrentGroup, setCurrentGroup } = useContext(GlobalContext);
+    const { OpengroupProfilePopUp, setOpengroupProfilePopUp } = useContext(GlobalContext);
 
     const [groupInfo, setGroupInfo] = useState(null);
 
@@ -137,7 +138,9 @@ const handleDayPress = (day) => {
             <View style={styles.infoContainer}>
                 <View></View>
                 {groupInfo ? <Text style={styles.header}>{groupInfo.nombre}</Text> : <Text style={styles.header}>Group...</Text>}
-                <TouchableOpacity onPress={() => console.log('Edit Group')}>
+                <TouchableOpacity 
+                    onPress={() => setOpengroupProfilePopUp(!OpengroupProfilePopUp)}
+                >
                     <Group width={24} height={24} color="#FFF" />
                 </TouchableOpacity>
             </View>
