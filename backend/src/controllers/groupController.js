@@ -121,7 +121,7 @@ export const inviteUserGroup = asyncHandler(async(req,res) => { //CU04
             return res.status(404).json({ message: "Grupo no encontrado" });
         }
 
-        const admin = await Usuario.findById(id_admin);   
+        const admin = await Usuario.findById(id_admin);
         if(!admin || !admin._id.equals(grupo.id_admin)){
             return res.status(403).json({ message: "Solo el administrador puede invitar usuarios." });
         }
