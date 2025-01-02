@@ -1,6 +1,6 @@
 //Imports
 import React, { use, useContext, useEffect, useRef , useState } from 'react';
-import { StyleSheet, Text, Animated , View, Pressable , Image } from 'react-native';
+import { StyleSheet, Text, Animated , View, Pressable , Image , TextInput , TouchableOpacity} from 'react-native';
 import { GlobalContext } from '../GlobalContext';
 import axios from 'axios';
 import { useRoute } from '@react-navigation/native';
@@ -24,6 +24,7 @@ export default function GroupProfile() {
     const { CurrentGroup } = useContext(GlobalContext);
     const [groupInfo, setGroupInfo] = useState(null);
     const [usersInfo, setUsersInfo] = useState([]);
+    const [invitedUser, setInvitedUser] = useState('');
     //Para cerrar la sesión (Provisional)
     const { LoggedIn , setLoggedIn } = useContext(GlobalContext);
 
@@ -106,13 +107,26 @@ export default function GroupProfile() {
     }
     , [groupInfo]);
 
-
+    // Funcion para invitar a un usuario a un grupo
+    const inviteUser = async (Username) => {
+        try {
+            const userInfo = await AsyncStorage.getItem('userInfo');
+            const userID = JSON.parse(userInfo)._id;
+            const response = await axios.put(`${BACKEND_IP}/api/group/invite/${Username}`, {
+                id_admin: userID,
+                id_group: CurrentGroup,
+            });
+            console.log('User invited:', response.data);
+        } catch (error) {
+            console.error('Error inviting user:', error);
+        }
+    };
 
     return (
         <Animated.View style={[styles.container, { left: horizontalAnim }]}>
             {groupInfo ? <Text style={styles.header}>{groupInfo.nombre}</Text> : <Text style={styles.text}>Group...</Text>}
             {groupInfo ? <Text style={styles.description}>{groupInfo.descripcion}</Text> : <Text style={styles.text}>Description...</Text>}
-            <View>
+            <View style={styles.userList}>
                 <FlatList
                     data={usersInfo ? usersInfo : []}
                     renderItem={({ item }) => (
@@ -122,6 +136,15 @@ export default function GroupProfile() {
                     )}
                 />
             </View>
+            <TextInput
+                placeholder="Username"
+                style={styles.input}
+                value={invitedUser}
+                onChangeText={setInvitedUser}
+            />
+            <TouchableOpacity style={styles.logoutButton} onPress={inviteUser}>
+                <Text style={styles.buttonText}>Invite user</Text>
+            </TouchableOpacity>
             <Animated.View style={[styles.exitContainer, { opacity: buttonAnim }]}>
                 <Pressable
                     style={styles.exitButton}
@@ -149,6 +172,18 @@ const styles = StyleSheet.create({
         justifyContent: 'start',
         paddingTop: 40,
         zIndex: 4,
+    },
+    input: {
+        width: '80%',
+        height: 40,
+        margin: 12,
+        borderBottomWidth: 2,
+        borderColor: '#B5C18E',
+        fontSize: 17,
+    },
+    userList: {
+        width: '80%',
+        height: 100,
     },
     exitContainer: {
         position: 'absolute',
