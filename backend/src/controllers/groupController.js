@@ -127,7 +127,7 @@ export const inviteUserGroup = asyncHandler(async(req,res) => { //CU04
             return res.status(403).json({ message: "Solo el administrador puede invitar usuarios." });
         }
 
-        const usuarioEnGrupo = grupo.id_usuarios.some(u => u.usuario && u.usuario.toString() === req.params.id_user);
+        const usuarioEnGrupo = grupo.id_usuarios.some(u => u.usuario && u.usuario.toString() === usuario._id);
         if (usuarioEnGrupo) {
             return res.status(409).json({ message: "El usuario ya está en este grupo" });
         }
