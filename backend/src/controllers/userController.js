@@ -195,10 +195,9 @@ export const logoutUser = asyncHandler(async(req, res) => { //CU25
 ///api/user/invitation/:grupo
 export const acceptInvitationGroup = asyncHandler(async(req, res) => { //CU06
 
-    const {nombre_usuario} = req.body
-
+    const {id_usuario} = req.body
     try {
-        const usuario = await Usuario.findOne({nombre_usuario});
+        const usuario = await Usuario.findById({id_usuario});
         if (!usuario) {
             return res.status(404).json({ message: 'Usuario no encontrado' });
         }
@@ -216,7 +215,6 @@ export const acceptInvitationGroup = asyncHandler(async(req, res) => { //CU06
 
         usuario.id_grupos.push(grupo);
         await usuario.save();
-
 
         grupo.id_usuarios.push(usuario);
         await grupo.save();

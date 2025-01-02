@@ -107,12 +107,12 @@ export const createGroup = asyncHandler(async(req, res) => { //CU03
     }
 })
 
-///api/group/invite/:id_user
+///api/group/invite/:nombre_usuario
 export const inviteUserGroup = asyncHandler(async(req,res) => { //CU04
     //const { id_user } = req.params; // ID del usuario a modificar
     const {id_admin, id_group} = req.body;
     try {
-        const usuario = await Usuario.findById(req.params.id_user);   
+        const usuario = await Usuario.findOne(req.params.nombre_usuario);   
         if(!usuario){
             return res.status(404).json({ message: "Usuario no encontrado" });
         }
@@ -149,7 +149,7 @@ export const inviteUserGroup = asyncHandler(async(req,res) => { //CU04
 
         (async () => {
             try {
-              await generarNotificacion(tipo, datos, req.params.id_user);
+              await generarNotificacion(tipo, datos, usuario._id);
               console.log('Notificación generada exitosamente.');
             } catch (error) {
               console.error('Error al generar la notificación:', error.message);
