@@ -111,7 +111,7 @@ export const createGroup = asyncHandler(async(req, res) => { //CU03
 export const inviteUserGroup = asyncHandler(async(req,res) => { //CU04
     const {id_admin, id_group, nombre_usuario} = req.body;
     try {
-        const usuario = await Usuario.findOne(nombre_usuario);   
+        const usuario = await Usuario.findOne({nombre_usuario});   
         if(!usuario){
             return res.status(404).json({ message: "Usuario no encontrado" });
         }
