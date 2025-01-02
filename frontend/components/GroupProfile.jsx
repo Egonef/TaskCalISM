@@ -1,40 +1,47 @@
 //Imports
-import React, { useContext, useEffect, useRef  } from 'react';
+import React, { use, useContext, useEffect, useRef , useState } from 'react';
 import { StyleSheet, Text, Animated , View, Pressable , Image } from 'react-native';
 import { GlobalContext } from '../GlobalContext';
+import axios from 'axios';
 import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { BACKEND_IP } from '@env';
 
 //Components
 import ClosePopUp from '../components/SvgComponents/Profile/ClosePopUp'
 import Edit from '../components/SvgComponents/Profile/Edit'
+import { FlatList } from 'react-native-gesture-handler';
+
 
 export default function GroupProfile() {
     //Para controlar las animaciones
-    const { OpenProfilePopUp, setOpenProfilePopUp } = useContext(GlobalContext);
+    const { OpengroupProfilePopUp, setOpengroupProfilePopUp } = useContext(GlobalContext);
     const horizontalAnim = useRef(new Animated.Value(0)).current;
     const buttonAnim = useRef(new Animated.Value(0)).current;
     const exitAnim = useRef(new Animated.Value(1)).current;
 
-
+    const { CurrentGroup } = useContext(GlobalContext);
+    const [groupInfo, setGroupInfo] = useState(null);
+    const [usersInfo, setUsersInfo] = useState([]);
     //Para cerrar la sesión (Provisional)
     const { LoggedIn , setLoggedIn } = useContext(GlobalContext);
+
 
     //Use Effect para animar el popUp cuando se detecta que se abre o cierra
     useEffect(() => {
         Animated.timing(horizontalAnim, {
-            toValue: OpenProfilePopUp ? 0 : -450, // Cambia la altura a 300 si OpenAddPopUp es true, de lo contrario a 0
+            toValue: OpengroupProfilePopUp ? 0 : -450, // Cambia la altura a 300 si OpenAddPopUp es true, de lo contrario a 0
             duration: 300,
             useNativeDriver: false,
         }).start();
 
         Animated.timing(buttonAnim, {
-            toValue: OpenProfilePopUp ? 1 : 0,
-            duration: OpenProfilePopUp ? 600 : 200,
+            toValue: OpengroupProfilePopUp ? 1 : 0,
+            duration: OpengroupProfilePopUp ? 600 : 200,
             useNativeDriver: false,
         }).start();
-    }, [OpenProfilePopUp]);
+    }, [OpengroupProfilePopUp]);
 
     const handlePressIn = (anim) => {
         Animated.spring(anim, {
@@ -50,42 +57,75 @@ export default function GroupProfile() {
         }).start();
     };
 
-    const handleLogOut = async () => {
-        await AsyncStorage.removeItem('isLoggedIn');
-        await AsyncStorage.removeItem('userInfo');
-        setLoggedIn(false);
+    // Obtener la información del grupo
+    const getGroupInfo = async () => {
+        try {
+            const response = await axios.get(`${BACKEND_IP}/api/group/${CurrentGroup}`);
+            console.log('Group Info:', response.data);
+            setGroupInfo(response.data);
+        } catch (error) {
+            console.error('Error fetching the group info:', error);
+        }
     };
+
+    // Funcion para obtener un uuario a partir de su id
+
+    const getUser = async (id) => {
+        try {
+            const response = await axios.get(`${BACKEND_IP}/api/user/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching the user:', error);
+        }
+    }
+
+    // Funcion que a partir del vector de id de usuarios de un grupo, devuelve un vector con los usuarios
+    const getUsers = async (users) => {
+        let usersInfo = [];
+        for (let i = 0; i < users.length; i++) {
+            const user = await getUser(users[i]._id);
+            usersInfo.push(user);
+        }
+        return usersInfo;
+    }
+
+    useEffect(() => {
+        if (CurrentGroup) {
+            console.log('CurrentGroup:', CurrentGroup);
+            getGroupInfo();
+        }
+    }   , [CurrentGroup]);
+
+    useEffect(() => {
+        if (groupInfo) {
+            getUsers(groupInfo.id_usuarios).then((users) => {
+                console.log('Users:', users);
+                setUsersInfo(users);
+            });
+        }
+    }
+    , [groupInfo]);
+
+
 
     return (
         <Animated.View style={[styles.container, { left: horizontalAnim }]}>
-            <Text style={styles.text}>Your Profile</Text>
-            <View style={{ height: 200 }}>
-                <Image style={styles.profileImage} source={require('../assets/pingu.png')} />
-                <Pressable
-                    style={styles.editButton}
-                    onPress={() => console.log('Change Profile Picture')}
-                    onPressIn={() => handlePressIn(exitAnim)}
-                    onPressOut={() => handlePressOut(exitAnim)}
-                >
-                    <Animated.View style={{ transform: [{ scale: exitAnim }] }}>
-                        <Edit />
-                    </Animated.View>
-                </Pressable>
-            </View>
+            {groupInfo ? <Text style={styles.header}>{groupInfo.nombre}</Text> : <Text style={styles.text}>Group...</Text>}
+            {groupInfo ? <Text style={styles.description}>{groupInfo.descripcion}</Text> : <Text style={styles.text}>Description...</Text>}
             <View>
-                <Pressable
-                    style={styles.logoutButton}
-                    onPress={() => handleLogOut()}
-                >
-                    <Animated.View style={{ transform: [{ scale: exitAnim }] }}>
-                        <Text style={styles.text}>Log Out</Text>
-                    </Animated.View>
-                </Pressable>
+                <FlatList
+                    data={usersInfo ? usersInfo : []}
+                    renderItem={({ item }) => (
+                        <View>
+                            <Text>{item.nombre_usuario}</Text>
+                        </View>
+                    )}
+                />
             </View>
             <Animated.View style={[styles.exitContainer, { opacity: buttonAnim }]}>
                 <Pressable
                     style={styles.exitButton}
-                    onPress={() => setOpenProfilePopUp(!OpenProfilePopUp)}
+                    onPress={() => setOpengroupProfilePopUp(!OpengroupProfilePopUp)}
                     onPressIn={() => handlePressIn(exitAnim)}
                     onPressOut={() => handlePressOut(exitAnim)}
                 >
@@ -136,11 +176,17 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         justifyContent: 'center',
     },
-    text: {
+    header: {
         color: '#FFFFFF',
         fontWeight: 'bold',
-        fontSize: 20,
+        fontSize: 30,
         textAlign: 'center',
+    },
+    description: {
+        color: '#FFFFFF',
+        fontSize: 14,
+        textAlign: 'center',
+        marginTop: 10,
     },
     profileImage: {
         width: 150,

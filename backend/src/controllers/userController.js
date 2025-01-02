@@ -22,7 +22,8 @@ export const getUsers = asyncHandler(async(req, res) => { //NO TIENE CU
 })
 
 export const getUser = asyncHandler(async(req, res) => { //CU01
-    
+    console.log("Entrmos a getUser")
+    console.log(req.params.id)
     try{
         const user = await Usuario.findById(req.params.id);
         if(user)
