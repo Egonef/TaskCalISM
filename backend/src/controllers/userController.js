@@ -38,6 +38,7 @@ export const getUser = asyncHandler(async(req, res) => { //CU01
 export const createUser = asyncHandler(async (req, res) => { //CU23
     const { nombre_usuario, nombre, contraseña, fecha_nacimiento } = req.body;
     try {
+        // Comprobar si el usuario ya existe
         const usuarioExistente = await Usuario.findOne({ nombre_usuario });
         if (usuarioExistente) {
             console.log("Usuario existente:", usuarioExistente);
@@ -52,8 +53,15 @@ export const createUser = asyncHandler(async (req, res) => { //CU23
         const contraseña_hashed = await bcrypt.hash(contraseña, saltRounds);
 
         //PROCESAR FECHA
+        if (!/^\d{2}\/\d{2}\/\d{4}$/.test(fecha_nacimiento)) {
+            return res.status(400).json({ message: "Formato de fecha no valido" });
+        }
         const [día, mes, año] = fecha_nacimiento.split('/');
         const fechaProcesada = new Date(`${año}-${mes}-${día}`);
+
+        if (isNaN(fechaProcesada.getTime())) {
+            return res.status(400).json({ message: "La fecha no es válida" });
+        }
 
         //CREAR OBJETO USUARIO
         const newUsu = new Usuario({
@@ -88,21 +96,16 @@ export const createUser = asyncHandler(async (req, res) => { //CU23
 
 export const modifyUser = asyncHandler(async(req, res) => { //CU02
     
-    const { nombre_usuario, nombre, contraseña, fecha_nacimiento} = req.body;
+    const { nombre_usuario, nombre} = req.body;
 
     try {
+        if (!nombre_usuario || !nombre) {
+            return res.status(400).json({ message: "Se requieren nombre_usuario y nombre para actualizar el usuario" });
+        }
         let updateData = {
             nombre_usuario,
             nombre,
-            fecha_nacimiento,
         };
-
-
-        // Solo actualizar la contraseña si se pasa en el cuerpo de la solicitud
-        if (contraseña) {
-            const contraseña_hashed = await bcrypt.hash(contraseña, saltRounds);
-            updateData.contraseña = contraseña_hashed;
-        }
         
         // Intentar encontrar y actualizar el usuario
         const usuario = await Usuario.findByIdAndUpdate(req.params.id, updateData, { new: true });
@@ -119,6 +122,28 @@ export const modifyUser = asyncHandler(async(req, res) => { //CU02
         res.status(500).json({ message: error.message });
         
     }
+})
+
+export const modifyPassword = asyncHandler(async(req, res) => { 
+    const { contraseña } = req.body;
+    try {
+        // Solo actualizar la contraseña si se pasa en el cuerpo de la solicitud
+        if (!contraseña) {
+            return res.status(400).json({ message: "Contraseña no proporcionada" });
+        } 
+        
+        const contraseña_hashed = await bcrypt.hash(contraseña, saltRounds);
+
+        const usuario = await Usuario.findByIdAndUpdate(req.params.id, {contraseña: contraseña_hashed} , { new: true });
+
+        if (!usuario) {
+            return res.status(404).json({ message: "Usuario no encontrado" });
+        }
+        res.status(200).json({ message: 'La contraseña ha sido actualizada', usuario});
+    } catch (error) {
+        // Manejar cualquier otro error
+        res.status(500).json({ message: error.message });
+    }     
 })
 
 export const loginUser = asyncHandler(async(req, res) => { //CU24
