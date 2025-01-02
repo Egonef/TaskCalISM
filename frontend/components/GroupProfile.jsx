@@ -117,7 +117,7 @@ export default function GroupProfile() {
         try {
             const userInfo = await AsyncStorage.getItem('userInfo');
             const userID = JSON.parse(userInfo)._id;
-            const response = await axios.post(`${BACKEND_IP}/api/group/invite/`, {
+            const response = await axios.post(`${BACKEND_IP}/api/group/invite`, {
                 nombre_usuario: invitedUser,
                 id_admin: userID,
                 id_group: CurrentGroup,

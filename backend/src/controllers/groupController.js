@@ -109,7 +109,9 @@ export const createGroup = asyncHandler(async(req, res) => { //CU03
 
 ///api/group/invite
 export const inviteUserGroup = asyncHandler(async(req,res) => { //CU04
+    console.log("Invitando a un usuario a un grupo");
     const {id_admin, id_group, nombre_usuario} = req.body;
+    console.log("Datos recibidos:", req.body);
     try {
         const usuario = await Usuario.findOne({nombre_usuario});   
         if(!usuario){
@@ -161,6 +163,7 @@ export const inviteUserGroup = asyncHandler(async(req,res) => { //CU04
 
         res.status(200).json({ message: 'Se ha invitado el usuario al grupo.' });
     } catch (error){
+        console.log("Error:", error);
         return res.status(500).json({ message: error.message});
     }
 })
