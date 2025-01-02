@@ -107,12 +107,11 @@ export const createGroup = asyncHandler(async(req, res) => { //CU03
     }
 })
 
-///api/group/invite/:nombre_usuario
+///api/group/invite
 export const inviteUserGroup = asyncHandler(async(req,res) => { //CU04
-    //const { id_user } = req.params; // ID del usuario a modificar
-    const {id_admin, id_group} = req.body;
+    const {id_admin, id_group, nombre_usuario} = req.body;
     try {
-        const usuario = await Usuario.findOne(req.params.nombre_usuario);   
+        const usuario = await Usuario.findOne(nombre_usuario);   
         if(!usuario){
             return res.status(404).json({ message: "Usuario no encontrado" });
         }
@@ -126,6 +125,10 @@ export const inviteUserGroup = asyncHandler(async(req,res) => { //CU04
         if(!admin || !admin._id.equals(grupo.id_admin)){
             return res.status(403).json({ message: "Solo el administrador puede invitar usuarios." });
         }
+        console.log("Usuario encontrado:", usuario);
+        console.log("Grupo encontrado:", grupo);
+        console.log("Admin encontrado:", admin);
+
 
         const usuarioEnGrupo = grupo.id_usuarios.some(u => u.usuario && u.usuario.toString() === usuario._id);
         if (usuarioEnGrupo) {

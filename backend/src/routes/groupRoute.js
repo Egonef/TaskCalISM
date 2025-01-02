@@ -8,7 +8,7 @@ router.route('/:id').get(ctr.getGroup)
 router.route('/user/:id_usuario').get(ctr.getGroupsUser)
 router.route('/members/:id_grupo').get(ctr.getMembersGroup)
 router.route('/:user').post(ctr.createGroup)
-router.route('/invite/:nombre_usuario').put(ctr.inviteUserGroup)
+router.route('/invite').post(ctr.inviteUserGroup)
 router.route('/delete/:id').delete(ctr.deleteGroup)
 router.route('/deleteUser/:admin').delete(ctr.deleteUserGroup)
 
