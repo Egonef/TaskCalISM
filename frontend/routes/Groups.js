@@ -2,11 +2,13 @@
 import { StatusBar } from 'expo-status-bar';
 import { Button, Pressable, StyleSheet, Text, TextInput, View, ScrollView, FlatList, Modal, TouchableOpacity, Animated} from 'react-native';
 import { Calendar } from 'react-native-calendars';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef , useContext} from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { EditPencil } from 'iconoir-react-native';
 import { useNavigation } from '@react-navigation/native';
+import { GlobalContext } from '../GlobalContext';
+
 //Entorno
 import { BACKEND_IP } from '@env';
 
@@ -29,11 +31,7 @@ export default function Groups() {
 
     const navigation = useNavigation();
 
-    /*
-    const goIntoGroup = (group) => {
-        navigation.navigate('GroupDashboard', { group });
-    }
-    */
+    const { CurrentGroup, setCurrentGroup } = useContext(GlobalContext);
 
     const goIntoGroup = (groupID) => {
         navigation.navigate('GroupDashboard', { groupID });
@@ -53,6 +51,7 @@ export default function Groups() {
 
     useEffect(() => {
         getGroups();
+        setCurrentGroup(null);
     }, []);
 
     return (

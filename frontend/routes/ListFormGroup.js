@@ -22,7 +22,10 @@ export default function ListFormGroup() {
     const [id_categoria_usuario, setCategoria] = useState('');
     const [fecha_vencimiento, setFecha_vencimiento] = useState('');
     const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
-    
+
+
+    const { CurrentGroup } = useContext(GlobalContext);
+
     useEffect(() => {
         NavigationBar.setBackgroundColorAsync("#F1F1F1");
         NavigationBar.setButtonStyleAsync("dark");
@@ -33,7 +36,7 @@ export default function ListFormGroup() {
         const userID = JSON.parse(userInfo)._id;
         console.log(userID);
         try {
-            const response = await axios.post(`${BACKEND_IP}/api/categories/user/${userID}`, {
+            const response = await axios.post(`${BACKEND_IP}/api/categories/group/${CurrentGroup}`, {
                 nombre,
                 descripcion,
             });

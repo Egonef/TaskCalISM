@@ -25,14 +25,11 @@ export default function TaskFormGroup() {
 
     const [categories, setCategories] = useState([]);
 
-    const route = useRoute();
-
     const { CurrentGroup } = useContext(GlobalContext);
 
     useEffect(() => {
         NavigationBar.setBackgroundColorAsync("#F1F1F1");
         NavigationBar.setButtonStyleAsync("dark");
-        console.log('TaskFormGroup route:', route);
 
 
         //Solicitud al backend para obtener las categorias
