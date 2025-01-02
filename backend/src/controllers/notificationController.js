@@ -10,7 +10,7 @@ import { generarNotificacion } from '../notificationServices/notificationsServic
 
 
 //eliiminarnotificciones, vernotificaciones
-
+//api/notification/:idusuario
 export const getNotifications = asyncHandler(async(req, res) => { //que diferencia hay con el getTasksByCategoryGroup de categoryGroupController.js??
     try{
         const notificaciones = await Notificacion.find({id_usuario: req.params.idusuario})
@@ -25,7 +25,7 @@ export const getNotifications = asyncHandler(async(req, res) => { //que diferenc
        return res.status(500).json({ message: error.message });
     }
 })
-
+//api/notification/:id
 export const getNotification = asyncHandler(async(req, res) => { //que diferencia hay con el getTasksByCategoryGroup de categoryGroupController.js??
     try{
         const notificacion = await Notificacion.findById(req.params.id)
@@ -40,7 +40,7 @@ export const getNotification = asyncHandler(async(req, res) => { //que diferenci
         return res.status(500).json({ message: error.message });
     }
 })
-
+//api/notification/delete/:id
 export const deleteNotification = asyncHandler(async(req, res) => {
 
     try{
@@ -58,6 +58,7 @@ export const deleteNotification = asyncHandler(async(req, res) => {
 })
 
 //Las leidas se eliminan automaticamente??
+//api/notification/read/:id
 export const readNotification = asyncHandler(async(req, res) => {
 
     try{
@@ -76,6 +77,7 @@ export const readNotification = asyncHandler(async(req, res) => {
 })
 
 //Esta funcion habria que llamarla cada vez que se registra un usuario
+//api/notification/welcome/:id
 export const createWelcomeNotification = asyncHandler(async(req, res) => {
 
     try {
@@ -114,6 +116,7 @@ export const createWelcomeNotification = asyncHandler(async(req, res) => {
 })
 
 //Esta funcion habria que llamarla cada dia
+//api/notification/pendingTaskUser/:idusuario
 export const createPendingTaskUserNotification = asyncHandler(async(req, res) => {
 
     const fechaActual = new Date();
@@ -192,6 +195,7 @@ export const createPendingTaskUserNotification = asyncHandler(async(req, res) =>
 })
 
 //Esta funcion habria que llamarla cada vez que se asigne una tarea a un usuario
+//api/notification/assign/:id_asignador
 export const createAssignNotification = asyncHandler(async(req, res) => {
 
     try {
