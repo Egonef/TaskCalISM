@@ -6,15 +6,15 @@ import React, { useState, useEffect, useRef , useContext} from 'react';
 import { useRoute } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { EditPencil } from 'iconoir-react-native';
+import { EditPencil , Group } from 'iconoir-react-native';
 import { GlobalContext } from '../GlobalContext';
-
 //Entorno
 import { BACKEND_IP } from '@env';
 
 
 //Components
 import AddPopUp from '../components/AddPopUp';
+import GroupProfile from '../components/GroupProfile';
 
 
 
@@ -32,6 +32,8 @@ export default function GroupDashboard() {
 
     const { CurrentGroup, setCurrentGroup } = useContext(GlobalContext);
 
+    const [groupInfo, setGroupInfo] = useState(null);
+
     useEffect(() => {
         console.log('GroupDashboard:', groupID);
         setCurrentGroup(groupID);
@@ -41,10 +43,22 @@ export default function GroupDashboard() {
         if (CurrentGroup) {
             console.log('CurrentGroup:', CurrentGroup);
             fetchTasks();
+            getGroupInfo();
         }
     }, [CurrentGroup]);
 
 
+    //Solicitud al backend para obtener la informacion del grupo
+
+    const getGroupInfo = async () => {
+        try {
+            const response = await axios.get(`${BACKEND_IP}/api/group/${CurrentGroup}`);
+            console.log('Group Info:', response.data);
+            setGroupInfo(response.data);
+        } catch (error) {
+            console.error('Error fetching the group info:', error);
+        }
+    };
 
     // Solicitud al backend para obtener las tareas
     const fetchTasks = async () => {
@@ -120,6 +134,13 @@ const handleDayPress = (day) => {
     return (
         <View style={styles.container}>
             <StatusBar style="auto" />
+            <View style={styles.infoContainer}>
+                <View></View>
+                {groupInfo ? <Text style={styles.header}>{groupInfo.nombre}</Text> : <Text style={styles.header}>Group...</Text>}
+                <TouchableOpacity onPress={() => console.log('Edit Group')}>
+                    <Group width={24} height={24} color="#FFF" />
+                </TouchableOpacity>
+            </View>
             <Calendar
                 enableSwipeMonths={true}
                 onDayPress={handleDayPress}
@@ -151,6 +172,7 @@ const handleDayPress = (day) => {
                 />
             </View>
             <AddPopUp />
+            <GroupProfile />
             {selectedTask && (
                  <Modal
                  animationType="fade"
@@ -187,12 +209,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     header: {
-        fontSize: 24,
+        fontSize: 18,
         fontWeight: 'bold',
-        marginVertical: 20,
+        marginLeft: 20,
+        color: '#FFFFFF',
     },
     calendar: {
-        marginTop: 55,
+        marginTop: 15,
         width: 350,
         height: 325,
         borderRadius: 30,
@@ -274,5 +297,15 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 20,
         right: 20,
+    },
+    infoContainer: {
+        flexDirection: 'row',
+        backgroundColor: '#B4A593',
+        marginTop: 30,
+        width: '85%',
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'space-around',
+        borderRadius: 50,
     },
 });

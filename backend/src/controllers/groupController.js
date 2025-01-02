@@ -39,7 +39,7 @@ export const getGroupsUser = asyncHandler(async(req, res) => { //NO TIENE CU
 })
 
 export const getGroup = asyncHandler(async(req, res) => { 
-    
+    console.log(req.params.id)
     try{
         const group = await Grupo.findById(req.params.id);
         if(group)

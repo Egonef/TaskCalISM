@@ -10,7 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ClosePopUp from '../components/SvgComponents/Profile/ClosePopUp'
 import Edit from '../components/SvgComponents/Profile/Edit'
 
-export default function Profile() {
+export default function GroupProfile() {
     //Para controlar las animaciones
     const { OpenProfilePopUp, setOpenProfilePopUp } = useContext(GlobalContext);
     const horizontalAnim = useRef(new Animated.Value(0)).current;
