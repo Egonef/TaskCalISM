@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, FlatList} from 'react-native';
 import axios from 'axios';
 import { BACKEND_IP } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { EditPencil } from 'iconoir-react-native';
+import { useRoute , useNavigation} from '@react-navigation/native';
 
 const CategoryTasksModal = ({ visible, onClose, categoryId }) => {
     const [tasks, setTasks] = useState([]);
+
+    const navigation = useNavigation();
 
     useEffect(() => {
         if (visible) {
@@ -46,7 +50,12 @@ const CategoryTasksModal = ({ visible, onClose, categoryId }) => {
         >
             <View style={styles.container}>
                 <View style={styles.content}>
+                    <View style={styles.headerContainer}>
                     <Text style={styles.header}>Tasks from this category:</Text>
+                    <TouchableOpacity style={styles.editButton} onPress={() => {navigation.navigate('EditCategoryForm', {categoryId: categoryId}); onClose();}}>
+                        <EditPencil width={24} height={24}  color="#B5C18E" style={{marginLeft: 40}} />
+                    </TouchableOpacity>
+                    </View>
                     <FlatList
                         data={tasks}
                         keyExtractor={(item) => item._id}
@@ -85,6 +94,11 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         color: '#B4A593',
         fontWeight: 'bold',
+    },
+    headerContainer: {
+        flexDirection: 'row',
+
+
     },
     taskCard: {
         backgroundColor: '#B5C18E',
