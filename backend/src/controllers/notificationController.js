@@ -17,7 +17,7 @@ export const getNotifications = asyncHandler(async(req, res) => { //que diferenc
         const notificaciones = await Notificacion.find({id_usuario: req.params.idusuario})
     
         if (notificaciones.length === 0){
-            return res.status(404).json({ message: 'No hay notificaciones para este usuario' });
+            return res.json({ message: 'No hay notificaciones para este usuario' });
 
         }
         return res.status(200).json(notificaciones)
