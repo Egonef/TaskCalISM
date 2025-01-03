@@ -98,10 +98,12 @@ export const createTaskGroup = asyncHandler(async (req, res) => { //CU11
 export const modifyTaskGroup = asyncHandler(async (req, res) => { //CU13
     //const { id } = req.params; // ID de la tarea a modificar
     const { nombre, descripcion, fecha_vencimiento, estado, id_categoria_grupo } = req.body;
-    const [día, mes, año] = fecha_vencimiento.split('/');
-    const fechaProcesada = new Date(`${año}-${mes}-${día}`);
-
-
+    let fechaProcesada;
+    if(fecha_vencimiento){
+        const [día, mes, año] = fecha_vencimiento.split('/');
+        fechaProcesada = new Date(`${año}-${mes}-${día}`);
+    }
+    
     try {
         // Verificar si la tarea existe
         const tarea = await TareaGrupo.findById(req.params.id);
@@ -114,8 +116,7 @@ export const modifyTaskGroup = asyncHandler(async (req, res) => { //CU13
         tarea.descripcion = descripcion || tarea.descripcion;
         tarea.fecha_vencimiento = fechaProcesada || tarea.fecha_vencimiento;
         tarea.estado = estado !== undefined ? estado : tarea.estado;
-        //tarea.id_categoria_grupo = id_categoria_usuario || tarea.id_categoria_usuario;
-        //como se va a modificar un id???
+        tarea.id_categoria_grupo = id_categoria_grupo || tarea.id_categoria_grupo;
 
         // Guardar los cambios
         const tareaActualizada = await tarea.save();
