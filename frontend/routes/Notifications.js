@@ -77,7 +77,11 @@ export default function Notifications() {
                                     <TrashSolid  width={24} height={24} color="#FFF"/>
                                 </TouchableOpacity>
                             </View>
-                            <Text>{item.descripcion}</Text>
+                            <ScrollView
+                                showsVerticalScrollIndicator={false}
+                            >
+                                <Text>{item.descripcion}</Text>
+                            </ScrollView>
                             {item.titulo === 'Notificación de invitacionAGrupo' ? 
                             <TouchableOpacity style={styles.joinButton}
                                 onPress={() => {

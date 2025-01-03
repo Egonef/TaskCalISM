@@ -23,6 +23,7 @@ export default function LogIn() {
     const [nombre_usuario, setNombre_usuario] = useState('');
     const [contraseña, setContraseña] = useState('');
 
+
     // Solicitud al backend para comrpbar el inicio de sesión
     const checkLogin = async () => {
         console.log('Checking login...');

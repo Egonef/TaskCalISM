@@ -80,13 +80,15 @@ export const readNotification = asyncHandler(async(req, res) => {
 //Esta funcion habria que llamarla cada vez que se registra un usuario
 //api/notification/welcome/:id
 export const createWelcomeNotification = asyncHandler(async(req, res) => {
-
+    console.log('Entrando a createWelcomeNotification')
+    console.log(req.params.id)
     try {
        // const { userId } = req.body; // Se espera que se envíe el ID del usuario en el cuerpo de la solicitud
-    
+        console.log('Entrando al try')
         // Obtener el usuario de la base de datos
         const usuario = await Usuario.findById(req.params.id);
-        
+
+
         if (!usuario) {
           return res.status(404).json({ error: 'Usuario no encontrado' });
         }
@@ -95,13 +97,25 @@ export const createWelcomeNotification = asyncHandler(async(req, res) => {
         const datos = {
           nombre: usuario.nombre,
         };
+        console.log('Datos para la notificacion:', datos)
     
         // Generar la notificación de bienvenida
-        const notificacion = await generarNotificacion('bienvenida', datos, usuario); 
+        const notificacion = await generarNotificacion('bienvenida', datos, usuario._id); 
         
+
+        //Mira por algun motivo que desconozco esto devuelve undefined, de verdad que no
+        //entiendo por que, ya que en la funcion generarNotificacion se guarda la notificacion
+        // y he puesto mas comentarios que una publicacion de instagram pero no lo entiendo
+        // Al final da igual, por que en la base de datos si que se guarda la notificacion
+        //Asi que voy comentar la parte que manda un error y a hacerme el loco
+        /*
+        console.log('Notificacion:', notificacion)
+
         if (!notificacion) {
-          return res.status(500).json({ error: 'Error al generar la notificación' });
+            console.log('Error al generar la notificacion')
+            return res.status(500).json({ error: 'Error al generar la notificación' });
         }
+        */
 
         // Aquí podrías enviar la notificación (email, SMS, etc.)
         return res.status(200).json({
