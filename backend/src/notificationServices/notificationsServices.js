@@ -46,7 +46,7 @@ async function generarNotificacion(tipo, datos, usuario) {
     // Crear y guardar la notificación en la base de datos
     if (tipo === 'bienvenida'){
       notificacion = new Notificacion({
-        titulo: `Notificación de ${tipo}`, // Puedes personalizar el título según el tipo
+        titulo: `Bienvenid@`, // Puedes personalizar el título según el tipo
         descripcion: content,
         leida: false,
         id_usuario: usuario,
@@ -63,12 +63,21 @@ async function generarNotificacion(tipo, datos, usuario) {
     }
 
     if (tipo === 'tareaPendienteHoy' || tipo === 'asignacionATareaGrupo'){
-      notificacion = new Notificacion({
-        titulo: `Notificación de ${tipo}`, // Puedes personalizar el título según el tipo
-        descripcion: content,
-        leida: false,
-        id_usuario: usuario,
-      });
+      if(tipo === 'tareaPendienteHoy'){
+        notificacion = new Notificacion({
+          titulo: `Tareas Pendientes de Hoy`,
+          descripcion: content,
+          leida: false,
+          id_usuario: usuario,
+        });
+      } else{
+        notificacion = new Notificacion({
+          titulo: `Asignación a Tarea de Grupo`,
+          descripcion: content,
+          leida: false,
+          id_usuario: usuario,
+        });
+      }
 
       console.log(`NOTIFICACION A CONTINUACION: ${notificacion}`)
       //await notificacion.save();
@@ -77,7 +86,7 @@ async function generarNotificacion(tipo, datos, usuario) {
     if(tipo == 'invitacionAGrupo'){
       const { id_grupo } = datos;
       notificacion = new Notificacion({
-        titulo: `Notificación de invitacion a grupo`, // Puedes personalizar el título según el tipo
+        titulo: `Invitacion a Grupo`,
         descripcion: content,
         leida: false,
         id_usuario: usuario,
