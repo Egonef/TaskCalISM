@@ -3,11 +3,12 @@ import { StatusBar } from 'expo-status-bar';
 import { Button, Pressable, StyleSheet, Text, TextInput, View, ScrollView, FlatList, Modal, TouchableOpacity, Animated} from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import React, { useState, useEffect, useRef , useContext} from 'react';
-import { useRoute } from '@react-navigation/native';
+import { useRoute,  useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { EditPencil , Group } from 'iconoir-react-native';
 import { GlobalContext } from '../GlobalContext';
+
 //Entorno
 import { BACKEND_IP } from '@env';
 
@@ -29,6 +30,8 @@ export default function GroupDashboard() {
 
     const route = useRoute();
     const { groupID } = route.params;
+
+    const navigation = useNavigation();
 
     const { CurrentGroup, setCurrentGroup } = useContext(GlobalContext);
     const { OpengroupProfilePopUp, setOpengroupProfilePopUp } = useContext(GlobalContext);
@@ -92,7 +95,7 @@ export default function GroupDashboard() {
             if (!markedDates[taskDate]) {
                 markedDates[taskDate] = { dots: [], marked: true };
             }
-            markedDates[taskDate].dots.push({ color: task.estado ? 'green' : '#B5C18E' });
+            markedDates[taskDate].dots.push({ color: task.estado ? '#EADBC8' : '#B5C18E' });
         });
         setMarkedDates(markedDates);
 
@@ -209,7 +212,7 @@ const handleDayPress = (day) => {
                          <Text style={styles.modalText}>Descripción: {selectedTask.descripcion}</Text>
                          <Text style={styles.modalText}>Fecha de vencimiento: {selectedTask.fecha_vencimiento.split('T')[0]}</Text>
                          <Text style={styles.modalText}>Estado: {selectedTask.estado ? 'Completada' : 'Pendiente'}</Text>
-                         <TouchableOpacity style={styles.editButton} onPress={() => {/* Lógica para editar la tarea */}}>
+                         <TouchableOpacity style={styles.editButton} onPress={() => {navigation.navigate('EditTaskFormGroup', {task: selectedTask}, {GroupId: CurrentGroup}); closeModal();}}>
                                 <EditPencil width={24} height={24} color="#FFF" />
                          </TouchableOpacity>
                         <View style={styles.buttons}>

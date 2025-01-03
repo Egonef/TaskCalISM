@@ -14,6 +14,7 @@ import mongoose from 'mongoose';
 export const getCategoriesGroup = asyncHandler(async(req, res) => { 
     try{
         console.log("Hemos entrao en getCategoriesGroup")
+        
         //const {id_g} = req.body
         const grupoExistente = await Grupo.findById(req.params.idgrupo);
 
