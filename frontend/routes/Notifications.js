@@ -60,7 +60,7 @@ export default function Notifications() {
         const userInfo = await AsyncStorage.getItem('userInfo');
         const userID = JSON.parse(userInfo)._id;
         try {
-            const res = await axios.post(`${BACKEND_IP}/api/user/invitation/${groupId}`, {
+            const res = await axios.put(`${BACKEND_IP}/api/user/invitation/${groupId}`, {
                 id_usuario: userID,
             });
             console.log('Joined group:', res.data);
@@ -101,7 +101,7 @@ export default function Notifications() {
                             {item.titulo === 'Invitacion a Grupo' ? 
                             <TouchableOpacity style={styles.joinButton}
                                 onPress={() => {
-                                    console.log('Join group');
+                                    joinGroup(item.id_grupo);
                                 }}
                             >
                                 <Text style={styles.joinText} >Join Group</Text>

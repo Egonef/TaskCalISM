@@ -194,7 +194,6 @@ export const logoutUser = asyncHandler(async(req, res) => { //CU25
 }) */
 ///api/user/invitation/:grupo
 export const acceptInvitationGroup = asyncHandler(async(req, res) => { //CU06
-
     const {id_usuario} = req.body
     try {
         const usuario = await Usuario.findById({id_usuario});
