@@ -100,6 +100,7 @@ export default function TaskForm() {
                 items={categories}
                 style={pickerSelectStyles}
                 placeholder={{ label: "Select a category", value: null }}
+                value={categories[0]}
             />
             <TouchableOpacity style={styles.button} onPress={createTask}>
                 <Text style={styles.buttonText}>Add Task</Text>

@@ -33,6 +33,9 @@ export default function UserCalendar() {
         fetchTasks(setTasks, setMarkedDates);
     }, []);
 
+    useEffect(() => {
+        fetchTasks();
+    }, [modalVisible]);
 
     // Solicitud al backend para obtener las tareas
     const fetchTasks = async () => {
@@ -110,6 +113,7 @@ const deleteTask = async () => {
         // Actualizar la lista de tareas
         fetchTasks();
         closeModal();
+        handleDayPress(selectedDate);
     } catch (error) {
         console.error('Error deleting the task:', error);
     }
