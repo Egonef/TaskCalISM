@@ -15,11 +15,11 @@ export const getNotifications = asyncHandler(async(req, res) => { //que diferenc
     console.log('entrando a getNotifications')
     try{
         const notificaciones = await Notificacion.find({id_usuario: req.params.idusuario})
-    
-        if (notificaciones.length === 0){
-            return res.json({ message: 'No hay notificaciones para este usuario' });
 
-        }
+        //Aqui habia un return que devolvia un 404 si no habia notificaciones.
+        //No se si es necesario, ya que si no hay notificaciones, se devolvera un array vacio
+        //Lo he quitado
+
         return res.status(200).json(notificaciones)
 
     }catch(error){
