@@ -22,6 +22,7 @@ export default function Notifications() {
 
     const [notifications, setNotifications] = useState([]);
 
+    //Funcion para obtener las notificaciones
 
     const getNotifications = async () => {
         const userInfo = await AsyncStorage.getItem('userInfo');
@@ -38,8 +39,6 @@ export default function Notifications() {
     }
     //Funcion para obtener las notificaciones
     useEffect(() => {
-        
-
         getNotifications();
     },[]);
 
@@ -48,6 +47,23 @@ export default function Notifications() {
         try {
             const res = await axios.delete(`${BACKEND_IP}/api/notification/delete/${notifId}`);
             console.log('Notification deleted:', res.data);
+            getNotifications();
+        }catch (error) {
+            console.error('Error creating lists:', error);
+        }
+    }
+
+    //Funcion para unirse a un grupo
+
+    const joinGroup = async (groupId) => {
+        console.log("Entrando a joinGroup");
+        const userInfo = await AsyncStorage.getItem('userInfo');
+        const userID = JSON.parse(userInfo)._id;
+        try {
+            const res = await axios.post(`${BACKEND_IP}/api/user/invitation/${groupId}`, {
+                id_usuario: userID,
+            });
+            console.log('Joined group:', res.data);
             getNotifications();
         }catch (error) {
             console.error('Error creating lists:', error);
@@ -82,7 +98,7 @@ export default function Notifications() {
                             >
                                 <Text>{item.descripcion}</Text>
                             </ScrollView>
-                            {item.titulo === 'Notificación de invitacionAGrupo' ? 
+                            {item.titulo === 'Invitacion a Grupo' ? 
                             <TouchableOpacity style={styles.joinButton}
                                 onPress={() => {
                                     console.log('Join group');
