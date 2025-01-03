@@ -44,7 +44,7 @@ export default function Notifications() {
     },[]);
 
     const deleteNotification = async (notifId) => {
-        console.log("Entrando a getNotifications");
+        console.log("Entrando a deleteNotifications");
         try {
             const res = await axios.delete(`${BACKEND_IP}/api/notification/delete/${notifId}`);
             console.log('Notification deleted:', res.data);
