@@ -7,6 +7,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { EditPencil } from 'iconoir-react-native';
 import { useRoute , useNavigation} from '@react-navigation/native';
+import { TrashSolid } from 'iconoir-react-native';
 
 //Entorno
 import { BACKEND_IP } from '@env';
@@ -74,6 +75,7 @@ export default function UserCalendar() {
     }
 };
 
+//funcion para finalizar una tarea
 const finishTask = async () => {
     try {
         const response = await axios.put(
@@ -90,6 +92,25 @@ const finishTask = async () => {
         fetchTasks();
     } catch (error) {
         console.error('Error finishing the task:', error);
+    }
+};
+
+//funcion para eliminar una tarea
+const deleteTask = async () => {
+    try {
+        const response = await axios.delete(
+            `${BACKEND_IP}/api/tasks/user/delete/${selectedTask._id}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+        console.log('Task deleted:', response.data);
+        // Actualizar la lista de tareas
+        fetchTasks();
+    } catch (error) {
+        console.error('Error deleting the task:', error);
     }
 };
 
@@ -169,14 +190,17 @@ const handleDayPress = (day) => {
                  onRequestClose={closeModal}
              >
                  <View style={styles.modalContainer}>
-                     <View style={styles.modalView}>
-                         <Text style={styles.modalTitle}>{selectedTask.nombre}</Text>
-                         <Text style={styles.modalText}>Description: {selectedTask.descripcion}</Text>
-                         <Text style={styles.modalText}>Due date: {selectedTask.fecha_vencimiento.split('T')[0]}</Text>
-                         <Text style={styles.modalText}>Status: {selectedTask.estado ? 'Complete' : 'Pending'}</Text>
-                         <TouchableOpacity style={styles.editButton} onPress={() => {navigation.navigate('EditTaskForm', {task: selectedTask}); closeModal();}}>
-                                <EditPencil width={24} height={24} color="#FFF" />
-                         </TouchableOpacity>
+                    <View style={styles.modalView}>
+                        <Text style={styles.modalTitle}>{selectedTask.nombre}</Text>
+                        <Text style={styles.modalText}>Description: {selectedTask.descripcion}</Text>
+                        <Text style={styles.modalText}>Due date: {selectedTask.fecha_vencimiento.split('T')[0]}</Text>
+                        <Text style={styles.modalText}>Status: {selectedTask.estado ? 'Complete' : 'Pending'}</Text>
+                        <TouchableOpacity style={styles.editButton} onPress={() => {navigation.navigate('EditTaskForm', {task: selectedTask}); closeModal();}}>
+                            <EditPencil width={24} height={24} color="#FFF" />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.deleteButton} onPress={deleteTask}>
+                            <TrashSolid width={24} height={24} color="#FFF" />
+                        </TouchableOpacity>
                         <View style={styles.buttons}>
                             <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
                                 <Text style={styles.closeButtonText}>Close</Text>
@@ -296,6 +320,11 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 20,
         right: 20,
+    },
+    deleteButton: {
+        position: 'absolute',
+        top: 20,
+        left: 20,
     },
     buttons: {
         flexDirection: 'row',
