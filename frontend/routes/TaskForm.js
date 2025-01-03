@@ -1,6 +1,6 @@
 //Imports
 import React, { useContext, useEffect, useRef , useState } from 'react';
-import { StyleSheet, Text, Animated , View, Pressable , TextInput, Button , TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, Animated , View, Pressable , TextInput, Button , TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView} from 'react-native';
 import { GlobalContext } from '../GlobalContext';
 import { useRoute } from '@react-navigation/native';
 import * as NavigationBar from 'expo-navigation-bar';
@@ -72,7 +72,10 @@ export default function TaskForm() {
     };
 
     return (
-        <View style={styles.container}>
+        <KeyboardAvoidingView 
+            style={styles.container}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            >
             <Text style={styles.AppName}>Fill task info</Text>
             <TextInput
                 placeholder="Header"
@@ -105,7 +108,7 @@ export default function TaskForm() {
                 visible={isSuccessModalVisible}
                 onClose={() => setIsSuccessModalVisible(false)}
             />
-        </View>
+        </KeyboardAvoidingView>
     );
 };
 
