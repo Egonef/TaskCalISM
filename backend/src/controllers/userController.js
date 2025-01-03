@@ -196,7 +196,7 @@ export const logoutUser = asyncHandler(async(req, res) => { //CU25
 export const acceptInvitationGroup = asyncHandler(async(req, res) => { //CU06
     const {id_usuario} = req.body
     try {
-        const usuario = await Usuario.findById({id_usuario});
+        const usuario = await Usuario.findById(id_usuario);
         if (!usuario) {
             return res.status(404).json({ message: 'Usuario no encontrado' });
         }
