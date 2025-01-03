@@ -1,9 +1,14 @@
 //Imports
 import { StatusBar } from 'expo-status-bar';
 import React, { useState , useEffect} from 'react';
-import { Button, Pressable, StyleSheet, Text, TextInput, View , ScrollView , FlatList } from 'react-native';
+import { Button, Pressable, StyleSheet, Text, TextInput, View , ScrollView , FlatList , TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { TrashSolid } from 'iconoir-react-native';
+
+
+
+//Entorno
 import { BACKEND_IP } from '@env';
 
 
@@ -17,24 +22,37 @@ export default function Notifications() {
 
     const [notifications, setNotifications] = useState([]);
 
+
+    const getNotifications = async () => {
+        const userInfo = await AsyncStorage.getItem('userInfo');
+        const userID = JSON.parse(userInfo)._id;
+        console.log("Entrando a getNotifications");
+        try {
+            const res = await axios.get(`${BACKEND_IP}/api/notification/${userID}`);
+            console.log('Notifications:', res.data);
+            setNotifications(res.data);
+            console.log('Notifications guardadas:', notifications);
+        }catch (error) {
+            console.error('Error creating lists:', error);
+        }
+    }
     //Funcion para obtener las notificaciones
     useEffect(() => {
-        const getNotifications = async () => {
-            const userInfo = await AsyncStorage.getItem('userInfo');
-            const userID = JSON.parse(userInfo)._id;
-            console.log("Entrando a getNotifications");
-            try {
-                const res = await axios.get(`${BACKEND_IP}/api/notification/${userID}`);
-                console.log('Notifications:', res.data);
-                setNotifications(res.data);
-                console.log('Notifications guardadas:', notifications);
-            }catch (error) {
-                console.error('Error creating lists:', error);
-            }
-        }
+        
 
         getNotifications();
     },[]);
+
+    const deleteNotification = async (notifId) => {
+        console.log("Entrando a getNotifications");
+        try {
+            const res = await axios.delete(`${BACKEND_IP}/api/notification/delete/${notifId}`);
+            console.log('Notification deleted:', res.data);
+            getNotifications();
+        }catch (error) {
+            console.error('Error creating lists:', error);
+        }
+    }
 
 
     return (
@@ -47,10 +65,28 @@ export default function Notifications() {
                     keyExtractor={(item) => item._id}
                     renderItem={({ item }) => (
                         <View style={styles.notificationCard}>
-                            <Text style={styles.notificationTitle}>
-                                {item.titulo}
-                            </Text>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <Text style={styles.notificationTitle}>
+                                    {item.titulo}
+                                </Text>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        deleteNotification(item._id);
+                                    }}
+                                >
+                                    <TrashSolid  width={24} height={24} color="#FFF"/>
+                                </TouchableOpacity>
+                            </View>
                             <Text>{item.descripcion}</Text>
+                            {item.titulo === 'Notificación de invitacionAGrupo' ? 
+                            <TouchableOpacity style={styles.joinButton}
+                                onPress={() => {
+                                    console.log('Join group');
+                                }}
+                            >
+                                <Text style={styles.joinText} >Join Group</Text>
+                            </TouchableOpacity> 
+                            : null}
                         </View>
                     )}
                 />
@@ -82,7 +118,7 @@ const styles = StyleSheet.create({
     },
     notificationCard: {
         borderRadius: 10,
-        height: 150,
+        height: 160,
         backgroundColor: '#B5C18E',
         padding: 10,
         margin: 10,
@@ -96,5 +132,16 @@ const styles = StyleSheet.create({
     },
     notificationDescription: {
         fontSize: 14,
+    },
+    joinButton: {
+        backgroundColor: '#B4A593',
+        padding: 10,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 10,
+    },
+    joinText: {
+        color: 'white',
     },
 });
