@@ -15,10 +15,10 @@ import { BACKEND_IP } from '@env';
 import SuccessModal from '../components/SuccessModal';
 
 export default function EditTaskFormGroup() {
-    const [nombre, setNombre] = useState('');
-    const [descripcion, setDescripcion] = useState('');
-    const [id_categoria_usuario, setCategoria] = useState('');
-    const [fecha_vencimiento, setFecha_vencimiento] = useState('');
+    const [nombre, setNombre] = useState(null);
+    const [descripcion, setDescripcion] = useState(null);
+    const [id_categoria_usuario, setCategoria] = useState(null);
+    const [fecha_vencimiento, setFecha_vencimiento] = useState(null);
     const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
     const [categories, setCategories] = useState([]);
     const [estado, setEstado] = useState(false);
@@ -120,6 +120,7 @@ export default function EditTaskFormGroup() {
                 items={categories}
                 style={pickerSelectStyles}
                 placeholder={{ label: "Select a category", value: null }}
+                value={null}
             />
             <TouchableOpacity style={styles.button} onPress={editTask}>
                 <Text style={styles.buttonText}>Edit Task</Text>

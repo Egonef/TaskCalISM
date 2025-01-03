@@ -15,8 +15,8 @@ import { BACKEND_IP } from '@env';
 import SuccessModal from '../components/SuccessModal';
 
 export default function EditCategoryForm() {
-    const [nombre, setNombre] = useState('');
-    const [descripcion, setDescripcion] = useState('');
+    const [nombre, setNombre] = useState(null);
+    const [descripcion, setDescripcion] = useState(null);
     const [id_categoria_usuario, setCategoria] = useState('');
     const [fecha_vencimiento, setFecha_vencimiento] = useState('');
     const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
