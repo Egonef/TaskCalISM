@@ -155,16 +155,16 @@ export const getTaskGroup = asyncHandler(async(req,res) => { //CU10
         res.status(500).json({message: "Error al buscar la tarea."});
     }
 })
-///api/tasks/endtask/:id
+///api/tasks/group/endtask/:id
 export const endTaskGroup = asyncHandler(async(req,res) => {
     //const { id } = req.params;
     try{
         const tarea = await TareaGrupo.findById(req.params.id);
-
+        console.log("entre en la funsion")
         if (!tarea) {
             return res.status(404).json({ message: "La tarea no existe." });
         }
-
+        console.log("tarea exite")
         if(!tarea.estado){
             tarea.estado = true;
             await tarea.save();

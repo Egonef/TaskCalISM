@@ -102,6 +102,26 @@ export default function GroupDashboard() {
     }
 };
 
+//funcon para terminar una tarea
+const finishTask = async () => {
+    try {
+        const response = await axios.put(
+            `${BACKEND_IP}/api/tasks/group/endtask/${selectedTask._id}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+        console.log('Task finished:', response.data);
+        setSelectedTask({ ...selectedTask, estado: true });
+        // Actualizar la lista de tareas
+        fetchTasks();
+    } catch (error) {
+        console.error('Error finishing the task:', error);
+    }
+};
+
 const handleDayPress = (day) => {
     console.log('Day pressed:', day.dateString);
     setSelectedDate(day.dateString);
@@ -187,14 +207,21 @@ const handleDayPress = (day) => {
                      <View style={styles.modalView}>
                          <Text style={styles.modalTitle}>{selectedTask.nombre}</Text>
                          <Text style={styles.modalText}>Descripción: {selectedTask.descripcion}</Text>
-                         <Text style={styles.modalText}>Fecha de vencimiento: {selectedTask.fecha_vencimiento}</Text>
+                         <Text style={styles.modalText}>Fecha de vencimiento: {selectedTask.fecha_vencimiento.split('T')[0]}</Text>
                          <Text style={styles.modalText}>Estado: {selectedTask.estado ? 'Completada' : 'Pendiente'}</Text>
                          <TouchableOpacity style={styles.editButton} onPress={() => {/* Lógica para editar la tarea */}}>
                                 <EditPencil width={24} height={24} color="#FFF" />
                          </TouchableOpacity>
-                         <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
-                             <Text style={styles.closeButtonText}>Cerrar</Text>
-                         </TouchableOpacity>
+                        <View style={styles.buttons}>
+                            <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+                                <Text style={styles.closeButtonText}>Cerrar</Text>
+                            </TouchableOpacity>
+                            {!selectedTask.estado && (
+                                <TouchableOpacity style={styles.closeButton} onPress={finishTask}>
+                                    <Text style={styles.closeButtonText}>Finish</Text>
+                                </TouchableOpacity>
+                            )}
+                        </View>
                      </View>
                  </View>
              </Modal>
@@ -210,6 +237,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
+        marginTop: 15,
     },
     header: {
         fontSize: 18,
@@ -250,7 +278,7 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         alignContent: 'center',
-        marginTop: 20,
+        marginTop: 10,
         padding: 30,
     },
     modalContainer: {
@@ -276,13 +304,15 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     modalTitle: {
-        fontSize: 24,
+        fontSize: 30,
         fontWeight: 'bold',
         marginBottom: 15,
+        color: 'white',
     },
     modalText: {
-        fontSize: 18,
+        fontSize: 23,
         marginBottom: 10,
+        color: 'white',
     },
     closeButton: {
         marginTop: 20,
@@ -290,11 +320,16 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 10,
         elevation: 2,
+        width: 100,
+        height: 55,
+        margin: 10,
     },
     closeButtonText: {
         color: 'white',
         fontWeight: 'bold',
         textAlign: 'center',
+        padding: 5,
+        fontSize: 18,
     },
     editButton: {
         position: 'absolute',
@@ -310,5 +345,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-around',
         borderRadius: 50,
+    },
+    buttons: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
 });
