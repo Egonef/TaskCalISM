@@ -133,6 +133,7 @@ export const deleteTaskGroup = asyncHandler(async (req, res) => { //CU14
     try {
         // Verificar si la tarea existe
         const tarea = await TareaGrupo.findById(req.params.id);
+
         if (!tarea) {
             return res.status(404).json({ message: "La tarea no existe" });
         }

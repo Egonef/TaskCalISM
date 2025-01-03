@@ -93,6 +93,7 @@ const finishTask = async () => {
         setSelectedTask({ ...selectedTask, estado: true });
         // Actualizar la lista de tareas
         fetchTasks();
+        //handleDayPress(selectedDate);
     } catch (error) {
         console.error('Error finishing the task:', error);
     }
