@@ -21,26 +21,27 @@ const templatesDir = path.resolve('src/notificationTemplates');
 
 // Función para cargar y renderizar una plantilla
 async function generarNotificacion(tipo, datos, usuario) {
+  console.log(`Entrando en la funcion que genera las notificaciones`)
   try {
      // Ruta de la plantilla
-     const templatePath = path.join(templatesDir, `${tipo}.hbs`);
-     console.log(templatePath);
+    const templatePath = path.join(templatesDir, `${tipo}.hbs`);
+    console.log(templatePath);
 
-     console.log(tipo);
+    console.log(tipo);
     
      // Verificar si el archivo existe
-     if (!fs.existsSync(templatePath)) {
+    if (!fs.existsSync(templatePath)) {
         throw new Error(`Plantilla para el tipo "${tipo}" no encontrada`);
-      }
+    }
  
-     // Cargar y compilar la plantilla
-     const templateSource = fs.readFileSync(templatePath, 'utf-8');
-     const template = handlebars.compile(templateSource);
+    // Cargar y compilar la plantilla
+    const templateSource = fs.readFileSync(templatePath, 'utf-8');
+    const template = handlebars.compile(templateSource);
 
-     // Renderizar la plantilla con datos
-      const content = template(datos);
-      let notificacion = []
-      //const usuario = await Usuario.findById(idusuario);
+    // Renderizar la plantilla con datos
+    const content = template(datos);
+    let notificacion = []
+    //const usuario = await Usuario.findById(idusuario);
 
     // Crear y guardar la notificación en la base de datos
     if (tipo === 'bienvenida'){
@@ -56,8 +57,9 @@ async function generarNotificacion(tipo, datos, usuario) {
       if (notificacionExistente) {
         throw new Error('La notificación ya existe' );
       }
-
+      console.log(`NOTIFICACION A CONTINUACION: ${notificacion}`)
       await notificacion.save();
+      console.log(`Notificacion guardada`)
     }
 
     if (tipo === 'tareaPendienteHoy' || tipo === 'asignacionATareaGrupo'){
