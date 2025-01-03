@@ -149,7 +149,8 @@ export const inviteUserGroup = asyncHandler(async(req,res) => { //CU04
         const datos = {
         nombre_usuario: usuario.nombre_usuario,
         nombre_usuario_asignador: admin.nombre_usuario,
-        nombre_grupo: grupo.nombre
+        nombre_grupo: grupo.nombre,
+        id_grupo: grupo._id
         };
 
         (async () => {

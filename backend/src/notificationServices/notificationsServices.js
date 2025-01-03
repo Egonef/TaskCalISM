@@ -75,11 +75,13 @@ async function generarNotificacion(tipo, datos, usuario) {
     }
 
     if(tipo == 'invitacionAGrupo'){
+      const { id_grupo } = datos;
       notificacion = new Notificacion({
-        titulo: `Notificación de ${tipo}`, // Puedes personalizar el título según el tipo
+        titulo: `Notificación de invitacion a grupo`, // Puedes personalizar el título según el tipo
         descripcion: content,
         leida: false,
         id_usuario: usuario,
+        id_grupo
       });
       await notificacion.save();
       console.log(`Invitao`)
