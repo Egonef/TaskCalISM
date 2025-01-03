@@ -30,8 +30,27 @@ export default function Notifications() {
         console.log("Entrando a getNotifications");
         try {
             const res = await axios.get(`${BACKEND_IP}/api/notification/${userID}`);
+
+            // Filtrar notificaciones duplicadas
+            const filteredNotifications = [];
+            const descrptions = new Set();
+
+            for (const notification of res.data) {
+                if (notification.titulo === 'Invitacion a Grupo') {
+                    filteredNotifications.push(notification);
+                } else if (!descrptions.has(notification.descripcion)) {
+                    descrptions.add(notification.descripcion);
+                    filteredNotifications.push(notification);
+                } else {
+                    // Eliminar notificación duplicada
+                    await deleteNotification(notification._id);
+                }
+            }
+
             console.log('Notifications:', res.data);
-            setNotifications(res.data);
+            //Le damos la vuelta al vector antes de guardarlo
+            filteredNotifications.reverse();
+            setNotifications(filteredNotifications);
             console.log('Notifications guardadas:', notifications);
         }catch (error) {
             console.error('Error creating lists:', error);

@@ -179,27 +179,35 @@ export const createPendingTaskUserNotification = asyncHandler(async(req, res) =>
             console.log('VAMOS A VER TODAS LAS TAREAS PENDIENTES:')
             console.log(task);
         }*/
-
-
-        for (let i = 0; i < tareas.length; i++) {
-            const cattarea = await CategoriaUsuario.findById(tareas[i].id_categoria_usuario);
+        console.log("Longuitud de tareas: ", tareas.length);
+        if (tareas.length === 1){
+            const cattarea = await CategoriaUsuario.findById(tareas[0].id_categoria_usuario);
             // Datos para la notificación
+            console.log('VAMOS A VER LA CATEGORIA DE LA TAREA:')
+            console.log(cattarea);
             const datos = {
                 nombre: usuario.nombre,
-                nombre_tarea: tareas[i].nombre,
-                descripcion_tarea: tareas[i].descripcion,
-                fecha_vencimiento: tareas[i].fecha_vencimiento,
+                nombre_tarea: tareas[0].nombre,
+                descripcion_tarea: tareas[0].descripcion,
+                fecha_vencimiento: tareas[0].fecha_vencimiento,
                 categoria_tarea: cattarea.nombre
             };
-    
-            // Generar la notificación 
+            console.log('Datos para la notificacion:', datos)
+            // Generar la notificación
             await generarNotificacion('tareaPendienteHoy', datos, usuario); 
 
-        }
+        }else if (tareas.length > 1){
+            const datos = {
+                nombre: usuario.nombre,
+                num_tareas: tareas.length
+            };
 
+            // Generar la notificación
+            await generarNotificacion('tareasPendientesHoy', datos, usuario);
+        }
         // Aquí podrías enviar la notificación (email, SMS, etc.)
         return res.status(200).json({
-          message: 'Notificaciones generada con éxito',
+          message: 'Notificaciones generadas con éxito',
         });
 
     } catch (error) {
@@ -208,6 +216,8 @@ export const createPendingTaskUserNotification = asyncHandler(async(req, res) =>
     }
 
 })
+
+
 
 //Esta funcion habria que llamarla cada vez que se asigne una tarea a un usuario
 //api/notification/assign/:id_asignador

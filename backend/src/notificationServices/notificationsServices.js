@@ -83,6 +83,16 @@ async function generarNotificacion(tipo, datos, usuario) {
       await notificacion.save();
     }
 
+    if (tipo === 'tareasPendientesHoy'){
+      notificacion = new Notificacion({
+        titulo: `Tareas Pendientes de Hoy`,
+        descripcion: content,
+        leida: false,
+        id_usuario: usuario,
+      });
+      await notificacion.save();
+    }
+
     if(tipo == 'invitacionAGrupo'){
       const { id_grupo } = datos;
       console.log("Id del usuario a invitar para debuggear: ", usuario);
