@@ -9,6 +9,7 @@ import { GlobalContext } from '../GlobalContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TrashSolid } from 'iconoir-react-native';
 import { EditPencil } from 'iconoir-react-native';
+import { useRoute , useNavigation} from '@react-navigation/native';
 
 //Entorno
 import { WEATHER_API } from '@env';
@@ -56,6 +57,8 @@ export default function Home() {
     //Estado para guardar la tarea seleccionada
     const [selectedTask, setSelectedTask] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
+
+    const navigation = useNavigation();
 
 
     //Animaciones
@@ -391,7 +394,7 @@ export default function Home() {
                                      <Text style={styles.modalText}>Description: {selectedTask.descripcion}</Text>
                                      <Text style={styles.modalText}>Due date: {selectedTask.fecha_vencimiento.split('T')[0]}</Text>
                                      <Text style={styles.modalText}>Status: {selectedTask.estado ? 'Complete' : 'Pending'}</Text>
-                                     <TouchableOpacity style={styles.editButton} onPress={() => {/* Lógica para editar la tarea */}}>
+                                     <TouchableOpacity style={styles.editButton} onPress={() => {navigation.navigate('EditTaskForm', {task: selectedTask}); closeModal();}}>
                                             <EditPencil width={24} height={24} color="#FFF" />
                                      </TouchableOpacity>
                                     <View style={styles.buttons}>
