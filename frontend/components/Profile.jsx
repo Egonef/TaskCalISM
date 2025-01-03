@@ -1,5 +1,5 @@
 //Imports
-import React, { useContext, useEffect, useRef  } from 'react';
+import React, { useContext, useEffect, useRef , useState } from 'react';
 import { StyleSheet, Text, Animated , View, Pressable , Image } from 'react-native';
 import { GlobalContext } from '../GlobalContext';
 import { useRoute } from '@react-navigation/native';
@@ -16,10 +16,22 @@ export default function Profile() {
     const horizontalAnim = useRef(new Animated.Value(0)).current;
     const buttonAnim = useRef(new Animated.Value(0)).current;
     const exitAnim = useRef(new Animated.Value(1)).current;
-
+    
 
     //Para cerrar la sesión (Provisional)
     const { LoggedIn , setLoggedIn } = useContext(GlobalContext);
+
+    const [userInfo, setUserInfo] = useState({});
+    //Funcion para sacar la información del usuario
+    const getUserInfo = async () => {
+        const userInfo = await AsyncStorage.getItem('userInfo');
+        console.log('User Info:', JSON.parse(userInfo));
+        setUserInfo(JSON.parse(userInfo));
+    }
+
+    useEffect(() => {
+        getUserInfo();
+    },[]);
 
     //Use Effect para animar el popUp cuando se detecta que se abre o cierra
     useEffect(() => {
@@ -58,7 +70,7 @@ export default function Profile() {
 
     return (
         <Animated.View style={[styles.container, { left: horizontalAnim }]}>
-            <Text style={styles.text}>Your Profile</Text>
+            <Text style={styles.text}>{userInfo.nombre_usuario}'s Profile</Text>
             <View style={{ height: 200 }}>
                 <Image style={styles.profileImage} source={require('../assets/pingu.png')} />
                 <Pressable
