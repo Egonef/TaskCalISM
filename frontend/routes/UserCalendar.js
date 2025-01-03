@@ -109,6 +109,7 @@ const deleteTask = async () => {
         console.log('Task deleted:', response.data);
         // Actualizar la lista de tareas
         fetchTasks();
+        closeModal();
     } catch (error) {
         console.error('Error deleting the task:', error);
     }
@@ -141,9 +142,7 @@ const handleDayPress = (day) => {
         setSelectedTask(null);
     };
 
-    const finish = () => {
-        finishTask();
-    };
+
 
 
 
