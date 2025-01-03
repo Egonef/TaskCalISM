@@ -27,6 +27,7 @@ export default function EditTaskFormGroup() {
     const { task } = route.params;
     console.log('Task:', task._id);
 
+    const { CurrentGroup } = useContext(GlobalContext);
 
     const routeGroup = useRoute();
     const { GroupId } = routeGroup.params;
@@ -44,7 +45,7 @@ export default function EditTaskFormGroup() {
         const userID = JSON.parse(userInfo)._id;
         console.log(userID);
         try {
-            const response = await axios.get(`${BACKEND_IP}/api/categories/group/${GroupId}`);
+            const response = await axios.get(`${BACKEND_IP}/api/categories/group/${CurrentGroup}`);
             console.log('Lists:', response.data);
             const categoryOptions = response.data.map(category => ({
                 label: category.nombre,
@@ -66,8 +67,9 @@ export default function EditTaskFormGroup() {
         console.log(task._id);
         console.log(estado);
         console.log(fecha_vencimiento);
+        console.log(id_categoria_usuario);
         try {
-            const response = await axios.put(`${BACKEND_IP}//api/tasks/group/modify/${task._id}`, {
+            const response = await axios.put(`${BACKEND_IP}/api/tasks/group/modify/${task._id}`, {
                 nombre,
                 descripcion,
                 fecha_vencimiento,
