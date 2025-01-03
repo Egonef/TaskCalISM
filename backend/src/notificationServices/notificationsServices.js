@@ -68,7 +68,7 @@ async function generarNotificacion(tipo, datos, usuario) {
           titulo: `Tareas Pendientes de Hoy`,
           descripcion: content,
           leida: false,
-          id_usuario: usuario,
+          id_usuario: usuario._id,
         });
       } else{
         notificacion = new Notificacion({
@@ -80,11 +80,12 @@ async function generarNotificacion(tipo, datos, usuario) {
       }
 
       console.log(`NOTIFICACION A CONTINUACION: ${notificacion}`)
-      //await notificacion.save();
+      await notificacion.save();
     }
 
     if(tipo == 'invitacionAGrupo'){
       const { id_grupo } = datos;
+      console.log("Id del usuario a invitar para debuggear: ", usuario);
       notificacion = new Notificacion({
         titulo: `Invitacion a Grupo`,
         descripcion: content,

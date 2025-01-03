@@ -219,6 +219,17 @@ export default function Home() {
         }
     };
 
+    //Funcion para crear una notificion sobre las tareass pendientes para el dia de hoy
+    const createPendingTaskUserNotification = async () => {
+        const userInfo = await AsyncStorage.getItem('userInfo');
+        const userID = JSON.parse(userInfo)._id;
+        try {
+            const res = await axios.post(`${BACKEND_IP}/api/notification/pendingTaskUser/${userID}`);
+            console.log('Notification created:', res.data);
+        } catch (error) {
+            console.error('Error creating notification:', error);
+        }
+    };
 
     //useEffect sive par ejecutar lo de dentro cuando se modifique lo que hay
     // entre los corchetes[], si no hay nada se ejecuta solo una vez al cargar la pagina
@@ -237,6 +248,8 @@ export default function Home() {
         fetchLists();
 
         fetchTasks();
+
+        createPendingTaskUserNotification();
     }, []);
 
     useEffect(() => {
