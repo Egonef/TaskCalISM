@@ -31,7 +31,7 @@ export default function GroupProfile() {
     //Para cerrar la sesión (Provisional)
     const { LoggedIn , setLoggedIn } = useContext(GlobalContext);
 
-
+    const navigation = useNavigation();
     //Use Effect para animar el popUp cuando se detecta que se abre o cierra
     useEffect(() => {
         Animated.timing(horizontalAnim, {
@@ -182,7 +182,7 @@ export default function GroupProfile() {
                 },
             });
             console.log('Group deleted:', response.data);
-            
+            navigation.navigate('Groups');
         } catch (error) {
             console.error('Error removing group:', error);
         }

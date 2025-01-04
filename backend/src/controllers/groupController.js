@@ -172,12 +172,10 @@ export const inviteUserGroup = asyncHandler(async(req,res) => { //CU04
 //CUANDO SE ELIMINA UN GRUPO, HAY QUE ELIMINAR TODAS LAS CATEGORIAS Y TAREAS ASOCIADAS A ESE GRUPO: TO DO!!!!!
 ///api/group/delete/:id
 export const deleteGroup = asyncHandler(async(req, res) => { //CU07
-   
     const {id_admin} = req.body;
     try {
 
-        const usuario = await Usuario.findOne({id_admin});
-        
+        const usuario = await Usuario.findById(id_admin);
         if(!usuario){
             return res.status(404).json({ message: "Usuario no encontrado" });
         }
