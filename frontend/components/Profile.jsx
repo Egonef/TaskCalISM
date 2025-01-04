@@ -17,6 +17,7 @@ export default function Profile() {
     const buttonAnim = useRef(new Animated.Value(0)).current;
     const exitAnim = useRef(new Animated.Value(1)).current;
     
+    const navigation = useNavigation();
 
     //Para cerrar la sesión (Provisional)
     const { LoggedIn , setLoggedIn } = useContext(GlobalContext);
@@ -80,7 +81,7 @@ export default function Profile() {
                     onPressOut={() => handlePressOut(exitAnim)}
                 >
                     <Animated.View style={{ transform: [{ scale: exitAnim }] }}>
-                        <Edit />
+                        <Edit onPress={() => {navigation.navigate('EditProfile')}}/>
                     </Animated.View>
                 </Pressable>
             </View>
