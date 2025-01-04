@@ -311,7 +311,7 @@ export default function Home() {
                 <View style={styles.weatherContainer}>
                     {weather == 'Clear' ? <Sunsvg style={styles.climateIcon} /> 
                     : weather == 'Clouds' ?  <Cloudsvg style={styles.climateIcon}/> 
-                    : weather == 'Drizzle' ?  <Rainsvg style={styles.climateIcon}/> 
+                    : weather == 'Rain' ?  <Rainsvg style={styles.climateIcon}/> 
                     : weather == 'Clear' && greet() == 'Good Night!' ?  <Moonsvg style={styles.climateIcon}/> 
                     : <Weathersvg style={styles.climateIcon} />}
                     <Weathersvg style={styles.weathersvg} />
