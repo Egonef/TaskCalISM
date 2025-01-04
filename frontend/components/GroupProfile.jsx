@@ -12,6 +12,7 @@ import { BACKEND_IP } from '@env';
 import ClosePopUp from '../components/SvgComponents/Profile/ClosePopUp'
 import Edit from '../components/SvgComponents/Profile/Edit'
 import { FlatList } from 'react-native-gesture-handler';
+import SuccessModal from '../components/SuccessModal';
 
 
 export default function GroupProfile() {
@@ -25,6 +26,8 @@ export default function GroupProfile() {
     const [groupInfo, setGroupInfo] = useState(null);
     const [usersInfo, setUsersInfo] = useState([]);
     const [invitedUser, setInvitedUser] = useState('');
+    const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
+    const [currentUser, setCurrentUser] = useState(null);
     //Para cerrar la sesión (Provisional)
     const { LoggedIn , setLoggedIn } = useContext(GlobalContext);
 
@@ -107,9 +110,19 @@ export default function GroupProfile() {
     }
     , [groupInfo]);
 
+
+
     useEffect(() => {
         console.log('Invited user:', invitedUser);
     }, [invitedUser]);
+
+    useEffect(() => {
+        const fetchCurrentUser = async () => {
+            const userInfo = await AsyncStorage.getItem('userInfo');
+            setCurrentUser(JSON.parse(userInfo));
+        };
+        fetchCurrentUser();
+    }, []);
 
     // Funcion para invitar a un usuario a un grupo
     const inviteUser = async () => {
@@ -123,8 +136,33 @@ export default function GroupProfile() {
                 id_group: CurrentGroup,
             });
             console.log('User invited:', response.data);
+            setIsSuccessModalVisible(true);
         } catch (error) {
             console.error('Error inviting user:', error);
+        }
+    };
+
+    const removeUser = async (userName) => {
+        try {
+            const groupName = groupInfo.nombre;
+            console.log('Removing user:', userName);
+            console.log('Group name:', groupName);
+            const userInfo = await AsyncStorage.getItem('userInfo');
+            const userID = JSON.parse(userInfo)._id;
+
+            const response = await axios.delete(`${BACKEND_IP}/api/group/deleteUser/${userID}`, {
+                data: {
+                    nombre_usuario: userName,
+                    nombre: groupName,
+                },
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            console.log('User removed:', response.data);
+            setUsersInfo(usersInfo.filter(user => user._id !== userId));
+        } catch (error) {
+            console.error('Error removing user:', error);
         }
     };
 
@@ -133,24 +171,41 @@ export default function GroupProfile() {
             {groupInfo ? <Text style={styles.header}>{groupInfo.nombre}</Text> : <Text style={styles.text}>Group...</Text>}
             {groupInfo ? <Text style={styles.description}>{groupInfo.descripcion}</Text> : <Text style={styles.text}>Description...</Text>}
             <View style={styles.userList}>
+                <Text style={styles.text}>Users:</Text>
                 <FlatList
                     data={usersInfo ? usersInfo : []}
+                    keyExtractor={(item) => item._id.toString()}
                     renderItem={({ item }) => (
-                        <View>
-                            <Text>{item.nombre_usuario}</Text>
+                        <View style={styles.listItem}>
+                            <Text style={styles.bulletPoint}>•</Text>
+                            <Text style={styles.users}>{item.nombre_usuario}</Text>
+                            {currentUser && currentUser._id === groupInfo.id_admin && currentUser.nombre_usuario !== item.nombre_usuario && (
+                                <TouchableOpacity style={styles.removeButton} onPress={() => removeUser(item.nombre_usuario, item._id)}>
+                                    <Text style={styles.removeButtonText}>Remove</Text>
+                                </TouchableOpacity>
+                            )}
                         </View>
+
                     )}
                 />
-            </View>
-            <TextInput
-                placeholder="Username"
-                style={styles.input}
-                value={invitedUser}
-                onChangeText={setInvitedUser}
-            />
-            <TouchableOpacity style={styles.logoutButton} onPress={inviteUser}>
-                <Text style={styles.buttonText}>Invite user</Text>
-            </TouchableOpacity>
+            </View>  
+        
+        
+            <Text style={styles.text}>Invite user:</Text>
+                <TextInput
+                    placeholder="Username"
+                    style={styles.input}
+                    value={invitedUser}
+                    onChangeText={setInvitedUser}
+                />
+                <TouchableOpacity style={styles.logoutButton} onPress={inviteUser}>
+                    <Text style={styles.buttonText}>Invite</Text>
+                </TouchableOpacity>
+                <SuccessModal
+                    visible={isSuccessModalVisible}
+                    onClose={() => setIsSuccessModalVisible(false)}
+                />
+
             <Animated.View style={[styles.exitContainer, { opacity: buttonAnim }]}>
                 <Pressable
                     style={styles.exitButton}
@@ -180,16 +235,37 @@ const styles = StyleSheet.create({
         zIndex: 4,
     },
     input: {
-        width: '80%',
+        width: '60%',
         height: 40,
         margin: 12,
         borderBottomWidth: 2,
-        borderColor: '#B5C18E',
+        borderColor: '#FFFFFF',
         fontSize: 17,
     },
     userList: {
         width: '80%',
-        height: 100,
+        height: 200,
+    },
+    text: {
+        color: '#FFFFFF',
+        fontWeight: 'bold',
+        fontSize: 25,
+        marginTop: 25,
+    },
+    users: {
+        color: '#FFFFFF',
+        fontSize: 20,
+        marginTop: 10,
+    },
+    listItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginLeft: 10,
+    },
+    bulletPoint: {
+        fontSize: 20,
+        marginRight: 10,
+        color: '#FFFFFF',
     },
     exitContainer: {
         position: 'absolute',
@@ -235,6 +311,23 @@ const styles = StyleSheet.create({
         borderRadius: 75,
         backgroundColor: '#FFFFFF',
         marginTop: 20,
+    },
+    buttonText: {
+        color: '#FFFFFF',
+        fontSize: 15,
+        fontWeight: 'bold',
+       
+    },
+    removeButton: {
+        marginLeft: 10,
+        backgroundColor: '#FF6347',
+        padding: 5,
+        borderRadius: 5,
+        marginTop: 5,
+    },
+    removeButtonText: {
+        color: '#FFFFFF',
+        fontSize: 12,
     },
 });
 

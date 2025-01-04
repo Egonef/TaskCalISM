@@ -150,6 +150,7 @@ export const modifyUser = asyncHandler(async(req, res) => { //CU02
 ///api/user/modifyPassword
 export const modifyPassword = asyncHandler(async(req, res) => { 
     const { contraseña } = req.body;
+    console.log("Contraseña: ", contraseña)
     try {
         // Solo actualizar la contraseña si se pasa en el cuerpo de la solicitud
         if (!contraseña) {
