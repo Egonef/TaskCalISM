@@ -166,6 +166,29 @@ export default function GroupProfile() {
         }
     };
 
+    const deleteGroup = async () => {
+        try {
+            const groupId = groupInfo._id;
+            const groupAdminId = groupInfo.id_admin;
+            const userInfo = await AsyncStorage.getItem('userInfo');
+            const userID = JSON.parse(userInfo)._id;
+
+            const response = await axios.delete(`${BACKEND_IP}/api/group/delete/${groupId}`, {
+                data: {
+                    id_admin: groupAdminId,
+                },
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            console.log('Group deleted:', response.data);
+            
+        } catch (error) {
+            console.error('Error removing group:', error);
+        }
+    };
+
+
     return (
         <Animated.View style={[styles.container, { left: horizontalAnim }]}>
             {groupInfo ? <Text style={styles.header}>{groupInfo.nombre}</Text> : <Text style={styles.text}>Group...</Text>}
@@ -202,6 +225,11 @@ export default function GroupProfile() {
                 <TouchableOpacity style={styles.logoutButton} onPress={inviteUser}>
                     <Text style={styles.buttonText}>Invite</Text>
                 </TouchableOpacity>
+                <View style={{marginTop: 60}}>
+                <TouchableOpacity style={styles.logoutButton} onPress={deleteGroup}>
+                    <Text style={styles.buttonText}>Delete group</Text>
+                </TouchableOpacity>
+                </View>
             </>
         )}
                 <SuccessModal
