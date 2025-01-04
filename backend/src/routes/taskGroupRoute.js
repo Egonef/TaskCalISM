@@ -15,6 +15,7 @@ router.route('/tasksToday/:idgrupo').get(ctr.tareasDiariasGroup)
 router.route('/calendarCat/:id_categoria_grupo').get(ctr.calendarioTareasCatGroup)
 router.route('/calendar/:idgrupo').get(ctr.calendarioTareasGroup)
 router.route('/assign/:idgrupo').post(ctr.assignMemberToATask)
+router.route('/assigned/:idtareagrupo').get(ctr.getAssignedMembers)
 
 
 

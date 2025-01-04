@@ -309,13 +309,9 @@ export const calendarioTareasGroup = asyncHandler (async(req,res) => {
     }
 })
 
-
-
-
 ///api/tasks/group/assign/:idgrupo
 export const assignMemberToATask = asyncHandler(async(req, res) => { //CU08
 
-        //aqui usar tarea miembro
     const { id_tarea_grupo, id_usuario } = req.body;
     try {
         const usuario = await Usuario.findById(id_usuario);
@@ -361,6 +357,31 @@ export const assignMemberToATask = asyncHandler(async(req, res) => { //CU08
 
     }
     catch (error) {
+        res.status(500).json({ message: error.message });
     }
 
+})
+
+
+///api/tasks/group/assigned/:idtareagrupo
+export const getAssignedMembers = asyncHandler(async(req, res) => { 
+    try {
+        const tareaGrupo = await TareaGrupo.findById(req.params.idtareagrupo);
+        
+        if (!tareaGrupo) {
+            return res.status(404).json({ message: "La tarea de grupo no existe" });
+        }
+
+        const tareasMiembros = await TareaMiembro.find({ id_tarea_grupo: req.params.idtareagrupo});
+
+        if (tareasMiembros.length === 0) {
+            return res.status(404).json({ message: "La tarea no tiene miembros asignados." });
+        }
+
+        res.status(201).json({ message: tareasMiembros });
+
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 })
