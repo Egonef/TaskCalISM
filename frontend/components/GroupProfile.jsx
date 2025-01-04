@@ -1,5 +1,5 @@
 //Imports
-import React, { use, useContext, useEffect, useRef , useState } from 'react';
+import React, { use, useContext, useEffect, useInsertionEffect, useRef , useState } from 'react';
 import { StyleSheet, Text, Animated , View, Pressable , Image , TextInput , TouchableOpacity} from 'react-native';
 import { GlobalContext } from '../GlobalContext';
 import axios from 'axios';
@@ -188,6 +188,32 @@ export default function GroupProfile() {
         }
     };
 
+    const removeMember = async () => {
+        try {
+            const groupName = groupInfo.nombre;
+            console.log('Group name:', groupName);
+            const userInfo = await AsyncStorage.getItem('userInfo');
+            const userID = JSON.parse(userInfo)._id;
+            console.log('Removing user:', userInfo.nombre_usuario);
+            console.log('userID:', userID);
+            const response = await axios.delete(`${BACKEND_IP}/api/group/deleteMember/`, {
+                data: {
+                    nombre_usuario: JSON.parse(userInfo).nombre_usuario,
+                    nombre: groupName,
+                },
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            console.log('User removed:', response.data);
+            setUsersInfo(usersInfo.filter(user => user._id !== userID));
+            navigation.navigate('Groups');
+        } catch (error) {
+            console.error('Error removing user:', error);
+        }
+    };
+
+
 
     return (
         <Animated.View style={[styles.container, { left: horizontalAnim }]}>
@@ -213,7 +239,7 @@ export default function GroupProfile() {
                 />
             </View>  
         
-        {currentUser && groupInfo && groupInfo.id_admin && currentUser._id === groupInfo.id_admin && (
+        {currentUser && groupInfo && groupInfo.id_admin && currentUser._id === groupInfo.id_admin ?
             <>
                 <Text style={styles.text}>Invite user:</Text>
                 <TextInput
@@ -231,7 +257,11 @@ export default function GroupProfile() {
                 </TouchableOpacity>
                 </View>
             </>
-        )}
+            : 
+            <TouchableOpacity style={styles.logoutButton} onPress={removeMember}>
+                <Text style={styles.buttonText}>Leave Group</Text>
+            </TouchableOpacity>
+            }
                 <SuccessModal
                     visible={isSuccessModalVisible}
                     onClose={() => setIsSuccessModalVisible(false)}

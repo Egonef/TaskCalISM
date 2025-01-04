@@ -295,3 +295,46 @@ export const deleteUserGroup = asyncHandler(async(req, res) => { //CU05
     }
 
 })
+
+
+export const deleteMemberGroup = asyncHandler(async(req, res) => { //CU05
+    console.log("Eliminando a un miembro de un grupo");
+    const {nombre_usuario, nombre} = req.body; //nombre es el nombre de grupo
+    console.log("Datos recibidos:", req.body);
+    try {
+        console.log("Buscando al usuario...");
+        const usuarioAEliminar = await Usuario.findOne({nombre_usuario});
+        console.log("Usuario encontrado:", usuarioAEliminar);
+        if(!usuarioAEliminar){
+            return res.status(404).json({ message: "Usuario no encontrado" });
+        }
+
+        console.log("Buscando al grupo...");
+        const grupo = await Grupo.findOne({nombre});
+
+        console.log("Grupo encontrado:", grupo);
+
+        console.log("Comprobando si el usuario es miembro del grupo...");
+        usuarioAEliminar.id_grupos = usuarioAEliminar.id_grupos.filter(id_grupo => !id_grupo.equals(grupo._id));
+        await usuarioAEliminar.save();
+
+        grupo.id_usuarios = grupo.id_usuarios.filter(id_usuario => !id_usuario.equals(usuarioAEliminar._id));
+        await grupo.save();
+
+        console.log("Buscando asignaciones a eliminar...");
+        /*
+        asignacionesAEliminar = await TareaMiembro.find({id_usuario: usuarioAEliminar._id});
+        console.log("Asignaciones encontradas:", asignacionesAEliminar);
+        //SI HAY UNA TAREA DONDE SOLO ESTA ASIGNADO ESE USUARIO, SE ELIMINA LA TAREA??? COMPROBAR LO DE ABAJO
+        for (const tareasM of asignacionesAEliminar){
+            await TareaMiembro.findByIdAndDelete(tareasM._id);
+        }
+        */
+
+        res.status(200).json({ message: 'El usuario ha sido eliminado del grupo' });
+
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+
+})

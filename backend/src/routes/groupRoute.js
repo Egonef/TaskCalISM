@@ -11,6 +11,7 @@ router.route('/invite').post(ctr.inviteUserGroup)
 router.route('/:user').post(ctr.createGroup)
 router.route('/delete/:id').delete(ctr.deleteGroup)
 router.route('/deleteUser/:admin').delete(ctr.deleteUserGroup)
+router.route('/deleteMember/').delete(ctr.deleteMemberGroup)
 
 
 
