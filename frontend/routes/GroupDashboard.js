@@ -6,7 +6,7 @@ import React, { useState, useEffect, useRef , useContext} from 'react';
 import { useRoute,  useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { EditPencil , Group } from 'iconoir-react-native';
+import { CloudBookmark, EditPencil , Group } from 'iconoir-react-native';
 import { GlobalContext } from '../GlobalContext';
 import { TrashSolid } from 'iconoir-react-native';
 import RNPickerSelect from 'react-native-picker-select';
@@ -40,6 +40,7 @@ export default function GroupDashboard() {
     const [groupInfo, setGroupInfo] = useState(null);
     const [usersInfo, setUsersInfo] = useState([]);
     const [assignedUser, setAssignedUser] = useState([]);
+    const [assignedMembers, setAssignedMembers] = useState([]);
 
     useEffect(() => {
         console.log('GroupDashboard:', groupID);
@@ -83,6 +84,18 @@ export default function GroupDashboard() {
         let usersInfo = [];
         for (let i = 0; i < users.length; i++) {
             const user = await getUser(users[i]._id);
+            usersInfo.push(user);
+        }
+        return usersInfo;
+    }
+
+    const getMembers = async (users) => {
+        console.log('Users:', users);
+        let usersInfo = [];
+        for (let i = 0; i < users.length; i++) {
+            console.log('User id:', users[i]);
+            const user = await getUser(users[i]);
+            console.log('User:', user);
             usersInfo.push(user);
         }
         return usersInfo;
@@ -197,6 +210,8 @@ export default function GroupDashboard() {
 
     };
 
+    //Funcion pra asignar un usuario a una tarea
+
     const assignMemberToATask = async () => {
         console.log('Assigning user to task:', assignedUser);
         try {
@@ -208,8 +223,24 @@ export default function GroupDashboard() {
                 },
             );
             console.log('User assigned to task:', response.data);
+            getAssignedMembers();
         } catch (error) {
             console.error('Error assigning the user to the task:', error);
+        }
+    };
+
+    //Funcion para obtener los miembros que estan asignados a una tarea
+
+    const getAssignedMembers = async () => {
+        try {
+            const response = await axios.get(`${BACKEND_IP}/api/tasks/group/assigned/${selectedTask._id}`);
+            console.log('Assigned Members:', response.data);
+            const assignedMembersObject = await getMembers(response.data);
+            console.log('Assigned Members Object:', assignedMembersObject);
+            setAssignedMembers(assignedMembersObject);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching the assigned members:', error);
         }
     };
 
@@ -225,6 +256,7 @@ export default function GroupDashboard() {
 
     const handleTaskMembersPress = () => {
         console.log('Task Members Pressed');
+        getAssignedMembers();
         setModalMembersVisible(true);
     };
 
@@ -323,7 +355,17 @@ export default function GroupDashboard() {
                 <View style={styles.modalContainer}>
                     <View style={styles.modalView}>
                         <Text style={styles.modalTitle}>Members</Text>
-                        <Text style={styles.modalText}>Members</Text>
+                        <View style={styles.memberList}>
+                            <FlatList
+                                data={assignedMembers}
+                                keyExtractor={(item, index) => index.toString()}
+                                renderItem={({ item }) => (
+                                    <View style={styles.memberCard}>
+                                        <Text style={styles.textList}>{item.nombre_usuario}</Text>
+                                    </View>
+                                )}
+                            />
+                        </View>
                         <View style={styles.assignContainer}>
                             <RNPickerSelect
                                 onValueChange={(value) => setAssignedUser(value)}
@@ -499,6 +541,23 @@ const styles = StyleSheet.create({
         borderBottomWidth: 2,
         borderColor: '#B4A593',
         fontSize: 17,
+    },
+    memberList: {
+        width: '100%',
+        height: 150,
+        alignContent: 'center',
+        marginTop: 10,
+        padding: 10,
+    },
+    memberCard: {
+        width: '100%',
+        height: 30,
+        backgroundColor: '#B4A593',
+        borderRadius: 10,
+        marginBottom: 10,
+        alignItems: 'center',
+        alignContent: 'center',
+        justifyContent: 'center',
     },
     buttons: {
         flexDirection: 'row',
