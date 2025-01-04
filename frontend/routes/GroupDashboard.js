@@ -27,7 +27,7 @@ export default function GroupDashboard() {
     const [markedDates, setMarkedDates] = useState({});
     const [selectedTask, setSelectedTask] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
-    const scaleValue = useRef(new Animated.Value(0)).current;
+    const [modalMembersVisible, setModalMembersVisible] = useState(false);
 
     const route = useRoute();
     const { groupID } = route.params;
@@ -174,6 +174,13 @@ const handleDayPress = (day) => {
         setSelectedTask(null);
     };
 
+    const handleTaskMembersPress = () => {
+        setModalMembersVisible(true);
+    }
+
+    const closeModalMembers = () => {
+        setModalMembersVisible(false);
+    }
 
 
 
@@ -222,12 +229,12 @@ const handleDayPress = (day) => {
             <AddPopUp />
             <GroupProfile />
             {selectedTask && (
-                 <Modal
-                 animationType="fade"
-                 transparent={true}
-                 visible={modalVisible}
-                 onRequestClose={closeModal}
-             >
+            <Modal
+            animationType="fade"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={closeModal}
+            >
                 <View style={styles.modalContainer}>
                     <View style={styles.modalView}>
                         <Text style={styles.modalTitle}>{selectedTask.nombre}</Text>
@@ -250,10 +257,26 @@ const handleDayPress = (day) => {
                                 </TouchableOpacity>
                             )}
                         </View>
-                     </View>
-                 </View>
-             </Modal>
+                    </View>
+                </View>
+            </Modal>
             )}
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={modalMembersVisible}
+                onRequestClose={closeModal}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalView}>
+                        <Text style={styles.modalTitle}>Members</Text>
+                        <Text style={styles.modalText}>Members</Text>
+                        <TouchableOpacity style={styles.closeButton} onPress={closeModalMembers}>
+                            <Text style={styles.closeButtonText}>Close</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 }
@@ -293,7 +316,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         alignItems: 'center',
         alignContent: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         padding: 20,
         
     },
@@ -317,7 +340,7 @@ const styles = StyleSheet.create({
     },
     modalView: {
         width: 315,
-        height: 315,
+        height: 415,
         backgroundColor: '#B5C18E',
         borderRadius: 20,
         padding: 35,
