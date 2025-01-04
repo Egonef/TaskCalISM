@@ -121,7 +121,7 @@ export default function Profile() {
                     </Animated.View>
                 </Pressable>
             </View>
-            <View>
+            <View style={styles.buttoncontainer}>
                 <Pressable
                     style={styles.logoutButton}
                     onPress={() => handleLogOut()}
@@ -130,7 +130,7 @@ export default function Profile() {
                         <Text style={styles.text}>Log Out</Text>
                     </Animated.View>
                 </Pressable>
-                <TouchableOpacity onPress={() => setIsChangePasswordVisible(!isChangePasswordVisible)}>
+                <TouchableOpacity style={styles.button} onPress={() => setIsChangePasswordVisible(!isChangePasswordVisible)}>
                     <Text style={styles.text}>Change password</Text>
                 </TouchableOpacity>
                 {isChangePasswordVisible && (
@@ -212,6 +212,7 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 10,
         justifyContent: 'center',
+        width: '25%',
     },
     text: {
         color: '#FFFFFF',
@@ -240,9 +241,9 @@ const styles = StyleSheet.create({
         fontSize: 17,
     },
     button: {
-        width: '40%',
+        width: '50%',
         height: 40,
-        backgroundColor: '#B5C18E',
+        backgroundColor: '#B4A593',
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 10,
@@ -251,6 +252,12 @@ const styles = StyleSheet.create({
     buttonText: {
         fontSize: 20,
         color: 'white',
+    },
+    buttoncontainer: {
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 20,
     },
 });
 
