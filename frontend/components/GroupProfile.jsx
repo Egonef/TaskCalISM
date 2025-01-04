@@ -256,6 +256,7 @@ export default function GroupProfile() {
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
+        top: -15,
         left: 0,
         width: '100%',
         height: '100%',
