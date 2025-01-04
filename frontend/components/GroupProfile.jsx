@@ -179,29 +179,33 @@ export default function GroupProfile() {
                         <View style={styles.listItem}>
                             <Text style={styles.bulletPoint}>•</Text>
                             <Text style={styles.users}>{item.nombre_usuario}</Text>
-                            {currentUser && currentUser._id === groupInfo.id_admin && (
+                            {currentUser && currentUser._id === groupInfo.id_admin && currentUser.nombre_usuario !== item.nombre_usuario && (
                                 <TouchableOpacity style={styles.removeButton} onPress={() => removeUser(item.nombre_usuario, item._id)}>
                                     <Text style={styles.removeButtonText}>Remove</Text>
                                 </TouchableOpacity>
                             )}
                         </View>
+
                     )}
                 />
-            </View>
+            </View>  
+        
+        
             <Text style={styles.text}>Invite user:</Text>
-            <TextInput
-                placeholder="Username"
-                style={styles.input}
-                value={invitedUser}
-                onChangeText={setInvitedUser}
-            />
-            <TouchableOpacity style={styles.logoutButton} onPress={inviteUser}>
-                <Text style={styles.buttonText}>Invite</Text>
-            </TouchableOpacity>
-            <SuccessModal
-                visible={isSuccessModalVisible}
-                onClose={() => setIsSuccessModalVisible(false)}
-            />
+                <TextInput
+                    placeholder="Username"
+                    style={styles.input}
+                    value={invitedUser}
+                    onChangeText={setInvitedUser}
+                />
+                <TouchableOpacity style={styles.logoutButton} onPress={inviteUser}>
+                    <Text style={styles.buttonText}>Invite</Text>
+                </TouchableOpacity>
+                <SuccessModal
+                    visible={isSuccessModalVisible}
+                    onClose={() => setIsSuccessModalVisible(false)}
+                />
+
             <Animated.View style={[styles.exitContainer, { opacity: buttonAnim }]}>
                 <Pressable
                     style={styles.exitButton}
