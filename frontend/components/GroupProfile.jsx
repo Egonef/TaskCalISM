@@ -190,8 +190,9 @@ export default function GroupProfile() {
                 />
             </View>  
         
-        
-            <Text style={styles.text}>Invite user:</Text>
+        {currentUser && groupInfo && groupInfo.id_admin && currentUser._id === groupInfo.id_admin && (
+            <>
+                <Text style={styles.text}>Invite user:</Text>
                 <TextInput
                     placeholder="Username"
                     style={styles.input}
@@ -201,6 +202,8 @@ export default function GroupProfile() {
                 <TouchableOpacity style={styles.logoutButton} onPress={inviteUser}>
                     <Text style={styles.buttonText}>Invite</Text>
                 </TouchableOpacity>
+            </>
+        )}
                 <SuccessModal
                     visible={isSuccessModalVisible}
                     onClose={() => setIsSuccessModalVisible(false)}
