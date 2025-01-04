@@ -223,9 +223,29 @@ export default function GroupDashboard() {
                 },
             );
             console.log('User assigned to task:', response.data);
+            createAssignNotification();
             getAssignedMembers();
         } catch (error) {
             console.error('Error assigning the user to the task:', error);
+        }
+    };
+
+
+    //funcion para notificar a un usuario que se le asigno una tarea
+    const createAssignNotification = async () => {
+        const userInfo = await AsyncStorage.getItem('userInfo');
+        const id_asignador = JSON.parse(userInfo)._id;
+        try {
+            const response = await axios.post(
+                `${BACKEND_IP}/api/notification/assign/${id_asignador}`,
+                {
+                    id_tarea: selectedTask._id,
+                    id_asignado: assignedUser,
+                },
+            );
+            console.log('Notification created:', response.data);
+        } catch (error) {
+            console.error('Error creating the notification:', error);
         }
     };
 
@@ -432,7 +452,7 @@ const styles = StyleSheet.create({
     },
     taskContainer: {
         width: '100%',
-        height: '100%',
+        height: 370,
         alignContent: 'center',
         marginTop: 10,
         padding: 30,

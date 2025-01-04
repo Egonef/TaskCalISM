@@ -222,22 +222,31 @@ export const createPendingTaskUserNotification = asyncHandler(async(req, res) =>
 //Esta funcion habria que llamarla cada vez que se asigne una tarea a un usuario
 //api/notification/assign/:id_asignador
 export const createAssignNotification = asyncHandler(async(req, res) => {
-
+    console.log('Entrando a createAssignNotification')
     try {
+        console.log('Entrando al try')
         const {id_asignado, id_tarea} = req.body; 
+        console.log('id_asignado:', id_asignado)
+        console.log('id_tarea:', id_tarea)
+        console.log('id_asignador:', req.params.id_asignador)
         // Obtener el usuario de la base de datos
+        console.log('Buscando usuario asignador')
         const usuario_asignador = await Usuario.findById(req.params.id_asignador);
-        
+        console.log(usuario_asignador)
         if (!usuario_asignador) {
           return res.status(404).json({ error: 'Usuario no encontrado' });
         }
-    
-        const usuario_asignado = await Usuario.findById({id_asignado});
+        
+        console.log('Buscando usuario asignado')
+        const usuario_asignado = await Usuario.findById(id_asignado);
+        console.log(usuario_asignado)
         if (!usuario_asignado) {
           return res.status(404).json({ error: 'Usuario no encontrado' });
         }
 
-        const tareagrupo = await TareaGrupo.findById({id_tarea})
+        console.log('Buscando tarea')
+        const tareagrupo = await TareaGrupo.findById(id_tarea)
+        console.log(tareagrupo)
         if (!tareagrupo) {
           return res.status(404).json({ error: 'Tarea no encontrada' });
         }
@@ -260,14 +269,11 @@ export const createAssignNotification = asyncHandler(async(req, res) => {
           nombre_grupo: grupo.nombre
         };
 
-    
+        console.log('Datos para la notificacion:', datos)
+        console.log("Generando notificacion")
         // Generar la notificación de bienvenida
-        const notificacion = await generarNotificacion('asigancionATareaGrupo', datos, usuario_asignado); 
+        const notificacion = await generarNotificacion('asignacionATareaGrupo', datos, usuario_asignado); 
         
-        if (!notificacion) {
-          return res.status(500).json({ error: 'Error al generar la notificación' });
-        }
-
         // Aquí podrías enviar la notificación (email, SMS, etc.)
         return res.status(200).json({
           message: 'Notificación generada con éxito',

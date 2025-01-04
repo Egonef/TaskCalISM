@@ -365,22 +365,14 @@ export const assignMemberToATask = asyncHandler(async(req, res) => { //CU08
 
 ///api/tasks/group/assigned/:idtareagrupo
 export const getAssignedMembers = asyncHandler(async(req, res) => { 
-    console.log("Entrando en getAssignedMembers")
-    console.log(req.params.idtareagrupo)
     try {
-        console.log("Entrando en el try")
         const tareaGrupo = await TareaGrupo.findById(req.params.idtareagrupo);
-        console.log("Tarea Grupo")
-        console.log(tareaGrupo)
         if (!tareaGrupo) {
             return res.status(404).json({ message: "La tarea de grupo no existe" });
         }
-        console.log("Tarea Grupo existe")
 
         const tareasMiembros = await TareaMiembro.find({ id_tarea_grupo: req.params.idtareagrupo});
 
-        console.log("Tareas Miembros")
-        console.log(tareasMiembros)
 
         if (tareasMiembros.length === 0) {
             return res.status(404).json({ message: "La tarea no tiene miembros asignados." });
@@ -389,7 +381,6 @@ export const getAssignedMembers = asyncHandler(async(req, res) => {
         // Mapear los resultados para devolver solo los id_usuario
         const miembrosIds = tareasMiembros.map(tarea => tarea.id_usuario);
 
-        console.log("Tareas Miembros si tiene miembros")
         res.status(201).json(miembrosIds);
 
     }

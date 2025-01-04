@@ -71,11 +71,13 @@ async function generarNotificacion(tipo, datos, usuario) {
           id_usuario: usuario._id,
         });
       } else{
+        console.log("Vamos a crear la notificacion de asignacion a tarea de grupo")
+        console.log(`Datos: ${datos}`)
         notificacion = new Notificacion({
           titulo: `Asignación a Tarea de Grupo`,
           descripcion: content,
           leida: false,
-          id_usuario: usuario,
+          id_usuario: usuario._id,
         });
       }
 
