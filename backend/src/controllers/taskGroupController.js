@@ -312,7 +312,7 @@ export const calendarioTareasGroup = asyncHandler (async(req,res) => {
 
 
 
-
+///api/tasks/group/assign/:idgrupo
 export const assignMemberToATask = asyncHandler(async(req, res) => { //CU08
 
         //aqui usar tarea miembro
@@ -352,8 +352,8 @@ export const assignMemberToATask = asyncHandler(async(req, res) => { //CU08
 
         // Asignar el miembro a la tarea
         const nuevaTareaMiembro = new TareaMiembro({
-            id_tarea_grupo: tareapertenecegrupo,
-            id_usuario: usuario,
+            id_tarea_grupo: id_tarea_grupo,
+            id_usuario: id_usuario,
         });
 
         await nuevaTareaMiembro.save();

@@ -9,7 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { EditPencil , Group } from 'iconoir-react-native';
 import { GlobalContext } from '../GlobalContext';
 import { TrashSolid } from 'iconoir-react-native';
-
+import RNPickerSelect from 'react-native-picker-select';
 //Entorno
 import { BACKEND_IP } from '@env';
 
@@ -38,6 +38,8 @@ export default function GroupDashboard() {
     const { OpengroupProfilePopUp, setOpengroupProfilePopUp } = useContext(GlobalContext);
 
     const [groupInfo, setGroupInfo] = useState(null);
+    const [usersInfo, setUsersInfo] = useState([]);
+    const [assignedUser, setAssignedUser] = useState([]);
 
     useEffect(() => {
         console.log('GroupDashboard:', groupID);
@@ -64,6 +66,37 @@ export default function GroupDashboard() {
             console.error('Error fetching the group info:', error);
         }
     };
+
+    // Funcion para obtener un uuario a partir de su id
+
+    const getUser = async (id) => {
+        try {
+            const response = await axios.get(`${BACKEND_IP}/api/user/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching the user:', error);
+        }
+    }
+
+    // Funcion que a partir del vector de id de usuarios de un grupo, devuelve un vector con los usuarios
+    const getUsers = async (users) => {
+        let usersInfo = [];
+        for (let i = 0; i < users.length; i++) {
+            const user = await getUser(users[i]._id);
+            usersInfo.push(user);
+        }
+        return usersInfo;
+    }
+
+    useEffect(() => {
+        if (groupInfo) {
+            getUsers(groupInfo.id_usuarios).then((users) => {
+                console.log('Users:', users);
+                setUsersInfo(users);
+            });
+        }
+    }
+    , [groupInfo]);
 
     // Solicitud al backend para obtener las tareas
     const fetchTasks = async () => {
@@ -101,67 +134,83 @@ export default function GroupDashboard() {
         setMarkedDates(markedDates);
 
 
-    } catch (error) {
-        console.error('Error fetching the tasks:', error);
-    }
-};
-
-//funcon para terminar una tarea
-const finishTask = async () => {
-    try {
-        const response = await axios.put(
-            `${BACKEND_IP}/api/tasks/group/endtask/${selectedTask._id}`,
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            }
-        );
-        console.log('Task finished:', response.data);
-        setSelectedTask({ ...selectedTask, estado: true });
-        // Actualizar la lista de tareas
-        fetchTasks();
-    } catch (error) {
-        console.error('Error finishing the task:', error);
-    }
-};
-
-//funcon para eliminar una tarea
-const deleteTask = async () => {
-    try {
-        const response = await axios.delete(
-            `${BACKEND_IP}/api/tasks/group/delete/${selectedTask._id}`,
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            }
-        );
-        console.log('Task deleted:', response.data);
-        // Actualizar la lista de tareas
-        fetchTasks();
-        closeModal();
-        handleDayPress(selectedDate);
-    } catch (error) {
-        console.error('Error finishing the task:', error);
-    }
-};
-
-const handleDayPress = (day) => {
-    console.log('Day pressed:', day.dateString);
-    setSelectedDate(day.dateString);
-    const filteredTasks = tasks.filter(task => {
-        if (!task.fecha_vencimiento) {
-            console.log('no hay tareas con esa fecha');
-            return false;
+        } catch (error) {
+            console.error('Error fetching the tasks:', error);
         }
-        const taskDate = task.fecha_vencimiento.split('T')[0]; // Eliminar la hora de la fecha
-        console.log('Task Date:', taskDate, 'Selected Date:', day.dateString);
-        return taskDate === day.dateString;
-    });
-    console.log('Filtered Tasks:', filteredTasks);
-    setTasksForSelectedDate(filteredTasks);
+    };
 
+    //funcon para terminar una tarea
+    const finishTask = async () => {
+        try {
+            const response = await axios.put(
+                `${BACKEND_IP}/api/tasks/group/endtask/${selectedTask._id}`,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+            console.log('Task finished:', response.data);
+            setSelectedTask({ ...selectedTask, estado: true });
+            // Actualizar la lista de tareas
+            fetchTasks();
+        } catch (error) {
+            console.error('Error finishing the task:', error);
+        }
+    };
+
+    //funcon para eliminar una tarea
+    const deleteTask = async () => {
+        try {
+            const response = await axios.delete(
+                `${BACKEND_IP}/api/tasks/group/delete/${selectedTask._id}`,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+            console.log('Task deleted:', response.data);
+            // Actualizar la lista de tareas
+            fetchTasks();
+            closeModal();
+            handleDayPress(selectedDate);
+        } catch (error) {
+            console.error('Error finishing the task:', error);
+        }
+    };
+
+    const handleDayPress = (day) => {
+        console.log('Day pressed:', day.dateString);
+        setSelectedDate(day.dateString);
+        const filteredTasks = tasks.filter(task => {
+            if (!task.fecha_vencimiento) {
+                console.log('no hay tareas con esa fecha');
+                return false;
+            }
+            const taskDate = task.fecha_vencimiento.split('T')[0]; // Eliminar la hora de la fecha
+            console.log('Task Date:', taskDate, 'Selected Date:', day.dateString);
+            return taskDate === day.dateString;
+        });
+        console.log('Filtered Tasks:', filteredTasks);
+        setTasksForSelectedDate(filteredTasks);
+
+    };
+
+    const assignMemberToATask = async () => {
+        console.log('Assigning user to task:', assignedUser);
+        try {
+            const response = await axios.post(
+                `${BACKEND_IP}/api/tasks/group/assign/${CurrentGroup}`,
+                {
+                    id_tarea_grupo: selectedTask._id,
+                    id_usuario: assignedUser,
+                },
+            );
+            console.log('User assigned to task:', response.data);
+        } catch (error) {
+            console.error('Error assigning the user to the task:', error);
+        }
     };
 
     const handleTaskPress = (task) => {
@@ -175,12 +224,13 @@ const handleDayPress = (day) => {
     };
 
     const handleTaskMembersPress = () => {
+        console.log('Task Members Pressed');
         setModalMembersVisible(true);
-    }
+    };
 
     const closeModalMembers = () => {
         setModalMembersVisible(false);
-    }
+    };
 
 
 
@@ -241,6 +291,9 @@ const handleDayPress = (day) => {
                         <Text style={styles.modalText}>Descripción: {selectedTask.descripcion}</Text>
                         <Text style={styles.modalText}>Fecha de vencimiento: {selectedTask.fecha_vencimiento.split('T')[0]}</Text>
                         <Text style={styles.modalText}>Estado: {selectedTask.estado ? 'Completada' : 'Pendiente'}</Text>
+                        <TouchableOpacity style={styles.assignedMembersButton} onPress={handleTaskMembersPress}>
+                            <Group width={24} height={24} color="#FFF" />
+                        </TouchableOpacity>
                         <TouchableOpacity style={styles.editButton} onPress={() => {navigation.navigate('EditTaskFormGroup', {task: selectedTask}, {GroupId: CurrentGroup}); closeModal();}}>
                             <EditPencil width={24} height={24} color="#FFF" />
                         </TouchableOpacity>
@@ -265,12 +318,23 @@ const handleDayPress = (day) => {
                 animationType="fade"
                 transparent={true}
                 visible={modalMembersVisible}
-                onRequestClose={closeModal}
+                onRequestClose={closeModalMembers}
             >
                 <View style={styles.modalContainer}>
                     <View style={styles.modalView}>
                         <Text style={styles.modalTitle}>Members</Text>
                         <Text style={styles.modalText}>Members</Text>
+                        <View style={styles.assignContainer}>
+                            <RNPickerSelect
+                                onValueChange={(value) => setAssignedUser(value)}
+                                items={usersInfo.map(user => ({ label: user.nombre_usuario, value: user._id }))}
+                                style={pickerSelectStyles}
+                                placeholder={{ label: "Select a member", value: null }}
+                            />
+                            <TouchableOpacity style={styles.assingButton} onPress={assignMemberToATask}>
+                                <Text style={styles.assingButtonText}>+</Text>
+                            </TouchableOpacity>
+                        </View>
                         <TouchableOpacity style={styles.closeButton} onPress={closeModalMembers}>
                             <Text style={styles.closeButtonText}>Close</Text>
                         </TouchableOpacity>
@@ -318,7 +382,6 @@ const styles = StyleSheet.create({
         alignContent: 'center',
         justifyContent: 'center',
         padding: 20,
-        
     },
     textList: {
         color: '#FFFFFF',
@@ -390,6 +453,11 @@ const styles = StyleSheet.create({
     deleteButton: {
         position: 'absolute',
         top: 20,
+        right: 50,
+    },
+    assignedMembersButton: {
+        position: 'absolute',
+        top: 20,
         left: 20,
     },
     infoContainer: {
@@ -402,8 +470,68 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         borderRadius: 50,
     },
+    assignContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        alignContent: 'center',
+        verticalAlign: 'center',
+        width: '100%',
+        height: 50,
+    },
+    assingButton: {
+        backgroundColor: '#B4A593',
+        width: 50,
+        height: 50,
+        padding: 10,
+        borderRadius: 10,
+        justifyContent: 'center',
+    },
+    assingButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        fontSize: 16,
+    },
+    assingInput: {
+        width: '50%',
+        height: 50,
+        borderBottomWidth: 2,
+        borderColor: '#B4A593',
+        fontSize: 17,
+    },
     buttons: {
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
 });
+
+const pickerSelectStyles = StyleSheet.create({
+    inputIOS: {
+        backgroundColor: '#ffff',
+        width: 190,
+        alignSelf: 'center',
+        fontSize: 16,
+        paddingVertical: 12,
+        paddingHorizontal: 10,
+        borderWidth: 1,
+        borderColor: 'gray',
+        borderRadius: 4,
+        color: 'black',
+        paddingRight: 30, // to ensure the text is never behind the icon
+    },
+    inputAndroid: {
+        backgroundColor: '#ffff',
+        width: 190,
+        alignSelf: 'center',
+        fontSize: 16,
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        borderWidth: 0.5,
+        borderColor: 'purple',
+        borderRadius: 8,
+        color: 'black',
+        paddingRight: 30, // to ensure the text is never behind the icon
+    },
+});
+
