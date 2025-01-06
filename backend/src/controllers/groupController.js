@@ -68,7 +68,8 @@ export const createGroup = asyncHandler(async(req, res) => { //CU03
         
         res.status(200).json({ message: "El grupo ha sido creado correctamente" });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error("Error al crear el grupo:", error); // Para ver detalles del error
+        res.status(500).json({ message: error.message, stack: error.stack }); // Añadido el stack para más detalles
     }
 })
 

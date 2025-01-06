@@ -32,6 +32,10 @@ describe('Pruebas para la API de usuarios', () => {
 
         const URI = process.env.MONGODB_URI || 'mongodb+srv://admin:admin@cluster0.ff5yg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
         await mongoose.connect(URI);
+
+        if (server) {
+          await new Promise(resolve => server.close(resolve)); // Esperamos a que el servidor se cierre completamente
+        }
   
         server = app.listen(5000, () => {
             console.log('Test server running on port 5000');
@@ -39,7 +43,8 @@ describe('Pruebas para la API de usuarios', () => {
         agent = request.agent(server); // Agente para manejar la sesión
   
       });
-  
+
+      
     afterAll(async () => {
       // Eliminar usuarios y grupos creados durante las pruebas
       await Usuario.deleteMany({ nombre_usuario: { $regex: /^test|usuario_existente|usuario_prueba/ } });
@@ -49,8 +54,6 @@ describe('Pruebas para la API de usuarios', () => {
             server.close();
       }
     });
-
-    
 
     it('Crear un nuevo usuario', async () => {
       const nuevoUsuario = {
@@ -163,6 +166,4 @@ describe('Pruebas para la API de usuarios', () => {
     });
     
     
-    
   })
-
