@@ -5,6 +5,7 @@ import { GlobalContext } from '../GlobalContext';
 import { useRoute } from '@react-navigation/native';
 import * as NavigationBar from 'expo-navigation-bar';
 import axios from 'axios'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //Entorno
 import { BACKEND_IP } from '@env';
@@ -25,6 +26,17 @@ export default function Register() {
         NavigationBar.setButtonStyleAsync("dark");
     }, []);
 
+    //Solicitud al backend para enviar una notificacion de bienvenida
+    const createWelcomeNotification = async (userID) => {
+        try {
+            const response = await axios.post(`${BACKEND_IP}/api/notification/welcome/${userID}`);
+            console.log('Welcome notification:', response.data);
+        } catch (error) {
+            console.error('Error creating welcome notification:', error);
+        }
+    };
+
+
     const registerUser = async () => {
         try {
             const response = await axios.post(`${BACKEND_IP}/api/user/`, {
@@ -34,6 +46,7 @@ export default function Register() {
                 fecha_nacimiento
             });
             console.log('User registered:', response.data);
+            createWelcomeNotification(response.data._id);
         } catch (error) {
             console.error('Error registering user:', error);
         }
@@ -43,25 +56,25 @@ export default function Register() {
         <View style={styles.container}>
             <Text style={styles.AppName}>TaskCal</Text>
             <TextInput
-                placeholder="Nombre de usuario"
+                placeholder="Username"
                 style={styles.input}
                 value={nombre_usuario}
                 onChangeText={setNombre_usuario}
             />
             <TextInput
-                placeholder="Nombre"
+                placeholder="Name"
                 style={styles.input}
                 value={nombre}
                 onChangeText={setNombre}
             />
             <TextInput
-                placeholder="Fecha de nacimiento"
+                placeholder="Date of birth"
                 style={styles.input}
                 value={fecha_nacimiento}
                 onChangeText={setFecha_nacimiento}
             />
             <TextInput
-                placeholder="Contraseña"
+                placeholder="Password"
                 style={styles.input}
                 value={contraseña}
                 onChangeText={setContraseña}

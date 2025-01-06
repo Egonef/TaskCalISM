@@ -7,6 +7,10 @@ import React, { use } from 'react';
 import { useEffect ,useState , useContext , useRef} from 'react';
 import { GlobalContext } from '../GlobalContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { TrashSolid } from 'iconoir-react-native';
+import { EditPencil } from 'iconoir-react-native';
+import { useRoute , useNavigation} from '@react-navigation/native';
+
 //Entorno
 import { WEATHER_API } from '@env';
 import { BACKEND_IP } from '@env';
@@ -26,6 +30,7 @@ import AddPopUp from '../components/AddPopUp';
 import Profile from '../components/Profile';
 import SkeletonTask from '../components/Skeletons/SkeletonTask';
 import CategoryTasksModal from '../components/CategoryTasksModal';
+import CategoryDeleteModal from '../components/CategoryDeleteModal';
 
 
 export default function Home() {
@@ -40,6 +45,8 @@ export default function Home() {
     const [lists, setLists] = useState(null);
 
     const [isCategoryTasksModalVisible, setCategoryTasksModalVisible] = useState(false);
+    const [isCategoryDeleteModalVisible, setCategoryDeleteModalVisible] = useState(false);
+
     const [selectedCategoryId, setSelectedCategoryId] = useState(null);
 
     //Estado para la lista seleccionada
@@ -47,6 +54,11 @@ export default function Home() {
 
     //Contexto global para abrir el deplegable del perfil
     const { OpenProfilePopUp , setOpenProfilePopUp } = useContext(GlobalContext);
+    //Estado para guardar la tarea seleccionada
+    const [selectedTask, setSelectedTask] = useState(null);
+    const [modalVisible, setModalVisible] = useState(false);
+
+    const navigation = useNavigation();
 
 
     //Animaciones
@@ -188,6 +200,36 @@ export default function Home() {
         }
     };
 
+    const finishTask = async () => {
+        try {
+            const response = await axios.put(
+                `${BACKEND_IP}/api/tasks/user/endtask/${selectedTask._id}`,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+            console.log('Task finished:', response.data);
+            setSelectedTask({ ...selectedTask, estado: true });
+            // Actualizar la lista de tareas
+            fetchTasks();
+        } catch (error) {
+            console.error('Error finishing the task:', error);
+        }
+    };
+
+    //Funcion para crear una notificion sobre las tareass pendientes para el dia de hoy
+    const createPendingTaskUserNotification = async () => {
+        const userInfo = await AsyncStorage.getItem('userInfo');
+        const userID = JSON.parse(userInfo)._id;
+        try {
+            const res = await axios.post(`${BACKEND_IP}/api/notification/pendingTaskUser/${userID}`);
+            console.log('Notification created:', res.data);
+        } catch (error) {
+            console.error('Error creating notification:', error);
+        }
+    };
 
     //useEffect sive par ejecutar lo de dentro cuando se modifique lo que hay
     // entre los corchetes[], si no hay nada se ejecuta solo una vez al cargar la pagina
@@ -206,6 +248,8 @@ export default function Home() {
         fetchLists();
 
         fetchTasks();
+
+        createPendingTaskUserNotification();
     }, []);
 
     useEffect(() => {
@@ -217,6 +261,33 @@ export default function Home() {
         setSelectedCategoryId(categoryId);
         setCategoryTasksModalVisible(true);
     };
+
+    const handleCategoryDeletePress = (categoryId) => {
+        setSelectedCategoryId(categoryId);
+        setCategoryDeleteModalVisible(true);
+    };
+
+    const refreshAfterCategoryDelete = () => {
+        fetchLists();
+        fetchTasks();
+        setCategoryDeleteModalVisible(false);
+    };
+
+    const handleTaskPress = (task) => {
+        setSelectedTask(task);
+        setModalVisible(true);
+    };
+
+    const closeModal = () => {
+        setModalVisible(false);
+        setSelectedTask(null);
+    };
+
+    const finish = () => {
+        finishTask();
+    };
+
+
 
     return (
         <View style={styles.container}>
@@ -240,7 +311,8 @@ export default function Home() {
                 <View style={styles.weatherContainer}>
                     {weather == 'Clear' ? <Sunsvg style={styles.climateIcon} /> 
                     : weather == 'Clouds' ?  <Cloudsvg style={styles.climateIcon}/> 
-                    : weather == 'Drizzle' ?  <Rainsvg style={styles.climateIcon}/> 
+                    : weather == 'Rain' ?  <Rainsvg style={styles.climateIcon}/> 
+                    : weather == 'Drizzle' ?  <Rainsvg style={styles.climateIcon}/>
                     : weather == 'Clear' && greet() == 'Good Night!' ?  <Moonsvg style={styles.climateIcon}/> 
                     : <Weathersvg style={styles.climateIcon} />}
                     <Weathersvg style={styles.weathersvg} />
@@ -304,23 +376,55 @@ export default function Home() {
                 ) : tasks.message === "No tienes tareas pendientes para hoy." ? (
                     // Mostrar mensaje cuando no hay tareas para hoy
                     <View style={styles.taskList}>
-                        <Text style={styles.noTasksText}>No tiene tareas pendientes para hoy!</Text>
+                        <Text style={styles.noTasksText}>No pending tasks for today!</Text>
                     </View>
                 ) : (
                     // Mostrar las tareas reales una vez cargadas
-                    <FlatList style={styles.taskList} 
+                    <FlatList style={styles.taskList}  
                         horizontal={true} 
                         showsHorizontalScrollIndicator={false}
                         data={tasks}
                     renderItem={({ item }) => 
                         <Shadow offset={[10,15]} distance={3}>
-                            <View style={styles.taskcard}>
-                                <Text>{item.descripcion}</Text>
-                            </View>
+
+                            <TouchableOpacity style={styles.taskcard} onPress={() => handleTaskPress(item)}>
+                                <Text>{item.nombre}</Text>
+                            </TouchableOpacity>
+
                         </Shadow>}
                     />
                 )}
             </View>
+            {selectedTask && (
+                             <Modal
+                             animationType="fade"
+                             transparent={true}
+                             visible={modalVisible}
+                             onRequestClose={closeModal}
+                         >
+                             <View style={styles.modalContainer}>
+                                 <View style={styles.modalView}>
+                                     <Text style={styles.modalTitle}>{selectedTask.nombre}</Text>
+                                     <Text style={styles.modalText}>Description: {selectedTask.descripcion}</Text>
+                                     <Text style={styles.modalText}>Due date: {selectedTask.fecha_vencimiento.split('T')[0]}</Text>
+                                     <Text style={styles.modalText}>Status: {selectedTask.estado ? 'Complete' : 'Pending'}</Text>
+                                     <TouchableOpacity style={styles.editButton} onPress={() => {navigation.navigate('EditTaskForm', {task: selectedTask}); closeModal();}}>
+                                            <EditPencil width={24} height={24} color="#FFF" />
+                                     </TouchableOpacity>
+                                    <View style={styles.buttons}>
+                                        <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+                                            <Text style={styles.closeButtonText}>Close</Text>
+                                        </TouchableOpacity>
+                                        {!selectedTask.estado && (
+                                                <TouchableOpacity style={styles.closeButton} onPress={finishTask}>
+                                                    <Text style={styles.closeButtonText}>Finish</Text>
+                                                </TouchableOpacity>
+                                        )}
+                                    </View>
+                                 </View>
+                             </View>
+                         </Modal>
+            )}
             <View style={styles.listContainer}>
                 <Text style={styles.headerText}>Categories</Text>
                 <View style={styles.listList} >
@@ -333,7 +437,9 @@ export default function Home() {
                             >
                                 <View style={styles.listcard}>
                                     <Text style={styles.textList}>{item.nombre}</Text>
-                                    <Text>+</Text>
+                                    <TouchableOpacity onPress={() => {handleCategoryDeletePress(item._id)}}>
+                                        <TrashSolid width={24} height={24} color="#FFF" />
+                                    </TouchableOpacity>
                                 </View>
                             </TouchableOpacity>
                         </View>}
@@ -345,6 +451,11 @@ export default function Home() {
             <CategoryTasksModal
                 visible={isCategoryTasksModalVisible}
                 onClose={() => setCategoryTasksModalVisible(false)}
+                categoryId={selectedCategoryId}
+            />
+            <CategoryDeleteModal
+                visible={isCategoryDeleteModalVisible}
+                onClose={() => refreshAfterCategoryDelete()}
                 categoryId={selectedCategoryId}
             />
         </View>
@@ -535,5 +646,64 @@ const styles = StyleSheet.create({
         color: '#888',
         textAlign: 'center',
         marginTop: 20,
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalView: {
+        width: 315,
+        height: 315,
+        backgroundColor: '#B5C18E',
+        borderRadius: 20,
+        padding: 35,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    modalTitle: {
+        fontSize: 30,
+        fontWeight: 'bold',
+        marginBottom: 15,
+        color: 'white',
+    },
+    modalText: {
+        fontSize: 23,
+        marginBottom: 10,
+        color: 'white',
+    },
+    closeButton: {
+        marginTop: 20,
+        backgroundColor: '#B4A593',
+        borderRadius: 10,
+        padding: 10,
+        elevation: 2,
+        width: 100,
+        height: 55,
+        margin: 10,
+    },
+    closeButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        padding: 5,
+        fontSize: 18,
+    },
+    editButton: {
+        position: 'absolute',
+        top: 20,
+        right: 20,
+    },
+    buttons: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
 });

@@ -20,8 +20,14 @@ import Groups from './routes/Groups';
 import Notifications from './routes/Notifications';
 import TaskForm from './routes/TaskForm';
 import ListForm from './routes/ListForm';
-
-
+import GroupForm from './routes/GroupForm';
+import GroupDashboard from './routes/GroupDashboard';
+import TaskFormGroup from './routes/TaskFormGroup';
+import ListFormGroup from './routes/ListFormGroup';
+import EditTaskForm from './routes/EditTaskForm';
+import EditCategoryForm from './routes/EditCategoryForm';
+import EditTaskFormGroup from './routes/EditTaskFormGroup';
+import EditProfile from './routes/EditProfile';
 
 const Stack = createStackNavigator();
 
@@ -63,6 +69,14 @@ export default function MainApp() {
                         <Stack.Screen name="Notifications" component={Notifications} />
                         <Stack.Screen name="TaskForm" component={TaskForm} />
                         <Stack.Screen name="ListForm" component={ListForm} />
+                        <Stack.Screen name="GroupForm" component={GroupForm} />
+                        <Stack.Screen name="GroupDashboard" component={GroupDashboard} />
+                        <Stack.Screen name="TaskFormGroup" component={TaskFormGroup} />
+                        <Stack.Screen name="ListFormGroup" component={ListFormGroup} />
+                        <Stack.Screen name="EditTaskForm" component={EditTaskForm} />
+                        <Stack.Screen name="EditCategoryForm" component={EditCategoryForm} />
+                        <Stack.Screen name="EditTaskFormGroup" component={EditTaskFormGroup} />
+                        <Stack.Screen name="EditProfile" component={EditProfile} />
                     </>
                 )}
             </Stack.Navigator>

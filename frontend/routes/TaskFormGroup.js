@@ -1,13 +1,12 @@
 //Imports
 import React, { useContext, useEffect, useRef , useState } from 'react';
-import { StyleSheet, Text, Animated , View, Pressable , TextInput, Button , TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView} from 'react-native';
+import { StyleSheet, Text, Animated , View, Pressable , TextInput, Button , TouchableOpacity} from 'react-native';
 import { GlobalContext } from '../GlobalContext';
 import { useRoute } from '@react-navigation/native';
 import * as NavigationBar from 'expo-navigation-bar';
 import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNPickerSelect from 'react-native-picker-select';
-
 
 //Entorno
 import { BACKEND_IP } from '@env';
@@ -17,52 +16,48 @@ import { BACKEND_IP } from '@env';
 import SuccessModal from '../components/SuccessModal';
 
 
-export default function TaskForm() {
+export default function TaskFormGroup() {
     const [nombre, setNombre] = useState('');
     const [descripcion, setDescripcion] = useState('');
-    const [id_categoria_usuario, setCategoria] = useState('');
+    const [id_categoria_grupo, setCategoria] = useState('');
     const [fecha_vencimiento, setFecha_vencimiento] = useState('');
     const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
 
     const [categories, setCategories] = useState([]);
 
-    const userID = AsyncStorage.getItem('userInfo')._id;
+    const { CurrentGroup } = useContext(GlobalContext);
 
     useEffect(() => {
         NavigationBar.setBackgroundColorAsync("#F1F1F1");
         NavigationBar.setButtonStyleAsync("dark");
 
-    //Solicitud al backend para obtener las categorias
-    const fetchCategories = async () => {
-        const userInfo = await AsyncStorage.getItem('userInfo');
-        const userID = JSON.parse(userInfo)._id;
-        console.log(userID);
-        try {
-            const response = await axios.get(`${BACKEND_IP}/api/categories/user/${userID}`);
-            console.log('Lists:', response.data);
-            const categoryOptions = response.data.map(category => ({
-                label: category.nombre,
-                value: category._id,
-            }));
-            setCategories(categoryOptions);
-        } catch (error) {
-            console.error('Error fetching categories:', error);
-        }
-    };
+
+        //Solicitud al backend para obtener las categorias
+        const fetchCategories = async () => {
+            console.log('CurrentGroup fetching categories:', CurrentGroup);
+            try {
+                const response = await axios.get(`${BACKEND_IP}/api/categories/group/${CurrentGroup}`);
+                console.log('Lists:', response.data);
+                const categoryOptions = response.data.map(category => ({
+                    label: category.nombre,
+                    value: category._id,
+                }));
+                setCategories(categoryOptions);
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            }
+        };
 
         fetchCategories();
     }, []);
 
     const createTask = async () => {
-        const userInfo = await AsyncStorage.getItem('userInfo');
-        const userID = JSON.parse(userInfo)._id;
-        console.log(userID);
         try {
-            const response = await axios.post(`${BACKEND_IP}/api/tasks/user/${userID}`, {
+            const response = await axios.post(`${BACKEND_IP}/api/tasks/group/${CurrentGroup}`, {
                 nombre,
                 descripcion,
                 fecha_vencimiento,
-                id_categoria_usuario
+                id_categoria_grupo
             });
             console.log('Task created:', response.data);
             setIsSuccessModalVisible(true);
@@ -72,10 +67,7 @@ export default function TaskForm() {
     };
 
     return (
-        <KeyboardAvoidingView 
-            style={styles.container}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            >
+        <View style={styles.container}>
             <Text style={styles.AppName}>Fill task info</Text>
             <TextInput
                 placeholder="Header"
@@ -100,7 +92,6 @@ export default function TaskForm() {
                 items={categories}
                 style={pickerSelectStyles}
                 placeholder={{ label: "Select a category", value: null }}
-                
             />
             <TouchableOpacity style={styles.button} onPress={createTask}>
                 <Text style={styles.buttonText}>Add Task</Text>
@@ -109,7 +100,7 @@ export default function TaskForm() {
                 visible={isSuccessModalVisible}
                 onClose={() => setIsSuccessModalVisible(false)}
             />
-        </KeyboardAvoidingView>
+        </View>
     );
 };
 

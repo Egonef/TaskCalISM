@@ -13,14 +13,19 @@ import mongoose from 'mongoose';
 ///api/categories/group?id_grupo=0
 export const getCategoriesGroup = asyncHandler(async(req, res) => { 
     try{
+        console.log("Hemos entrao en getCategoriesGroup")
+        
         //const {id_g} = req.body
         const grupoExistente = await Grupo.findById(req.params.idgrupo);
 
+        console.log("Grupo existente", grupoExistente)
         if (!grupoExistente) {
+            console.log("Grupo no existe")
             return res.status(404).json({ message: "El grupo no existe" });
         }
-        const categories = await CategoriaGrupo.find({ id_grupo: grupoExistente });
 
+        const categories = await CategoriaGrupo.find({ id_grupo: req.params.idgrupo });
+        console.log("Categorias", categories)
         if (categories.length === 0) {
             return res.status(404).json({ message: "No se encontraron categorías para este grupo" });
         }

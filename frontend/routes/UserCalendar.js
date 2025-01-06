@@ -6,6 +6,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { EditPencil } from 'iconoir-react-native';
+import { useRoute , useNavigation} from '@react-navigation/native';
+import { TrashSolid } from 'iconoir-react-native';
 
 //Entorno
 import { BACKEND_IP } from '@env';
@@ -25,11 +27,15 @@ export default function UserCalendar() {
     const [modalVisible, setModalVisible] = useState(false);
     const scaleValue = useRef(new Animated.Value(0)).current;
 
+    const navigation = useNavigation();
 
     useEffect(() => {
         fetchTasks(setTasks, setMarkedDates);
     }, []);
 
+    useEffect(() => {
+        fetchTasks();
+    }, [modalVisible]);
 
     // Solicitud al backend para obtener las tareas
     const fetchTasks = async () => {
@@ -62,13 +68,55 @@ export default function UserCalendar() {
             if (!markedDates[taskDate]) {
                 markedDates[taskDate] = { dots: [], marked: true };
             }
-            markedDates[taskDate].dots.push({ color: task.estado ? 'green' : '#B5C18E' });
+            markedDates[taskDate].dots.push({ color: task.estado ? '#EADBC8' : '#B5C18E' });
         });
         setMarkedDates(markedDates);
 
 
     } catch (error) {
         console.error('Error fetching the tasks:', error);
+    }
+};
+
+//funcion para finalizar una tarea
+const finishTask = async () => {
+    try {
+        const response = await axios.put(
+            `${BACKEND_IP}/api/tasks/user/endtask/${selectedTask._id}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+        console.log('Task finished:', response.data);
+        setSelectedTask({ ...selectedTask, estado: true });
+        // Actualizar la lista de tareas
+        fetchTasks();
+        //handleDayPress(selectedDate);
+    } catch (error) {
+        console.error('Error finishing the task:', error);
+    }
+};
+
+//funcion para eliminar una tarea
+const deleteTask = async () => {
+    try {
+        const response = await axios.delete(
+            `${BACKEND_IP}/api/tasks/user/delete/${selectedTask._id}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+        console.log('Task deleted:', response.data);
+        // Actualizar la lista de tareas
+        fetchTasks();
+        closeModal();
+        handleDayPress(selectedDate);
+    } catch (error) {
+        console.error('Error deleting the task:', error);
     }
 };
 
@@ -98,6 +146,8 @@ const handleDayPress = (day) => {
         setModalVisible(false);
         setSelectedTask(null);
     };
+
+
 
 
 
@@ -144,17 +194,27 @@ const handleDayPress = (day) => {
                  onRequestClose={closeModal}
              >
                  <View style={styles.modalContainer}>
-                     <View style={styles.modalView}>
-                         <Text style={styles.modalTitle}>{selectedTask.nombre}</Text>
-                         <Text style={styles.modalText}>Descripción: {selectedTask.descripcion}</Text>
-                         <Text style={styles.modalText}>Fecha de vencimiento: {selectedTask.fecha_vencimiento}</Text>
-                         <Text style={styles.modalText}>Estado: {selectedTask.estado ? 'Completada' : 'Pendiente'}</Text>
-                         <TouchableOpacity style={styles.editButton} onPress={() => {/* Lógica para editar la tarea */}}>
-                                <EditPencil width={24} height={24} color="#FFF" />
-                         </TouchableOpacity>
-                         <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
-                             <Text style={styles.closeButtonText}>Cerrar</Text>
-                         </TouchableOpacity>
+                    <View style={styles.modalView}>
+                        <Text style={styles.modalTitle}>{selectedTask.nombre}</Text>
+                        <Text style={styles.modalText}>Description: {selectedTask.descripcion}</Text>
+                        <Text style={styles.modalText}>Due date: {selectedTask.fecha_vencimiento.split('T')[0]}</Text>
+                        <Text style={styles.modalText}>Status: {selectedTask.estado ? 'Complete' : 'Pending'}</Text>
+                        <TouchableOpacity style={styles.editButton} onPress={() => {navigation.navigate('EditTaskForm', {task: selectedTask}); closeModal();}}>
+                            <EditPencil width={24} height={24} color="#FFF" />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.deleteButton} onPress={deleteTask}>
+                            <TrashSolid width={24} height={24} color="#FFF" />
+                        </TouchableOpacity>
+                        <View style={styles.buttons}>
+                            <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+                                <Text style={styles.closeButtonText}>Close</Text>
+                            </TouchableOpacity>
+                            {!selectedTask.estado && (
+                                    <TouchableOpacity style={styles.closeButton} onPress={finishTask}>
+                                        <Text style={styles.closeButtonText}>Finish</Text>
+                                    </TouchableOpacity>
+                            )}
+                        </View>
                      </View>
                  </View>
              </Modal>
@@ -179,7 +239,7 @@ const styles = StyleSheet.create({
     calendar: {
         marginTop: 55,
         width: 350,
-        height: 325,
+        height: 365,
         borderRadius: 30,
         shadowColor: '#e0e0da',
         shadowOffset: { width: 0, height: 6 },
@@ -189,10 +249,9 @@ const styles = StyleSheet.create({
     },
     listcard: {
         width: '100%',
-        height: 130,
+        height: 110,
         backgroundColor: '#B5C18E',
         borderRadius: 10,
-        marginTop: 10,
         marginBottom: 10,
         alignItems: 'center',
         alignContent: 'center',
@@ -203,14 +262,13 @@ const styles = StyleSheet.create({
     textList: {
         color: '#FFFFFF',
         fontWeight: 'bold',
-        fontSize: 20,
+        fontSize: 25,
     },
     taskContainer: {
         width: '100%',
         height: '100%',
         alignContent: 'center',
-        marginTop: 20,
-        padding: 30,
+        padding: 20,
     },
     modalContainer: {
         flex: 1,
@@ -235,13 +293,15 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     modalTitle: {
-        fontSize: 24,
+        fontSize: 30,
         fontWeight: 'bold',
         marginBottom: 15,
+        color: 'white',
     },
     modalText: {
-        fontSize: 18,
+        fontSize: 23,
         marginBottom: 10,
+        color: 'white',
     },
     closeButton: {
         marginTop: 20,
@@ -249,15 +309,29 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 10,
         elevation: 2,
+        width: 100,
+        height: 55,
+        margin: 10,
     },
     closeButtonText: {
         color: 'white',
         fontWeight: 'bold',
         textAlign: 'center',
+        padding: 5,
+        fontSize: 18,
     },
     editButton: {
         position: 'absolute',
         top: 20,
         right: 20,
+    },
+    deleteButton: {
+        position: 'absolute',
+        top: 20,
+        left: 20,
+    },
+    buttons: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
 });

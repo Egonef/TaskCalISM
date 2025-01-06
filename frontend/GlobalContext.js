@@ -6,10 +6,19 @@ export const GlobalContext = createContext();
 export const GlobalProvider = ({ children }) => {
     const [OpenAddPopUp, setOpenAddPopUp] = useState(false);
     const [OpenProfilePopUp, setOpenProfilePopUp] = useState(false);
+    const [OpengroupProfilePopUp, setOpengroupProfilePopUp] = useState(false)
     const [LoggedIn, setLoggedIn] = useState(false);
 
+    const [CurrentGroup, setCurrentGroup] = useState(null);
+
     return (
-        <GlobalContext.Provider value={{ OpenAddPopUp, setOpenAddPopUp, OpenProfilePopUp, setOpenProfilePopUp , LoggedIn, setLoggedIn}}>
+        <GlobalContext.Provider value={{ 
+            OpenAddPopUp, setOpenAddPopUp, 
+            OpenProfilePopUp, setOpenProfilePopUp , 
+            LoggedIn, setLoggedIn,
+            CurrentGroup, setCurrentGroup,
+            OpengroupProfilePopUp, setOpengroupProfilePopUp,
+            }}>
             {children}
         </GlobalContext.Provider>
     );

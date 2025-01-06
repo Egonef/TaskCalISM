@@ -101,7 +101,7 @@ export const modifyCategoryUser = asyncHandler(async (req, res) => { //CU20
 ///api/categories/user/delete/:id_categoria
 export const deleteCategoryUser = asyncHandler(async (req, res) => { //CU21
     //const { id_categoria } = req.params;  // ID de la categoría a eliminar
-
+    console.log('borrando categoria')
     try {
         // Buscar y eliminar la categoría por su ID
         const categoria = await CategoriaUsuario.findByIdAndDelete(req.params.id);

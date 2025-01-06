@@ -8,9 +8,7 @@ import asyncHandler from 'express-async-handler'
 // Tus rutas van aquí
     // GETS GENERICOS
 
-//Hola soy emilio yo he hecho esto por que queria que en el calendario salieran todas las tareas
-// de el usuario pero al final terminan saliendo todass las tareas de todos los usuarios (excepto las que tengan 
-// alguna categoria asignada) por que la categoria vacia es compartida
+///api/tasks/user/all/:id_usuario
 export const getAllTasksUser = asyncHandler(async(req, res) => {  //CU09, que diferencia hay con el getTasksByCategoryUser de categoryUserController.js??
     try{
         //const {id_usuario} = req.query //TIENE QUE SER QUERY, SI SE PONE BODY NO FUNCIONA NO TOCAR BAJO NINGUN CONCEPTO
@@ -111,6 +109,11 @@ export const createTaskUser = asyncHandler(async (req, res) => { //CU11
 export const modifyTaskUser = asyncHandler(async (req, res) => { //CU12
     //const { id } = req.params; // ID de la tarea a modificar
     const { nombre, descripcion, fecha_vencimiento, estado, id_categoria_usuario } = req.body;
+    let fechaProcesada;
+    if(fecha_vencimiento){
+        const [día, mes, año] = fecha_vencimiento.split('/');
+        fechaProcesada = new Date(`${año}-${mes}-${día}`);
+    }
 
     try {
         // Verificar si la tarea existe
@@ -122,9 +125,9 @@ export const modifyTaskUser = asyncHandler(async (req, res) => { //CU12
         // Actualizar los campos con los nuevos valores si están presentes
         tarea.nombre = nombre || tarea.nombre;
         tarea.descripcion = descripcion || tarea.descripcion;
-        tarea.fecha_vencimiento = fecha_vencimiento || tarea.fecha_vencimiento;
+        tarea.fecha_vencimiento = fechaProcesada || tarea.fecha_vencimiento;
         tarea.estado = estado !== undefined ? estado : tarea.estado;
-        //tarea.id_categoria_usuario = id_categoria_usuario || tarea.id_categoria_usuario;
+        tarea.id_categoria_usuario = id_categoria_usuario || tarea.id_categoria_usuario;
 
         // Guardar los cambios
         const tareaActualizada = await tarea.save();

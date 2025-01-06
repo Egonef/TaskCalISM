@@ -9,7 +9,29 @@ import asyncHandler from 'express-async-handler'
 
 // Tus rutas van aquí
     // GETS GENERICOS
+///api/tasks/group/all/:id_grupo
+export const getAllTasksGroup = asyncHandler(async(req, res) => {  //CU09, que diferencia hay con el getTasksByCategoryUser de categoryUserController.js??
+    try{
+        //const {id_grupo} = req.query //TIENE QUE SER QUERY, SI SE PONE BODY NO FUNCIONA NO TOCAR BAJO NINGUN CONCEPTO
+        const categorias = await CategoriaGrupo.find({id_grupo : req.params.id_grupo});
+        if (categorias.length === 0) {
+            return res.status(404).json({ message: "Este grupo no tiene categorias existentes" });
+        }
 
+        let tareas = [];
+        for (const categoria of categorias) {
+            const tareasCategoria = await TareaGrupo.find({
+                id_categoria_grupo: categoria._id, // Filtrar por el ID de la categoría 
+            });
+            tareas = tareas.concat(tareasCategoria);
+        }
+
+        res.status(200).json(tareas)
+
+    }catch(error){
+        res.status(500).json({ messageTareaUsuario: error.message });
+    }
+})
 ///api/tasks?id_usuario=0
 export const getTasksCatGroup = asyncHandler(async(req, res) => { //que diferencia hay con el getTasksByCategoryGroup de categoryGroupController.js??
     try{
@@ -36,12 +58,12 @@ export const getTasksCatGroup = asyncHandler(async(req, res) => { //que diferenc
 ///api/tasks
 //se pueden crear dos tareas o categorias iguales?????
 export const createTaskGroup = asyncHandler(async (req, res) => { //CU11
-    const { nombre, descripcion, fecha_vencimiento, estado, id_categoria_grupo } = req.body;
-
+    const { nombre, descripcion, fecha_vencimiento, id_categoria_grupo } = req.body;
     try {
         // Verificar si el usuario asociado existe
         const grupoExistente = await Grupo.findById(req.params.idgrupo);
         if (!grupoExistente) {
+            console.log("Grupo no encontrado")
             return res.status(404).json({ message: "El grupo asociado no existe" });
         }
 
@@ -59,7 +81,7 @@ export const createTaskGroup = asyncHandler(async (req, res) => { //CU11
             nombre,
             descripcion,
             fecha_vencimiento: fechaProcesada,
-            estado,
+            estado: false,
             id_categoria_grupo,//ponerla como obligatoria
         });
 
@@ -76,7 +98,12 @@ export const createTaskGroup = asyncHandler(async (req, res) => { //CU11
 export const modifyTaskGroup = asyncHandler(async (req, res) => { //CU13
     //const { id } = req.params; // ID de la tarea a modificar
     const { nombre, descripcion, fecha_vencimiento, estado, id_categoria_grupo } = req.body;
-
+    let fechaProcesada;
+    if(fecha_vencimiento){
+        const [día, mes, año] = fecha_vencimiento.split('/');
+        fechaProcesada = new Date(`${año}-${mes}-${día}`);
+    }
+    
     try {
         // Verificar si la tarea existe
         const tarea = await TareaGrupo.findById(req.params.id);
@@ -87,10 +114,9 @@ export const modifyTaskGroup = asyncHandler(async (req, res) => { //CU13
         // Actualizar los campos con los nuevos valores si están presentes
         tarea.nombre = nombre || tarea.nombre;
         tarea.descripcion = descripcion || tarea.descripcion;
-        tarea.fecha_vencimiento = fecha_vencimiento || tarea.fecha_vencimiento;
+        tarea.fecha_vencimiento = fechaProcesada || tarea.fecha_vencimiento;
         tarea.estado = estado !== undefined ? estado : tarea.estado;
-        //tarea.id_categoria_grupo = id_categoria_usuario || tarea.id_categoria_usuario;
-        //como se va a modificar un id???
+        tarea.id_categoria_grupo = id_categoria_grupo || tarea.id_categoria_grupo;
 
         // Guardar los cambios
         const tareaActualizada = await tarea.save();
@@ -107,6 +133,7 @@ export const deleteTaskGroup = asyncHandler(async (req, res) => { //CU14
     try {
         // Verificar si la tarea existe
         const tarea = await TareaGrupo.findById(req.params.id);
+
         if (!tarea) {
             return res.status(404).json({ message: "La tarea no existe" });
         }
@@ -133,16 +160,16 @@ export const getTaskGroup = asyncHandler(async(req,res) => { //CU10
         res.status(500).json({message: "Error al buscar la tarea."});
     }
 })
-///api/tasks/endtask/:id
+///api/tasks/group/endtask/:id
 export const endTaskGroup = asyncHandler(async(req,res) => {
     //const { id } = req.params;
     try{
         const tarea = await TareaGrupo.findById(req.params.id);
-
+        console.log("entre en la funsion")
         if (!tarea) {
             return res.status(404).json({ message: "La tarea no existe." });
         }
-
+        console.log("tarea exite")
         if(!tarea.estado){
             tarea.estado = true;
             await tarea.save();
@@ -282,13 +309,9 @@ export const calendarioTareasGroup = asyncHandler (async(req,res) => {
     }
 })
 
-
-
-
-
+///api/tasks/group/assign/:idgrupo
 export const assignMemberToATask = asyncHandler(async(req, res) => { //CU08
 
-        //aqui usar tarea miembro
     const { id_tarea_grupo, id_usuario } = req.body;
     try {
         const usuario = await Usuario.findById(id_usuario);
@@ -325,8 +348,8 @@ export const assignMemberToATask = asyncHandler(async(req, res) => { //CU08
 
         // Asignar el miembro a la tarea
         const nuevaTareaMiembro = new TareaMiembro({
-            id_tarea_grupo: tareapertenecegrupo,
-            id_usuario: usuario,
+            id_tarea_grupo: id_tarea_grupo,
+            id_usuario: id_usuario,
         });
 
         await nuevaTareaMiembro.save();
@@ -334,6 +357,34 @@ export const assignMemberToATask = asyncHandler(async(req, res) => { //CU08
 
     }
     catch (error) {
+        res.status(500).json({ message: error.message });
     }
 
+})
+
+
+///api/tasks/group/assigned/:idtareagrupo
+export const getAssignedMembers = asyncHandler(async(req, res) => { 
+    try {
+        const tareaGrupo = await TareaGrupo.findById(req.params.idtareagrupo);
+        if (!tareaGrupo) {
+            return res.status(404).json({ message: "La tarea de grupo no existe" });
+        }
+
+        const tareasMiembros = await TareaMiembro.find({ id_tarea_grupo: req.params.idtareagrupo});
+
+
+        if (tareasMiembros.length === 0) {
+            return res.status(404).json({ message: "La tarea no tiene miembros asignados." });
+        }
+
+        // Mapear los resultados para devolver solo los id_usuario
+        const miembrosIds = tareasMiembros.map(tarea => tarea.id_usuario);
+
+        res.status(201).json(miembrosIds);
+
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 })
