@@ -55,13 +55,13 @@ export default function LogIn() {
         <View style={styles.container}>
             <Text style={styles.AppName}>TaskCal</Text>
             <TextInput
-                placeholder="Nombre de usuario"
+                placeholder="Username"
                 style={styles.input}
                 value={nombre_usuario}
                 onChangeText={setNombre_usuario}
             />
             <TextInput
-                placeholder="Contraseña"
+                placeholder="Password"
                 style={styles.input}
                 value={contraseña}
                 onChangeText={setContraseña}
@@ -78,11 +78,6 @@ export default function LogIn() {
             <Pressable style={styles.button} onPress={() => navigation.navigate('Register')} >
                 <Text style={styles.buttonText}>Register</Text>
             </Pressable>
-            <View style={styles.externalLogin}>
-                <View style={styles.externalLoginBox}>
-                    <Googlesvg width={50} height={50} />
-                </View>
-            </View>
         </View>
     );
 }

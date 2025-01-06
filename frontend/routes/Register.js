@@ -56,25 +56,25 @@ export default function Register() {
         <View style={styles.container}>
             <Text style={styles.AppName}>TaskCal</Text>
             <TextInput
-                placeholder="Nombre de usuario"
+                placeholder="Username"
                 style={styles.input}
                 value={nombre_usuario}
                 onChangeText={setNombre_usuario}
             />
             <TextInput
-                placeholder="Nombre"
+                placeholder="Name"
                 style={styles.input}
                 value={nombre}
                 onChangeText={setNombre}
             />
             <TextInput
-                placeholder="Fecha de nacimiento"
+                placeholder="Date of birth"
                 style={styles.input}
                 value={fecha_nacimiento}
                 onChangeText={setFecha_nacimiento}
             />
             <TextInput
-                placeholder="Contraseña"
+                placeholder="Password"
                 style={styles.input}
                 value={contraseña}
                 onChangeText={setContraseña}
