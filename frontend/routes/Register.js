@@ -5,6 +5,7 @@ import { GlobalContext } from '../GlobalContext';
 import { useRoute } from '@react-navigation/native';
 import * as NavigationBar from 'expo-navigation-bar';
 import axios from 'axios'
+import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //Entorno
@@ -20,6 +21,8 @@ export default function Register() {
     const [nombre, setNombre] = useState('');
     const [fecha_nacimiento, setFecha_nacimiento] = useState('');
     const [contraseña, setContraseña] = useState('');
+
+    const navigation = useNavigation();
 
     useEffect(() => {
         NavigationBar.setBackgroundColorAsync("#F1F1F1");
@@ -47,6 +50,7 @@ export default function Register() {
             });
             console.log('User registered:', response.data);
             createWelcomeNotification(response.data._id);
+            navigation.navigate('LogIn');
         } catch (error) {
             console.error('Error registering user:', error);
         }

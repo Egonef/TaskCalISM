@@ -54,7 +54,7 @@ export default function EditCategoryForm() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.AppName}>Fill task info</Text>
+            <Text style={styles.AppName}>Fill category info</Text>
             <TextInput
                 placeholder="Name"
                 style={styles.input}
