@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, FlatList } from 'react-native';
-import { WarningTriangleSolid } from 'iconoir-react-native';
+import { WarningTriangleSolid , ThumbsUp } from 'iconoir-react-native';
 
 const SuccessfulModal = ({ visible, onClose }) => {
 
@@ -14,7 +14,7 @@ const SuccessfulModal = ({ visible, onClose }) => {
         >
             <View style={styles.container}>
                 <View style={styles.content}>
-                    <WarningTriangleSolid width={50} height={50} color="#c71616" />
+                    <ThumbsUp width={50} height={50} color="#B5C18E" />
                     <Text style={styles.header}>Operation completed Successfully!</Text>
                     <TouchableOpacity style={styles.closeButton} onPress={onClose}>
                         <Text style={styles.closeButtonText}>Cancel</Text>
