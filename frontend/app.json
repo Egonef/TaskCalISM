@@ -24,11 +24,7 @@
         "foregroundImage": "./assets/taskcalappicon.jpg",
         "backgroundColor": "#ffffff"
       },
-<<<<<<< HEAD
-      "package": "com.anonymous.frontend"
-=======
       "package": "com.egonef.frontend"
->>>>>>> 3116ac8281c655378e6f75d2454ff6cafed482ee
     },
     "web": {
       "favicon": "./assets/favicon.png"
