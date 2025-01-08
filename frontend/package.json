@@ -33,7 +33,7 @@
     "react-native-screens": "^4.0.0",
     "react-native-shadow-2": "^7.1.1",
     "react-native-svg": "^15.8.0",
-    "expo-dev-client": "~4.0.29"
+    "expo-dev-client": "~5.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
